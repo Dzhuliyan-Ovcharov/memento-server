@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         Objects.requireNonNull(user, "User cannot be null.");
         final User newUser = User.builder()
                 .username(user.getUsername())
-                .role(roleRepository.findRoleBy(RoleName.CLIENT))
+                .role(roleRepository.findRoleByRoleName(RoleName.CLIENT))
                 .password(bCryptPasswordEncoder.encode(user.getPassword()))
                 .build();
         return userRepository.save(newUser);
@@ -62,6 +62,6 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(final String username) {
         Objects.requireNonNull(username, "Username cannot be null.");
         log.info("Loading user with username: " + username);
-        return userRepository.findByName(username).orElseThrow(() -> new ResourceNotFoundException("Cannot find User with username:" + username));
+        return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Cannot find User with username:" + username));
     }
 }

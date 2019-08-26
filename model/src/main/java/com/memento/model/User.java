@@ -15,7 +15,7 @@ import static com.google.common.collect.Sets.newHashSet;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "users", indexes = {@Index(name = "uidx_name", unique = true, columnList = "name")})
+@Table(name = "users", indexes = {@Index(name = "uidx_username", unique = true, columnList = "username")})
 public class User implements UserDetails {
 
     private static final long serialVersionUID = 7511863539873633069L;

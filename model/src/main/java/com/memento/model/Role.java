@@ -24,11 +24,11 @@ public class Role implements GrantedAuthority {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    private RoleName role;
+    private RoleName roleName;
 
     @Override
     public String getAuthority() {
-        return role.name();
+        return roleName.name();
     }
 }
 
