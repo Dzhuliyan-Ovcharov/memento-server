@@ -12,4 +12,6 @@ public interface UserService extends UserDetailsService {
     User findById(final Long id);
 
     User save(final User user);
+
+    User update(final User user);
 }

@@ -52,6 +52,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User update(User user) {
+        Objects.requireNonNull(user, "User cannot be null.");
+        final User oldUser = userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with id: " + user.getId()));
+        final User newUser = User.builder()
+                .id(oldUser.getId())
+                .username(user.getUsername())
+                .password(bCryptPasswordEncoder.encode(user.getPassword()))
+                .role(user.getRole())
+                .build();
+        return userRepository.save(newUser);
+    }
+
+    @Override
     public User findById(final Long id) {
         Objects.requireNonNull(id, "id cannot be null.");
         log.info("Search for user with id: " + id);
