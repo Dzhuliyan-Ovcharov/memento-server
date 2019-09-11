@@ -57,7 +57,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         UsernamePasswordAuthenticationToken toReturn = new UsernamePasswordAuthenticationToken(null, null);
 
         if (jwtTokenUtil.validateToken(token, userDetails)) {
-            toReturn = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+            toReturn = new UsernamePasswordAuthenticationToken(userDetails, userDetails.getPassword(), userDetails.getAuthorities());
             toReturn.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             return toReturn;
         }
