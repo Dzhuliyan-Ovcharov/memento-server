@@ -22,8 +22,8 @@ public class JwtTokenUtil implements Serializable {
     @Value("${jwt.secret}")
     private String SECRET;
 
-    @Value("${jwt.expires_in}")
-    private long JWT_TOKEN_VALIDITY;
+    @Value("${jwt.expires_in:10000}")
+    private int JWT_TOKEN_VALIDITY;
 
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
