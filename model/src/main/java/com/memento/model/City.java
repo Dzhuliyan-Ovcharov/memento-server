@@ -4,7 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -13,7 +13,7 @@ import java.util.List;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "cities")
+@Table(name = "cities", indexes = {@Index(name = "uidx_city_name", unique = true, columnList = "name")})
 public class City implements Serializable {
 
     private static final long serialVersionUID = 5340407668460219421L;
@@ -26,6 +26,6 @@ public class City implements Serializable {
     private String name;
 
     @OneToMany(mappedBy = "city", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Neighborhood> neighborhoods;
+    private Set<Neighborhood> neighborhoods;
 
 }

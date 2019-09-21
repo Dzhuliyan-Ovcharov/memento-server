@@ -38,7 +38,6 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     private List<Estate> estates;
 
-
     @Override
     public Set<Role> getAuthorities() {
         return newHashSet(role);

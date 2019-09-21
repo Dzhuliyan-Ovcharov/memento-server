@@ -9,9 +9,9 @@ public interface UserService extends UserDetailsService {
 
     List<User> getAll();
 
-    User findById(final Long id);
+    User findById(Long id);
 
-    User save(final User user);
+    User save(User user);
 
-    User update(final User user);
+    User update(User user);
 }

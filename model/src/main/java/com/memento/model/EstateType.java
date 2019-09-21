@@ -5,7 +5,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import java.io.Serializable;
-import java.util.List;
+import java.util.Set;
 
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -28,5 +28,5 @@ public class EstateType implements Serializable {
     private String type;
 
     @OneToMany(mappedBy = "estateType", fetch = FetchType.LAZY)
-    private List<Estate> estates;
+    private Set<Estate> estates;
 }

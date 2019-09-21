@@ -1,9 +1,10 @@
-package com.memento.service;
+package com.memento.service.impl;
 
 import com.memento.model.RoleName;
 import com.memento.model.User;
 import com.memento.repository.RoleRepository;
 import com.memento.repository.UserRepository;
+import com.memento.service.UserService;
 import com.memento.shared.exception.ResourceNotFoundException;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +53,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(User user) {
+    public User update(final User user) {
         Objects.requireNonNull(user, "User cannot be null.");
         final User oldUser = userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with id: " + user.getId()));
         final User newUser = User.builder()
@@ -75,6 +76,6 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(final String username) {
         Objects.requireNonNull(username, "Username cannot be null.");
         log.info("Loading user with username: " + username);
-        return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Cannot find User with username:" + username));
+        return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Cannot find User with username: " + username));
     }
 }

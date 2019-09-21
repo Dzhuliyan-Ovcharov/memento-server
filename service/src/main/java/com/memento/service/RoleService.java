@@ -3,11 +3,12 @@ package com.memento.service;
 import com.memento.model.Role;
 
 import java.util.List;
+import java.util.Set;
 
 public interface RoleService {
 
-    List<Role> getAll();
+    Set<Role> getAll();
 
-    Role save(final Role role);
+    Role save(Role role);
 
 }
