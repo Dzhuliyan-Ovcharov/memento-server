@@ -4,6 +4,7 @@ import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
@@ -15,7 +16,7 @@ import static com.google.common.collect.Sets.newHashSet;
 @EqualsAndHashCode
 @ToString
 @Entity
-@Table(name = "users", indexes = {@Index(name = "uidx_username", unique = true, columnList = "username")})
+@Table(name = "users", indexes = {@Index(name = "uidx_user_username", unique = true, columnList = "username")})
 public class User implements UserDetails {
 
     private static final long serialVersionUID = 7511863539873633069L;
@@ -33,6 +34,10 @@ public class User implements UserDetails {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id", foreignKey = @ForeignKey(name = "fk_roles_id"))
     private Role role;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    private List<Estate> estates;
+
 
     @Override
     public Set<Role> getAuthorities() {
