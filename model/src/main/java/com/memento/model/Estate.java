@@ -44,4 +44,7 @@ public class Estate implements Serializable {
     @Column(name = "price")
     @Convert(converter = MoneyConverter.class)
     private Money price;
+
+    @Embedded
+    private Quadrature quadrature;
 }

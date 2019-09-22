@@ -1,11 +1,14 @@
 package com.memento.model;
 
+import lombok.Getter;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Currency;
 import java.util.Locale;
 
+@Getter
 public class Money implements Serializable {
 
     private static final long serialVersionUID = 4713348214498094311L;
@@ -41,14 +44,6 @@ public class Money implements Serializable {
     private Money(BigDecimal amount, Currency currency, RoundingMode rounding) {
         this.currency = currency;
         this.amount = amount.setScale(currency.getDefaultFractionDigits(), rounding);
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public Currency getCurrency() {
-        return currency;
     }
 
     @Override
