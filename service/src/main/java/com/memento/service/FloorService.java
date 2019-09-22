@@ -10,5 +10,5 @@ public interface FloorService {
 
     Floor save(Floor floor);
 
-    Floor findByName(String name);
+    Floor findByNumber(Integer number);
 }
