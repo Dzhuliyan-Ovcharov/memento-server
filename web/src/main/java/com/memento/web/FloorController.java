@@ -10,7 +10,7 @@ import javax.validation.Valid;
 import java.util.Set;
 
 @RestController
-@RequestMapping(value = "/floor")
+@RequestMapping(value = "/api/floor")
 public class FloorController {
 
     private final FloorService floorService;
