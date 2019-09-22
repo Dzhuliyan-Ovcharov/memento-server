@@ -14,13 +14,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/user")
-public class UserController {
+public class UserApiController {
 
     private final UserService userService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public UserController(final UserService userService, final BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserApiController(final UserService userService, final BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userService = userService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }

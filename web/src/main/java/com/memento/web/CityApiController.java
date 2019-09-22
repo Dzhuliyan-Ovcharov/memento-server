@@ -11,12 +11,12 @@ import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/api/city")
-public class CityController {
+public class CityApiController {
 
     private final CityService cityService;
 
     @Autowired
-    public CityController(final CityService cityService) {
+    public CityApiController(final CityService cityService) {
         this.cityService = cityService;
     }
 

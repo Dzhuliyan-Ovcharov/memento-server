@@ -11,12 +11,12 @@ import java.util.Set;
 
 @RestController
 @RequestMapping(value = "/api/floor")
-public class FloorController {
+public class FloorApiController {
 
     private final FloorService floorService;
 
     @Autowired
-    public FloorController(final FloorService floorService) {
+    public FloorApiController(final FloorService floorService) {
         this.floorService = floorService;
     }
 

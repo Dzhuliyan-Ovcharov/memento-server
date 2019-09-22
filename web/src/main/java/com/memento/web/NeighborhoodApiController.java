@@ -13,12 +13,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/neighborhood")
-public class NeighborhoodController {
+public class NeighborhoodApiController {
 
     private final NeighborhoodService neighborhoodService;
 
     @Autowired
-    public NeighborhoodController(final NeighborhoodService neighborhoodService) {
+    public NeighborhoodApiController(final NeighborhoodService neighborhoodService) {
         this.neighborhoodService = neighborhoodService;
     }
 
