@@ -10,14 +10,16 @@ import java.io.Serializable;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "estates")
 public class Estate implements Serializable {
 
     private static final long serialVersionUID = -605287185932654205L;
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
     @Id
     @GeneratedValue
     private Long id;

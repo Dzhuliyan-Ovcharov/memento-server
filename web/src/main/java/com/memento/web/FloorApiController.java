@@ -3,6 +3,7 @@ package com.memento.web;
 import com.memento.model.Floor;
 import com.memento.service.FloorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +11,7 @@ import javax.validation.Valid;
 import java.util.Set;
 
 @RestController
-@RequestMapping(value = "/api/floor")
+@RequestMapping(value = "/api/floor", produces = { MediaType.APPLICATION_JSON_VALUE })
 public class FloorApiController {
 
     private final FloorService floorService;

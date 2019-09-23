@@ -13,21 +13,27 @@ import static com.google.common.collect.Sets.newHashSet;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "users", indexes = {@Index(name = "uidx_user_username", unique = true, columnList = "username")})
 public class User implements UserDetails {
 
     private static final long serialVersionUID = 7511863539873633069L;
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
     @Id
     @GeneratedValue
     private Long id;
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
     @Column(name = "username", nullable = false)
     private String username;
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
     @Column(name = "password", nullable = false)
     private String password;
 

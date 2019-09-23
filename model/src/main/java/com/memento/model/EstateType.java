@@ -11,18 +11,22 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@EqualsAndHashCode
-@ToString
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 @Entity
 @Table(name = "estate_types", indexes = {@Index(name = "uidx_estate_type", unique = true, columnList = "type")})
 public class EstateType implements Serializable {
 
     private static final long serialVersionUID = 896929148458585749L;
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
     @Id
     @GeneratedValue
     private Long id;
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
     @Length(min = 3, max = 30, message = "Type must be between 3 and 30 symbols.")
     @Column(name = "type", nullable = false)
     private String type;
