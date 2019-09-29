@@ -1,11 +1,9 @@
 package com.memento.service.impl;
 
 import com.memento.model.City;
-import com.memento.model.Neighborhood;
 import com.memento.repository.CityRepository;
 import com.memento.service.CityService;
 import com.memento.shared.exception.ResourceNotFoundException;
-import io.jsonwebtoken.lang.Collections;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -13,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -24,7 +21,7 @@ public class CityServiceImpl implements CityService {
     private final CityRepository cityRepository;
 
     @Autowired
-    public CityServiceImpl(CityRepository cityRepository) {
+    public CityServiceImpl(final CityRepository cityRepository) {
         this.cityRepository = cityRepository;
     }
 
@@ -50,13 +47,5 @@ public class CityServiceImpl implements CityService {
                 .build();
 
         return cityRepository.save(newCity);
-    }
-
-    private Neighborhood buildNeighborhood(Neighborhood neighborhood, City city) {
-        return Neighborhood.builder()
-                .id(neighborhood.getId())
-                .name(neighborhood.getName())
-                .city(city)
-                .build();
     }
 }
