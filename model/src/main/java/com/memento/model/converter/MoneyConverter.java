@@ -18,6 +18,6 @@ public class MoneyConverter implements AttributeConverter<Money, String> {
     @Override
     public Money convertToEntityAttribute(String moneyString) {
         final String[] values = moneyString.split(" ");
-        return Money.of(BigDecimal.valueOf(Long.parseLong(values[0])), Currency.getInstance(values[1]));
+        return Money.of(BigDecimal.valueOf(Double.parseDouble(values[0])), Currency.getInstance(values[1]));
     }
 }
