@@ -43,7 +43,7 @@ public class Estate implements Serializable {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @Column(name = "price")
+    @Column(name = "price", nullable = false)
     @Convert(converter = MoneyConverter.class)
     private Money price;
 

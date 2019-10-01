@@ -13,10 +13,10 @@ public class Quadrature implements Serializable {
 
     private static final long serialVersionUID = -6869288107131789383L;
 
-    @Column(name = "built_up_area", precision = 3, scale = 2)
+    @Column(name = "built_up_area", precision = 3, scale = 2, nullable = false)
     private final BigDecimal builtUpArea;
 
-    @Column(name = "pure_area", precision = 3, scale = 2)
+    @Column(name = "pure_area", precision = 3, scale = 2, nullable = false)
     private final BigDecimal pureArea;
 
     public Quadrature of(final BigDecimal builtUpArea, final BigDecimal pureArea) {
