@@ -37,7 +37,7 @@ public class CityServiceImpl implements CityService {
 
     @Override
     public City update(City city) {
-        City oldCity = cityRepository.findById(city.getId()).orElseThrow(ResourceNotFoundException::new);
+        final City oldCity = cityRepository.findById(city.getId()).orElseThrow(ResourceNotFoundException::new);
         oldCity.getNeighborhoods().clear();
 
         final City newCity = City.builder()
