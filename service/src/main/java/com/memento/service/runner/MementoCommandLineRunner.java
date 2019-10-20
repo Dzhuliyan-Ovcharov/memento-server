@@ -49,10 +49,10 @@ public class MementoCommandLineRunner {
                         isExists = true;
                         break;
                     }
+
                 }
 
-
-                if (isExists) {
+                if (!isExists) {
                     newRoles.add(Role.builder().roleName(roleName).build());
                 }
             }
