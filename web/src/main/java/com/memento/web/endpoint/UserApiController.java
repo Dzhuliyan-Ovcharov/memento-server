@@ -51,10 +51,10 @@ public class UserApiController implements UserApi {
 
     @Override
     @PostMapping(value = "/login")
-    public ResponseEntity<UserDTO> login(@Valid @RequestBody final UserDTO userDTO) {
-        final User user = (User) userService.loadUserByUsername(userDTO.getUsername());
+    public ResponseEntity<UserDTO> login(@RequestParam final String username, @RequestParam final String password) {
+        final User user = (User) userService.loadUserByUsername(username);
 
-        if (!bCryptPasswordEncoder.matches(userDTO.getPassword(), user.getPassword())) {
+        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password");
         }
 

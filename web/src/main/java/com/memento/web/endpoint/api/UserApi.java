@@ -5,7 +5,6 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
 import java.util.Set;
 
 @Api(value = "User API")
@@ -18,5 +17,5 @@ public interface UserApi {
     ResponseEntity<UserDTO> register(UserDTO userDTO);
 
     @ApiOperation(value = "Login", response = UserDTO.class)
-    ResponseEntity<UserDTO> login(UserDTO userDTO);
+    ResponseEntity<UserDTO> login(final String username, final String password);
 }
