@@ -1,4 +1,4 @@
-package com.memento.configuration.security;
+package com.memento.service.configuration.security;
 
 import com.memento.service.UserService;
 import lombok.extern.log4j.Log4j2;

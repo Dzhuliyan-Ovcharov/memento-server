@@ -1,14 +1,19 @@
 package com.memento.service.impl;
 
+import com.memento.model.EmailVerificationToken;
 import com.memento.model.RoleName;
 import com.memento.model.User;
-import com.memento.repository.RoleRepository;
 import com.memento.repository.UserRepository;
+import com.memento.service.EmailService;
+import com.memento.service.EmailVerificationService;
+import com.memento.service.RoleService;
 import com.memento.service.UserService;
 import com.memento.shared.exception.ResourceNotFoundException;
-import lombok.extern.log4j.Log4j2;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
+import org.springframework.dao.DuplicateKeyException;
+import org.springframework.mail.MailSendException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -16,40 +21,64 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 
 @Service
 @Primary
-@Log4j2
-@Transactional
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+    private final RoleService roleService;
+    private final EmailService emailService;
+    private final EmailVerificationService verificationService;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public UserServiceImpl(final UserRepository userRepository,
-                           final RoleRepository roleRepository,
+                           final RoleService roleService,
+                           final EmailService emailService,
+                           final EmailVerificationService verificationService,
                            final BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+        this.roleService = roleService;
+        this.emailService = emailService;
+        this.verificationService = verificationService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
-    public List<User> getAll() {
-        return userRepository.findAll();
+    public Set<User> getAll() {
+        return Set.copyOf(userRepository.findAll());
     }
 
     @Override
-    public User save(final User user) {
+    public Set<User> getAllByUsernames(Set<String> usernames) {
+        return userRepository.findByUsernameIn(usernames);
+    }
+
+    @Override
+    @Transactional
+    public User register(final User user) {
         Objects.requireNonNull(user, "User cannot be null.");
+        checkUserExists(user.getUsername(), user.getEmail());
+
         final User newUser = User.builder()
                 .username(user.getUsername())
-                .role(roleRepository.findRoleByRoleName(RoleName.CLIENT))
+                .email(user.getEmail())
+                .role(roleService.findRoleByRoleName(RoleName.BUYER))
                 .password(bCryptPasswordEncoder.encode(user.getPassword()))
                 .build();
-        return userRepository.save(newUser);
+
+
+       final User savedUser = userRepository.save(newUser);
+       final EmailVerificationToken emailVerificationToken = EmailVerificationToken.from(savedUser);
+       emailService.sendMail(newUser.getEmail(), emailVerificationToken.getToken());
+       verificationService.save(emailVerificationToken);
+
+
+       return savedUser;
     }
 
     @Override
@@ -77,5 +106,29 @@ public class UserServiceImpl implements UserService {
         Objects.requireNonNull(username, "Username cannot be null.");
         log.info("Loading user with username: " + username);
         return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Cannot find User with username: " + username));
+    }
+
+    private void checkUserExists(String username, String email) {
+        Optional<User> optionalUser;
+
+        if ((optionalUser = userRepository.findByUsernameOrEmail(username, email)).isPresent()) {
+            final User user = optionalUser.get();
+            final StringBuilder errorMessageBuilder = new StringBuilder();
+
+            if (user.getUsername().equals(username)) {
+                errorMessageBuilder.append("username ");
+            }
+
+            if (user.getEmail().equals(email)) {
+                if(!errorMessageBuilder.toString().isEmpty()) {
+                    errorMessageBuilder.append("and ");
+                }
+                errorMessageBuilder.append("email ");
+            }
+
+            errorMessageBuilder.append("exists");
+
+            throw new DuplicateKeyException(errorMessageBuilder.toString());
+        }
     }
 }

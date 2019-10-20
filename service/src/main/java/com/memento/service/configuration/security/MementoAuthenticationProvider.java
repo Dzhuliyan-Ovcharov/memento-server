@@ -1,4 +1,4 @@
-package com.memento.configuration.security;
+package com.memento.service.configuration.security;
 
 import com.google.common.base.Strings;
 import com.memento.model.User;

@@ -1,13 +1,13 @@
 package com.memento.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import java.util.List;
 import java.util.Set;
-
-import static com.google.common.collect.Sets.newHashSet;
 
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -29,12 +29,19 @@ public class User implements UserDetails {
 
     @EqualsAndHashCode.Include
     @ToString.Include
-    @Column(name = "username", nullable = false)
+    @Column(nullable = false)
     private String username;
 
     @EqualsAndHashCode.Include
     @ToString.Include
-    @Column(name = "password", nullable = false)
+    @Column(nullable = false)
+    @Email
+    private String email;
+
+    @EqualsAndHashCode.Include
+    @ToString.Include
+    @JsonIgnore
+    @Column(nullable = false)
     private String password;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -46,7 +53,7 @@ public class User implements UserDetails {
 
     @Override
     public Set<Role> getAuthorities() {
-        return newHashSet(role);
+        return Set.of(role);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.memento.configuration.security;
+package com.memento.service.configuration.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

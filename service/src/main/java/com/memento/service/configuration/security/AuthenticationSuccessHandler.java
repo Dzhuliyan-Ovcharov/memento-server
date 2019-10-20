@@ -1,4 +1,4 @@
-package com.memento.configuration.security;
+package com.memento.service.configuration.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memento.model.User;
