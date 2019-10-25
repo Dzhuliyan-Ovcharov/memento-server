@@ -69,7 +69,7 @@ public class MementoCommandLineRunner {
         private final RoleService roleService;
         private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-        private static final String USERNAME = "admin";
+        private static final String FIRST_AND_LAST_NAME = "admin";
         private static final String PASSWORD = "admin";
         private static final String EMAIL = "ddd.bg@gmail.com";
 
@@ -84,9 +84,10 @@ public class MementoCommandLineRunner {
 
         @Override
         public void run(String... args) {
-            if (userRepository.findByUsername(USERNAME).isEmpty()) {
+            if (userRepository.findByEmail(EMAIL).isEmpty()) {
                 User user = User.builder()
-                        .username(USERNAME)
+                        .firstName(FIRST_AND_LAST_NAME)
+                        .lastName(FIRST_AND_LAST_NAME)
                         .email(EMAIL)
                         .password(bCryptPasswordEncoder.encode(PASSWORD))
                         .role(roleService.findRoleByRoleName(RoleName.ADMIN))

@@ -1,9 +1,12 @@
 package com.memento.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+@JsonFormat(shape = JsonFormat.Shape.STRING)
 public enum RoleName {
-    ADMIN("admin"),
-    AGENCY("agency"),
-    BUYER("buyer");
+    ADMIN("ADMIN"),
+    AGENCY("AGENCY"),
+    BUYER("BUYER");
 
     private final String roleName;
 

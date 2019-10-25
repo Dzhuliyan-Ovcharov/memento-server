@@ -1,7 +1,6 @@
 package com.memento.service.impl;
 
 import com.memento.model.EmailVerificationToken;
-import com.memento.model.RoleName;
 import com.memento.model.User;
 import com.memento.repository.UserRepository;
 import com.memento.service.EmailService;
@@ -13,15 +12,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.mail.MailSendException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -54,31 +50,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Set<User> getAllByUsernames(Set<String> usernames) {
-        return userRepository.findByUsernameIn(usernames);
-    }
-
-    @Override
     @Transactional
-    public User register(final User user) {
+    public void register(final User user) {
         Objects.requireNonNull(user, "User cannot be null.");
-        checkUserExists(user.getUsername(), user.getEmail());
+
+        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
+            throw new DuplicateKeyException("email exists.");
+        }
 
         final User newUser = User.builder()
-                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .email(user.getEmail())
-                .role(roleService.findRoleByRoleName(RoleName.BUYER))
+                .role(roleService.findRoleByRoleName(user.getRole().getRoleName()))
                 .password(bCryptPasswordEncoder.encode(user.getPassword()))
                 .build();
 
-
-       final User savedUser = userRepository.save(newUser);
-       final EmailVerificationToken emailVerificationToken = EmailVerificationToken.from(savedUser);
-       emailService.sendMail(newUser.getEmail(), emailVerificationToken.getToken());
-       verificationService.save(emailVerificationToken);
-
-
-       return savedUser;
+        final User savedUser = userRepository.save(newUser);
+        final EmailVerificationToken emailVerificationToken = EmailVerificationToken.from(savedUser);
+        emailService.sendMail(newUser.getEmail(), emailVerificationToken.getToken());
+        verificationService.save(emailVerificationToken);
     }
 
     @Override
@@ -87,11 +78,17 @@ public class UserServiceImpl implements UserService {
         final User oldUser = userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with id: " + user.getId()));
         final User newUser = User.builder()
                 .id(oldUser.getId())
-                .username(user.getUsername())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
                 .password(bCryptPasswordEncoder.encode(user.getPassword()))
                 .role(user.getRole())
                 .build();
         return userRepository.save(newUser);
+    }
+
+    @Override
+    public User findByEmail(final String email) {
+        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with email: " + email));
     }
 
     @Override
@@ -102,33 +99,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(final String username) {
-        Objects.requireNonNull(username, "Username cannot be null.");
-        log.info("Loading user with username: " + username);
-        return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("Cannot find User with username: " + username));
-    }
-
-    private void checkUserExists(String username, String email) {
-        Optional<User> optionalUser;
-
-        if ((optionalUser = userRepository.findByUsernameOrEmail(username, email)).isPresent()) {
-            final User user = optionalUser.get();
-            final StringBuilder errorMessageBuilder = new StringBuilder();
-
-            if (user.getUsername().equals(username)) {
-                errorMessageBuilder.append("username ");
-            }
-
-            if (user.getEmail().equals(email)) {
-                if(!errorMessageBuilder.toString().isEmpty()) {
-                    errorMessageBuilder.append("and ");
-                }
-                errorMessageBuilder.append("email ");
-            }
-
-            errorMessageBuilder.append("exists");
-
-            throw new DuplicateKeyException(errorMessageBuilder.toString());
-        }
+    public UserDetails loadUserByUsername(final String email) {
+        Objects.requireNonNull(email, "Email cannot be null.");
+        final User user =  userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cannot find Email with email: " + email));
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(user.getEmail())
+                .password(user.getPassword())
+                .authorities(Set.of(user.getRole()))
+                .build();
     }
 }

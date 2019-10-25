@@ -10,11 +10,11 @@ public interface UserService extends UserDetailsService {
 
     Set<User> getAll();
 
-    Set<User> getAllByUsernames(Set<String> usernames);
-
     User findById(Long id);
 
-    User register(User user);
+    void register(User user);
 
     User update(User user);
+
+    User findByEmail(String email);
 }

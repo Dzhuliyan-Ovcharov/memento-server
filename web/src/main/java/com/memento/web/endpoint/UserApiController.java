@@ -2,16 +2,16 @@ package com.memento.web.endpoint;
 
 import com.memento.model.User;
 import com.memento.service.UserService;
+import com.memento.web.dto.UserRegisterRequest;
 import com.memento.web.endpoint.api.UserApi;
-import com.memento.web.view.UserDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 import java.util.Set;
@@ -35,31 +35,18 @@ public class UserApiController implements UserApi {
     }
 
     @Override
+    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
     @GetMapping(value = "/all")
-    public ResponseEntity<Set<UserDTO>> getAllUsers() {
-        Set<UserDTO> response = userService.getAll().stream().map(u -> modelMapper.map(u, UserDTO.class)).collect(Collectors.toSet());
+    public ResponseEntity<Set<UserRegisterRequest>> getAllUsers() {
+        Set<UserRegisterRequest> response = userService.getAll().stream().map(u -> modelMapper.map(u, UserRegisterRequest.class)).collect(Collectors.toSet());
         return ResponseEntity.ok(response);
     }
 
     @Override
     @PostMapping(value = "/register")
-    public ResponseEntity<UserDTO> register(@Valid @RequestBody final UserDTO userDTO) {
-        final User user = modelMapper.map(userDTO, User.class);
-        final UserDTO response = modelMapper.map(userService.register(user), UserDTO.class);
-        return ResponseEntity.ok(response);
+    public ResponseEntity<HttpStatus> register(@Valid @RequestBody final UserRegisterRequest userRegisterRequest) {
+        final User user = modelMapper.map(userRegisterRequest, User.class);
+        userService.register(user);
+        return ResponseEntity.ok().build();
     }
-
-    @Override
-    @PostMapping(value = "/login")
-    public ResponseEntity<UserDTO> login(@RequestParam final String username, @RequestParam final String password) {
-        final User user = (User) userService.loadUserByUsername(username);
-
-        if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong username or password");
-        }
-
-        final UserDTO response = modelMapper.map(user, UserDTO.class);
-        return ResponseEntity.ok(response);
-    }
-
 }

@@ -1,12 +1,12 @@
-package com.memento.web.view;
+package com.memento.web.dto;
 
+import com.memento.model.RoleName;
 import com.memento.shared.annotation.PasswordMatches;
 import com.memento.shared.annotation.ValidEmail;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -15,13 +15,13 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode
 @ToString
 @PasswordMatches(password = "password", confirmPassword = "confirmPassword")
-public class UserDTO {
-
-    private Long id;
+public class UserRegisterRequest {
 
     @NotNull
-    @Size(min = 4, max = 20)
-    private String username;
+    private String firstName;
+
+    @NotNull
+    private String lastName;
 
     @ValidEmail
     @NotNull
@@ -29,10 +29,11 @@ public class UserDTO {
     private String email;
 
     @NotNull
-    @Size(min = 4, max = 20)
+    private RoleName roleName;
+
+    @NotNull
     private String password;
 
     @NotNull
-    @Size(min = 4, max = 20)
     private String confirmPassword;
 }
