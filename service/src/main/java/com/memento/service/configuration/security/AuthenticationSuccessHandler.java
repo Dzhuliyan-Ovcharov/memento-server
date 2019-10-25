@@ -1,8 +1,6 @@
 package com.memento.service.configuration.security;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memento.model.User;
-import lombok.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
