@@ -13,7 +13,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "neighborhoods")
+@Table(name = "neighborhoods", indexes = {@Index(name = "uidx_neighborhood_name", unique = true, columnList = "name")})
 public class Neighborhood implements Serializable {
 
     private static final long serialVersionUID = 1605361890092710339L;
