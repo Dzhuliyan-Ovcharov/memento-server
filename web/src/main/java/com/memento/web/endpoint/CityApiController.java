@@ -1,11 +1,13 @@
 package com.memento.web.endpoint;
 
 import com.memento.model.City;
+import com.memento.model.Permission;
 import com.memento.service.CityService;
 import com.memento.web.endpoint.api.CityApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -29,12 +31,14 @@ public class CityApiController implements CityApi {
     }
 
     @Override
+    @Secured(Permission.Value.ADMIN)
     @PostMapping(value = "/save")
     public ResponseEntity<City> save(@Valid @RequestBody final City city) {
         return ResponseEntity.ok(cityService.save(city));
     }
 
     @Override
+    @Secured(Permission.Value.ADMIN)
     @PutMapping(value = "/update")
     public ResponseEntity<City> update(@Valid @RequestBody final City city) {
         return ResponseEntity.ok(cityService.update(city));

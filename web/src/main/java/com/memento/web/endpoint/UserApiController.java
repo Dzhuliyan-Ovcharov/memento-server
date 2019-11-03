@@ -1,5 +1,6 @@
 package com.memento.web.endpoint;
 
+import com.memento.model.Permission;
 import com.memento.model.User;
 import com.memento.service.UserService;
 import com.memento.web.dto.UserRegisterRequest;
@@ -9,8 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -23,23 +23,19 @@ public class UserApiController implements UserApi {
 
     private final UserService userService;
     private final ModelMapper modelMapper;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
     public UserApiController(final UserService userService,
-                             final ModelMapper modelMapper,
-                             final BCryptPasswordEncoder bCryptPasswordEncoder) {
+                             final ModelMapper modelMapper) {
         this.userService = userService;
         this.modelMapper = modelMapper;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @Override
-    @PreAuthorize(value = "hasRole('ROLE_ADMIN')")
+    @Secured(Permission.Value.ADMIN)
     @GetMapping(value = "/all")
     public ResponseEntity<Set<UserRegisterRequest>> getAllUsers() {
-        Set<UserRegisterRequest> response = userService.getAll().stream().map(u -> modelMapper.map(u, UserRegisterRequest.class)).collect(Collectors.toSet());
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userService.getAll().stream().map(u -> modelMapper.map(u, UserRegisterRequest.class)).collect(Collectors.toSet()));
     }
 
     @Override

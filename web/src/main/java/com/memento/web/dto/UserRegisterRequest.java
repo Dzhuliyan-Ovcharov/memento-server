@@ -1,6 +1,6 @@
 package com.memento.web.dto;
 
-import com.memento.model.RoleName;
+import com.memento.model.Permission;
 import com.memento.shared.annotation.PasswordMatches;
 import com.memento.shared.annotation.ValidEmail;
 import lombok.*;
@@ -29,7 +29,7 @@ public class UserRegisterRequest {
     private String email;
 
     @NotNull
-    private RoleName roleName;
+    private Permission permission;
 
     @NotNull
     private String password;

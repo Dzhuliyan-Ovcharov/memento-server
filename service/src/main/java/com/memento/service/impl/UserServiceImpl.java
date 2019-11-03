@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
-                .role(roleService.findRoleByRoleName(user.getRole().getRoleName()))
+                .role(roleService.findRoleByPermission(user.getRole().getPermission()))
                 .password(bCryptPasswordEncoder.encode(user.getPassword()))
                 .build();
 

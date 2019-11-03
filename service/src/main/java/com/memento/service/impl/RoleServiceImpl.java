@@ -1,7 +1,7 @@
 package com.memento.service.impl;
 
 import com.memento.model.Role;
-import com.memento.model.RoleName;
+import com.memento.model.Permission;
 import com.memento.repository.RoleRepository;
 import com.memento.service.RoleService;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Set;
 
 @Service
@@ -42,7 +41,7 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Role findRoleByRoleName(RoleName roleName) {
-        return roleRepository.findRoleByRoleName(roleName);
+    public Role findRoleByPermission(Permission permission) {
+        return roleRepository.findRoleByPermission(permission);
     }
 }

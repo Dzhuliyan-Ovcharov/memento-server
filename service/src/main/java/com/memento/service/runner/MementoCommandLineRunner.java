@@ -1,7 +1,7 @@
 package com.memento.service.runner;
 
 import com.memento.model.Role;
-import com.memento.model.RoleName;
+import com.memento.model.Permission;
 import com.memento.model.User;
 import com.memento.repository.UserRepository;
 import com.memento.service.RoleService;
@@ -35,17 +35,17 @@ public class MementoCommandLineRunner {
             final Set<Role> roles = roleService.getAll();
 
             if (CollectionUtils.isEmpty(roles)) {
-                roleService.saveRoles(Arrays.stream(RoleName.values())
-                        .map(r -> Role.builder().roleName(r).build())
+                roleService.saveRoles(Arrays.stream(Permission.values())
+                        .map(r -> Role.builder().permission(r).build())
                         .collect(Collectors.toSet()));
                 return;
             }
 
             final Set<Role> newRoles = new HashSet<>();
-            for (RoleName roleName : RoleName.values()) {
+            for (Permission permission : Permission.values()) {
                 boolean isExists = false;
                 for (Role role : roles) {
-                    if (role.getRoleName().equals(roleName)) {
+                    if (role.getPermission().equals(permission)) {
                         isExists = true;
                         break;
                     }
@@ -53,7 +53,7 @@ public class MementoCommandLineRunner {
                 }
 
                 if (!isExists) {
-                    newRoles.add(Role.builder().roleName(roleName).build());
+                    newRoles.add(Role.builder().permission(permission).build());
                 }
             }
 
@@ -90,7 +90,7 @@ public class MementoCommandLineRunner {
                         .lastName(FIRST_AND_LAST_NAME)
                         .email(EMAIL)
                         .password(bCryptPasswordEncoder.encode(PASSWORD))
-                        .role(roleService.findRoleByRoleName(RoleName.ADMIN))
+                        .role(roleService.findRoleByPermission(Permission.ADMIN))
                         .build();
 
                 userRepository.save(user);

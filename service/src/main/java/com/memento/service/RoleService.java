@@ -1,7 +1,7 @@
 package com.memento.service;
 
 import com.memento.model.Role;
-import com.memento.model.RoleName;
+import com.memento.model.Permission;
 
 import java.util.Set;
 
@@ -13,5 +13,5 @@ public interface RoleService {
 
     void saveRoles(Set<Role> roles);
 
-    Role findRoleByRoleName(RoleName roleName);
+    Role findRoleByPermission(Permission permission);
 }

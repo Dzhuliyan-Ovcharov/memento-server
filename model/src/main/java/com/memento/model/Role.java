@@ -13,7 +13,7 @@ import javax.persistence.*;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "roles", indexes = {@Index(name = "uidx_role", unique = true, columnList = "role")})
+@Table(name = "roles", indexes = {@Index(name = "uidx_role", unique = true, columnList = "permission")})
 public class Role implements GrantedAuthority {
 
     private static final long serialVersionUID = 7734444963238814777L;
@@ -27,12 +27,12 @@ public class Role implements GrantedAuthority {
     @EqualsAndHashCode.Include
     @ToString.Include
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private RoleName roleName;
+    @Column(nullable = false)
+    private Permission permission;
 
     @Override
     public String getAuthority() {
-        return roleName.name();
+        return permission.name();
     }
 }
 
