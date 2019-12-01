@@ -15,7 +15,6 @@ import java.util.Set;
 @Service
 @Primary
 @Slf4j
-@Transactional
 public class CityServiceImpl implements CityService {
 
     private final CityRepository cityRepository;
@@ -31,11 +30,13 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
+    @Transactional
     public City save(City city) {
         return cityRepository.save(city);
     }
 
     @Override
+    @Transactional
     public City update(City city) {
         final City oldCity = cityRepository.findById(city.getId()).orElseThrow(ResourceNotFoundException::new);
         oldCity.getNeighborhoods().clear();

@@ -14,7 +14,6 @@ import java.util.Set;
 @Service
 @Primary
 @Slf4j
-@Transactional
 public class AdTypeServiceImpl implements AdTypeService {
 
     private final AdTypeRepository adTypeRepository;
@@ -30,6 +29,7 @@ public class AdTypeServiceImpl implements AdTypeService {
     }
 
     @Override
+    @Transactional
     public AdType save(AdType adType) {
         return adTypeRepository.save(adType);
     }

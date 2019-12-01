@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -24,6 +25,22 @@ public class Estate implements Serializable {
     @GeneratedValue
     private Long id;
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
+    @Column(name = "price", nullable = false)
+    @Convert(converter = MoneyConverter.class)
+    private Money price;
+
+    @EqualsAndHashCode.Include
+    @ToString.Include
+    @Embedded
+    private Quadrature quadrature;
+
+    @EqualsAndHashCode.Include
+    @ToString.Include
+    @Column(name = "description", nullable = false)
+    private String description;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "floor_id", foreignKey = @ForeignKey(name = "fk_floor_id"))
     private Floor floor;
@@ -40,13 +57,6 @@ public class Estate implements Serializable {
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_id"))
     private User user;
 
-    @Column(name = "description", nullable = false)
-    private String description;
-
-    @Column(name = "price", nullable = false)
-    @Convert(converter = MoneyConverter.class)
-    private Money price;
-
-    @Embedded
-    private Quadrature quadrature;
+    @OneToMany(mappedBy = "estate", fetch = FetchType.LAZY)
+    private List<Image> images;
 }
