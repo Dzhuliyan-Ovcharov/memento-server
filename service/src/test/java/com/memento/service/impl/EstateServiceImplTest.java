@@ -1,8 +1,7 @@
-package java.com.memento.service.impl;
+package com.memento.service.impl;
 
 import com.memento.model.Estate;
 import com.memento.repository.EstateRepository;
-import com.memento.service.impl.EstateServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -21,10 +20,12 @@ public class EstateServiceImplTest {
     private EstateServiceImpl estateService;
 
     @Test
-    public void saveTest() {
+    public void save_whenEstateIsNotNull_expectToSave() {
         Estate estate = mock(Estate.class);
         when(estateRepository.save(any(Estate.class))).thenReturn(estate);
+
         estateService.save(estate);
-        verify(estateRepository).save(any(Estate.class));
+
+        verify(estateRepository, times(1)).save(any(Estate.class));
     }
 }

@@ -1,9 +1,8 @@
-package java.com.memento.service.impl;
+package com.memento.service.impl;
 
 import com.memento.model.Permission;
 import com.memento.model.Role;
 import com.memento.repository.RoleRepository;
-import com.memento.service.impl.RoleServiceImpl;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -24,32 +23,40 @@ public class RoleServiceImplTest {
     private RoleServiceImpl roleService;
 
     @Test
-    public void getAllTest() {
+    public void getAll_whenRolesAreAvailable_expectTheRoles() {
         when(roleRepository.findAll()).thenReturn(Collections.emptyList());
+
         roleService.getAll();
-        verify(roleRepository).findAll();
+
+        verify(roleRepository, times(1)).findAll();
     }
 
     @Test
-    public void saveTest() {
+    public void save_whenRoleIsNotNull_expectToSave() {
         Role role = mock(Role.class);
         when(roleRepository.save(any(Role.class))).thenReturn(role);
+
         roleService.save(role);
-        verify(roleRepository).save(any(Role.class));
+
+        verify(roleRepository, times(1)).save(any(Role.class));
     }
 
     @Test
-    public void saveRolesTest() {
+    public void saveRoles_whenRolesAreNotNull_expectToSave() {
         when(roleRepository.saveAll(anySet())).thenReturn(Collections.emptyList());
+
         roleService.saveRoles(Collections.emptySet());
-        verify(roleRepository).saveAll(anySet());
+
+        verify(roleRepository, times(1)).saveAll(anySet());
     }
 
     @Test
-    public void findRoleByPermissionTest() {
+    public void findRoleByPermission_whenRolesAreFound_expectTheRoles() {
         Role role = mock(Role.class);
         when(roleRepository.findRoleByPermission(any(Permission.class))).thenReturn(role);
-        roleService.findRoleByPermission(Permission.values()[0]);
-        verify(roleRepository).findRoleByPermission(any(Permission.class));
+
+        roleService.findRoleByPermission(Permission.BUYER);
+
+        verify(roleRepository, times(1)).findRoleByPermission(any(Permission.class));
     }
 }
