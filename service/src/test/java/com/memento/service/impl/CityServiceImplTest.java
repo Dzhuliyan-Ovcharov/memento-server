@@ -63,7 +63,7 @@ public class CityServiceImplTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void throwWhenCityIdIsNotFound() {
+    public void throwsWhenCityIdIsNotFound() {
         City city = mock(City.class);
 
         when(cityRepository.findById(anyLong())).thenReturn(Optional.empty());

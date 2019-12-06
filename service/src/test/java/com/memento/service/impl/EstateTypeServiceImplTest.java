@@ -62,7 +62,7 @@ public class EstateTypeServiceImplTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void throwWhenEstateTypeIdIsNotFound() {
+    public void throwsWhenEstateTypeIdIsNotFound() {
         EstateType newEstateType = mock(EstateType.class);
 
         when(estateTypeRepository.findById(anyLong())).thenReturn(Optional.empty());
