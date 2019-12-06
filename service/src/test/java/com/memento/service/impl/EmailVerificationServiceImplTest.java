@@ -14,9 +14,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.time.Instant;
 import java.util.Optional;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -42,7 +41,7 @@ public class EmailVerificationServiceImplTest {
 
         boolean isEmailVerified = emailVerificationService.isEmailVerified("");
 
-        assertThat(isEmailVerified, is(equalTo(false)));
+        assertFalse(isEmailVerified);
         verify(emailVerificationRepository, times(1)).findByUser_Email(anyString());
     }
 
@@ -53,7 +52,7 @@ public class EmailVerificationServiceImplTest {
 
         boolean isEmailVerified = emailVerificationService.isEmailVerified("");
 
-        assertThat(isEmailVerified, is(equalTo(false)));
+        assertFalse(isEmailVerified);
         verify(emailVerificationRepository, times(1)).findByUser_Email(anyString());
         verify(token, times(1)).isEmailVerified();
     }
@@ -65,7 +64,7 @@ public class EmailVerificationServiceImplTest {
 
         boolean isEmailVerified = emailVerificationService.isEmailVerified("");
 
-        assertThat(isEmailVerified, is(equalTo(true)));
+        assertTrue(isEmailVerified);
         verify(emailVerificationRepository, times(1)).findByUser_Email(anyString());
         verify(token, times(1)).isEmailVerified();
     }
