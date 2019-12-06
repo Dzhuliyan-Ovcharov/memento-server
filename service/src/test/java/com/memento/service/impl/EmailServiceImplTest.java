@@ -32,7 +32,7 @@ public class EmailServiceImplTest {
     }
 
     @Test(expected = MailSendException.class)
-    public void throwWhenFailToParseTheMessage() {
+    public void throwsWhenFailToParseTheMessage() {
         doThrow(MailParseException.class).when(javaMailSender).send(any(SimpleMailMessage.class));
 
         emailService.sendMail("", "");

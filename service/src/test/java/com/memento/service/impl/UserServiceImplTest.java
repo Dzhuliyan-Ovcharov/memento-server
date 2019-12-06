@@ -171,7 +171,7 @@ public class UserServiceImplTest {
 
         userService.findById(1L);
 
-        verify(userRepository).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
     }
 
     @Test(expected = ResourceNotFoundException.class)
@@ -180,7 +180,7 @@ public class UserServiceImplTest {
 
         userService.findById(0L);
 
-        verify(userRepository).findById(anyLong());
+        verify(userRepository, times(1)).findById(anyLong());
     }
 
     @Test
@@ -193,7 +193,7 @@ public class UserServiceImplTest {
 
         userService.loadUserByUsername("");
 
-        verify(userRepository).findByEmail(anyString());
+        verify(userRepository, times(1)).findByEmail(anyString());
         verify(user, times(1)).getEmail();
         verify(user, times(1)).getPassword();
         verify(user, times(1)).getRole();
@@ -205,7 +205,7 @@ public class UserServiceImplTest {
 
         userService.loadUserByUsername("");
 
-        verify(userRepository).findByEmail(anyString());
+        verify(userRepository, times(1)).findByEmail(anyString());
     }
 
     @Test(expected = NullPointerException.class)

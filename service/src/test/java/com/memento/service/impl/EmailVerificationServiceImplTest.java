@@ -92,7 +92,7 @@ public class EmailVerificationServiceImplTest {
 
         emailVerificationService.verifyEmail("");
 
-        verify(emailVerificationRepository).findByToken(anyString());
+        verify(emailVerificationRepository, times(1)).findByToken(anyString());
     }
 
     @Test(expected = EmailVerificationTimeExpiryException.class)
@@ -102,8 +102,8 @@ public class EmailVerificationServiceImplTest {
 
         emailVerificationService.verifyEmail("");
 
-        verify(emailVerificationRepository).findByToken(anyString());
-        verify(token).getExpiryTime();
+        verify(emailVerificationRepository, times(1)).findByToken(anyString());
+        verify(token, times(1)).getExpiryTime();
     }
 
     @Test
@@ -112,6 +112,6 @@ public class EmailVerificationServiceImplTest {
 
         emailVerificationService.save(token);
 
-        verify(emailVerificationRepository).save(any(EmailVerificationToken.class));
+        verify(emailVerificationRepository, times(1)).save(any(EmailVerificationToken.class));
     }
 }
