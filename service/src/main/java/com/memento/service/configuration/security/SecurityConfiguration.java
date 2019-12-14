@@ -16,6 +16,7 @@ import java.util.List;
 
 @Configuration
 @EnableWebSecurity
+//Todo : remove proxyTargetClass
 @EnableGlobalMethodSecurity(securedEnabled = true, proxyTargetClass = true)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 

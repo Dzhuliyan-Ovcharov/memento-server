@@ -1,28 +1,32 @@
 package com.memento.web.endpoint;
 
 import com.memento.model.Floor;
-import com.memento.service.impl.FloorServiceImpl;
+import com.memento.service.FloorService;
 import com.memento.shared.exception.ResourceNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@RunWith(SpringRunner.class)
 @WebMvcTest(controllers = FloorApiController.class)
 public class FloorApiControllerTest extends BaseApiControllerTest {
 
     @MockBean
-    private FloorServiceImpl floorService;
+    private FloorService floorService;
 
     private Floor floor;
 
@@ -45,8 +49,8 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()", is(1)))
-                .andExpect(jsonPath("$.[0].length()", is(2)))
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$.[0].*", hasSize(2)))
                 .andExpect(jsonPath("$.[0].id", is(1)))
                 .andExpect(jsonPath("$.[0].number", is(2)));
 
@@ -62,7 +66,7 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()", is(0)));
+                .andExpect(jsonPath("$", is(empty())));
 
         verify(floorService, times(1)).getAll();
     }
@@ -76,7 +80,7 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()", is(2)))
+                .andExpect(jsonPath("$.*", hasSize(2)))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.number", is(2)));
 
@@ -108,7 +112,7 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
                         .content(jsonString))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.length()", is(2)))
+                .andExpect(jsonPath("$.*", hasSize(2)))
                 .andExpect(jsonPath("$.id", is(1)))
                 .andExpect(jsonPath("$.number", is(2)));
 

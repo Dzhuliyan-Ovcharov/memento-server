@@ -19,7 +19,7 @@ public class Quadrature implements Serializable {
     @Column(name = "pure_area", precision = 3, scale = 2, nullable = false)
     private final BigDecimal pureArea;
 
-    public Quadrature of(final BigDecimal builtUpArea, final BigDecimal pureArea) {
+    public static Quadrature of(final BigDecimal builtUpArea, final BigDecimal pureArea) {
         return new Quadrature(builtUpArea, pureArea);
     }
 

@@ -4,15 +4,18 @@ import com.memento.service.EmailVerificationService;
 import com.memento.shared.exception.EmailVerificationTimeExpiryException;
 import com.memento.shared.exception.ResourceNotFoundException;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@RunWith(SpringRunner.class)
 @WebMvcTest(controllers = EmailVerificationApiController.class)
 public class EmailVerificationApiControllerTest extends BaseApiControllerTest {
 
