@@ -2,6 +2,7 @@ package com.memento.web.endpoint;
 
 import com.memento.model.Floor;
 import com.memento.service.FloorService;
+import com.memento.web.endpoint.api.FloorApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +12,8 @@ import javax.validation.Valid;
 import java.util.Set;
 
 @RestController
-@RequestMapping(value = "/api/floor", produces = { MediaType.APPLICATION_JSON_VALUE })
-public class FloorApiController {
+@RequestMapping(value = "/api/floor", produces = {MediaType.APPLICATION_JSON_VALUE})
+public class FloorApiController implements FloorApi {
 
     private final FloorService floorService;
 

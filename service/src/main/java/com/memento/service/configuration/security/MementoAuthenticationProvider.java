@@ -10,13 +10,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Objects;
 import java.util.Set;
 
-@Component
 public class MementoAuthenticationProvider implements AuthenticationProvider {
 
     private final UserService userService;
