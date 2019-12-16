@@ -6,14 +6,12 @@ import com.memento.model.User;
 import com.memento.web.dto.UserRegisterRequest;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.Set;
@@ -25,7 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
+
 @WebMvcTest(controllers = UserApiController.class)
 public class UserApiControllerTest extends BaseApiControllerTest {
 
@@ -77,6 +75,7 @@ public class UserApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$.[0].email", is("email@email.email")))
                 .andExpect(jsonPath("$.[0].password", is("password")))
                 .andExpect(jsonPath("$.[0].confirmPassword", is(nullValue())));
+        //Todo : verify "$.[0].permission" (modelMapper is not mapping the role)
 
         verify(userService, times(1)).getAll();
         verify(modelMapper, times(1)).map(any(Object.class), any(Class.class));

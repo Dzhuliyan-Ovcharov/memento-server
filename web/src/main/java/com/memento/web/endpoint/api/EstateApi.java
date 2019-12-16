@@ -9,5 +9,5 @@ import org.springframework.http.ResponseEntity;
 public interface EstateApi {
 
     @ApiOperation(value = "Save estate", response = Estate.class)
-    ResponseEntity<Estate> save(Estate city);
+    ResponseEntity<Estate> save(Estate estate);
 }

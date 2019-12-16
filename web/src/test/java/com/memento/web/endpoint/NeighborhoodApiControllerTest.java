@@ -4,11 +4,9 @@ import com.memento.model.City;
 import com.memento.model.Neighborhood;
 import com.memento.service.NeighborhoodService;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +16,6 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@RunWith(SpringRunner.class)
 @WebMvcTest(controllers = NeighborhoodApiController.class)
 public class NeighborhoodApiControllerTest extends BaseApiControllerTest {
 
