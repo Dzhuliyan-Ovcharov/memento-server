@@ -27,6 +27,6 @@ public class AdType implements Serializable {
 
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @OneToMany(mappedBy = "estateType", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "adType", fetch = FetchType.LAZY)
     private Set<Estate> estates;
 }

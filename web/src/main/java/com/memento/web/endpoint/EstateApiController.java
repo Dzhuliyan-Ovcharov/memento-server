@@ -5,6 +5,7 @@ import com.memento.model.Permission;
 import com.memento.service.EstateService;
 import com.memento.web.endpoint.api.EstateApi;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping(value = "/api/estate")
+@RequestMapping(value = "/api/estate", produces = {MediaType.APPLICATION_JSON_VALUE})
 public class EstateApiController implements EstateApi {
 
     private final EstateService estateService;

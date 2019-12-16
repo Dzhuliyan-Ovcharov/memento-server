@@ -1,5 +1,6 @@
 package com.memento.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 
 import java.io.Serializable;
@@ -37,6 +38,7 @@ public class Money implements Serializable {
         return new Money(amount, currency);
     }
 
+    @JsonCreator
     private Money(BigDecimal amount, Currency currency) {
         this(amount, currency, DEFAULT_ROUNDING);
     }
