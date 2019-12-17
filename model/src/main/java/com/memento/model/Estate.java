@@ -1,7 +1,12 @@
 package com.memento.model;
 
-import com.memento.model.converter.MoneyConverter;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.memento.model.converter.JodaMoneyConverter;
+import com.memento.model.serializer.JodaMoneyJsonDeserializer;
+import com.memento.model.serializer.JodaMoneyJsonSerializer;
 import lombok.*;
+import org.joda.money.Money;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -28,7 +33,9 @@ public class Estate implements Serializable {
     @EqualsAndHashCode.Include
     @ToString.Include
     @Column(name = "price", nullable = false)
-    @Convert(converter = MoneyConverter.class)
+    @Convert(converter = JodaMoneyConverter.class)
+    @JsonSerialize(using = JodaMoneyJsonSerializer.class)
+    @JsonDeserialize(using = JodaMoneyJsonDeserializer.class)
     private Money price;
 
     @EqualsAndHashCode.Include

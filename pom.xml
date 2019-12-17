@@ -18,6 +18,7 @@
 
     <properties>
         <java.version>12</java.version>
+        <joda-money.version>1.0.1</joda-money.version>
         <swagger2.version>2.9.2</swagger2.version>
         <modelmapper.version>2.3.5</modelmapper.version>
     </properties>
@@ -84,6 +85,11 @@
                 <groupId>org.modelmapper</groupId>
                 <artifactId>modelmapper</artifactId>
                 <version>${modelmapper.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.joda</groupId>
+                <artifactId>joda-money</artifactId>
+                <version>${joda-money.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

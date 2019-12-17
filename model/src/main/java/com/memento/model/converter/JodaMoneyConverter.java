@@ -1,14 +1,12 @@
 package com.memento.model.converter;
 
-import com.memento.model.Money;
+import org.joda.money.Money;
 
 import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
-import java.math.BigDecimal;
-import java.util.Currency;
 
 @Converter
-public class MoneyConverter implements AttributeConverter<Money, String> {
+public class JodaMoneyConverter implements AttributeConverter<Money, String> {
 
     @Override
     public String convertToDatabaseColumn(Money money) {
@@ -17,7 +15,6 @@ public class MoneyConverter implements AttributeConverter<Money, String> {
 
     @Override
     public Money convertToEntityAttribute(String moneyString) {
-        final String[] values = moneyString.split(" ");
-        return Money.of(BigDecimal.valueOf(Double.parseDouble(values[0])), Currency.getInstance(values[1]));
+        return Money.parse(moneyString);
     }
 }
