@@ -6,7 +6,7 @@ import javax.persistence.AttributeConverter;
 import javax.persistence.Converter;
 
 @Converter
-public class JodaMoneyConverter implements AttributeConverter<Money, String> {
+public class MoneyConverter implements AttributeConverter<Money, String> {
 
     @Override
     public String convertToDatabaseColumn(Money money) {

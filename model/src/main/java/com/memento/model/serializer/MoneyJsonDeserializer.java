@@ -8,9 +8,9 @@ import org.joda.money.Money;
 
 import java.io.IOException;
 
-public class JodaMoneyJsonDeserializer extends StdDeserializer<Money> {
+public class MoneyJsonDeserializer extends StdDeserializer<Money> {
 
-    protected JodaMoneyJsonDeserializer() {
+    public MoneyJsonDeserializer() {
         super(Money.class);
     }
 

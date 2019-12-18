@@ -7,9 +7,9 @@ import org.joda.money.Money;
 
 import java.io.IOException;
 
-public class JodaMoneyJsonSerializer extends StdSerializer<Money> {
+public class MoneyJsonSerializer extends StdSerializer<Money> {
 
-    public JodaMoneyJsonSerializer() {
+    public MoneyJsonSerializer() {
         super(Money.class);
     }
 
