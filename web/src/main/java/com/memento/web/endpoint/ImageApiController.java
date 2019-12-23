@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/api/image", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/api/image")
 public class ImageApiController implements ImageApi {
 
     private final ImageService imageService;

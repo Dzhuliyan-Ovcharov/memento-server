@@ -26,7 +26,7 @@ public class Image implements Serializable {
     @EqualsAndHashCode.Include
     @ToString.Include
     @Column(nullable = false)
-    private String path;
+    private String name;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estate_id", foreignKey = @ForeignKey(name = "fk_estate_id"))

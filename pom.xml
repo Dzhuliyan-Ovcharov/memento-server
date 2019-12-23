@@ -17,6 +17,7 @@
     <description>Memento project</description>
 
     <properties>
+        <commons-io.version>2.6</commons-io.version>
         <java.version>12</java.version>
         <joda-money.version>1.0.1</joda-money.version>
         <swagger2.version>2.9.2</swagger2.version>
@@ -90,6 +91,11 @@
                 <groupId>org.joda</groupId>
                 <artifactId>joda-money</artifactId>
                 <version>${joda-money.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
