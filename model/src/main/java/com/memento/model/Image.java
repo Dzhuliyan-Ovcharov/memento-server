@@ -12,7 +12,7 @@ import java.io.Serializable;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
 @Entity
-@Table(name = "images", indexes = {@Index(name = "uidx_image_path", unique = true, columnList = "path")})
+@Table(name = "images", indexes = {@Index(name = "uidx_image_name", unique = true, columnList = "name")})
 public class Image implements Serializable {
 
     private static final long serialVersionUID = 7191306004502413023L;

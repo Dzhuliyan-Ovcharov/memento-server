@@ -39,7 +39,8 @@ public class ImageServiceImpl implements ImageService {
 
     @Override
     public List<Resource> getAllImagesByEstateId(final Long estateId) {
-        return imageRepository.findAllByEstateId(estateId).stream()
+        return imageRepository.findAllByEstateId(estateId)
+                .stream()
                 .map(image -> storageService.loadAsResource(image.getName()))
                 .collect(Collectors.toList());
     }

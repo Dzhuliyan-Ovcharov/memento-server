@@ -26,19 +26,18 @@ public class ImageApiController implements ImageApi {
     }
 
     @Override
-    @GetMapping(value = "/one/{imageName}")
+    @GetMapping(value = "/name/{imageName}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<Resource> findOneImage(@PathVariable(value = "imageName") final String imageName) {
         return ResponseEntity.ok(imageService.findOneImage(imageName));
     }
 
     @Override
-    @GetMapping(value = "/all/estate/id/{estateId}")
+    @GetMapping(value = "/all/estate/id/{estateId}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<List<Resource>> getAllImagesByEstateId(@PathVariable(value = "estateId") final Long estateId) {
         return ResponseEntity.ok(imageService.getAllImagesByEstateId(estateId));
     }
 
     @Override
-    @Secured(Permission.Value.ADMIN)
     @PostMapping(value = "/create/estate/id/{estateId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<HttpStatus> createImage(@RequestParam(value = "file") final MultipartFile file, @PathVariable(value = "estateId") final Long estateId) {
         imageService.createImage(file, estateId);

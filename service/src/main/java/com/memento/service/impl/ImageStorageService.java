@@ -1,6 +1,7 @@
 package com.memento.service.impl;
 
 import com.memento.service.StorageService;
+import com.memento.shared.exception.MementoException;
 import com.memento.shared.exception.StorageException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -27,49 +28,39 @@ public class ImageStorageService implements StorageService {
 
     private final ResourceLoader resourceLoader;
 
-    @Value(value = "${memento.upload-dir}")
     private final String storageRootDirectory;
 
     @Autowired
-    public ImageStorageService(final ResourceLoader resourceLoader, final String storageRootDirectory) {
+    public ImageStorageService(final ResourceLoader resourceLoader,
+                               @Value("${memento.upload-dir}") final String storageRootDirectory) {
         this.resourceLoader = resourceLoader;
         this.storageRootDirectory = storageRootDirectory;
     }
 
     @Override
     public String store(final MultipartFile file) {
-        if (file.isEmpty()) {
-            log.error("The file {} is empty.", file.getOriginalFilename());
-            throw new StorageException("Cannot store empty file " + file.getOriginalFilename());
-        }
-
         final String newFileName = generateFileName(file);
-        final Path filePath = Path.of(storageRootDirectory, newFileName);
-
         try {
-            if (ImageIO.read(file.getInputStream()) == null) {
-                log.error("The file {} is not an image.", file.getOriginalFilename());
-                throw new StorageException("Cannot store non image file " + file.getOriginalFilename());
+            if (file.isEmpty() || ImageIO.read(file.getInputStream()) == null ||
+                    !FilenameUtils.isExtension(file.getOriginalFilename(), SUPPORTED_FILE_EXTENSIONS)) {
+                log.error("The file {} is either empty or its type is not supported.", file.getOriginalFilename());
+                throw new StorageException(String.format("The file %s is either empty or its not an image with supported extension. Current supported file extensions are %s.", file.getOriginalFilename(), SUPPORTED_FILE_EXTENSIONS));
             }
-            file.transferTo(filePath);
+            file.transferTo(Path.of(storageRootDirectory, newFileName));
         } catch (IOException e) {
             log.error("Cannot create file {}.{}", newFileName, e.getMessage());
-            throw new StorageException("Cannot store file " + file.getOriginalFilename(), e);
+            throw new MementoException("Cannot store file " + file.getOriginalFilename(), e);
         }
         return newFileName;
     }
 
     @Override
     public void delete(final String fileName) {
-        if (fileName.contains("..")) {
-            log.error("Cannot delete file {} with relative path outside current directory.", fileName);
-            throw new StorageException("Cannot delete file with relative path outside current directory " + fileName);
-        }
         try {
             Files.delete(Path.of(storageRootDirectory, fileName));
         } catch (IOException e) {
             log.error("Cannot delete file {}.{}", fileName, e.getMessage());
-            throw new StorageException("Cannot delete file " + fileName, e);
+            throw new MementoException("Cannot delete file " + fileName, e);
         }
     }
 
@@ -80,17 +71,8 @@ public class ImageStorageService implements StorageService {
 
     private String generateFileName(final MultipartFile file) {
         final String uid = UUID.randomUUID().toString();
-        final String fileExtension = getFileExtension(file);
+        final String fileExtension = FilenameUtils.getExtension(file.getOriginalFilename());
 
         return uid + "." + fileExtension;
-    }
-
-    private String getFileExtension(final MultipartFile file) {
-        if (!FilenameUtils.isExtension(file.getOriginalFilename(), SUPPORTED_FILE_EXTENSIONS)) {
-            log.error("File type of {} is not supported", file.getOriginalFilename());
-            throw new StorageException("File type not supported " + file.getOriginalFilename());
-        }
-
-        return FilenameUtils.getExtension(file.getOriginalFilename());
     }
 }
