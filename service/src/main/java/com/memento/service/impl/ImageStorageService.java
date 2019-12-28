@@ -4,6 +4,7 @@ import com.memento.service.StorageService;
 import com.memento.shared.exception.MementoException;
 import com.memento.shared.exception.StorageException;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,11 +12,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
+import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.UUID;
@@ -56,8 +58,14 @@ public class ImageStorageService implements StorageService {
 
     @Override
     public void delete(final String fileName) {
+        if (StringUtils.isEmpty(fileName)) {
+            log.error("File name {} must not be empty or null", fileName);
+            throw new StorageException("File name must not be empty or null");
+        }
+
         try {
-            Files.delete(Path.of(storageRootDirectory, fileName));
+            final File file = Path.of(storageRootDirectory, fileName).toFile();
+            FileUtils.forceDelete(file);
         } catch (IOException e) {
             log.error("Cannot delete file {}.{}", fileName, e.getMessage());
             throw new MementoException("Cannot delete file " + fileName, e);

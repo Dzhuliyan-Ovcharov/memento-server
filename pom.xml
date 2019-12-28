@@ -20,6 +20,7 @@
         <commons-io.version>2.6</commons-io.version>
         <java.version>12</java.version>
         <joda-money.version>1.0.1</joda-money.version>
+        <powermock.version>2.0.2</powermock.version>
         <swagger2.version>2.9.2</swagger2.version>
         <modelmapper.version>2.3.5</modelmapper.version>
     </properties>
@@ -96,6 +97,16 @@
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>${commons-io.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-module-junit4</artifactId>
+                <version>${powermock.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.powermock</groupId>
+                <artifactId>powermock-api-mockito2</artifactId>
+                <version>${powermock.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
