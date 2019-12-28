@@ -4,6 +4,7 @@ import com.memento.shared.exception.MementoException;
 import com.memento.shared.exception.StorageException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Path;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
@@ -36,7 +36,7 @@ import static org.powermock.api.mockito.PowerMockito.verifyStatic;
         ImageIO.class,
         FileUtils.class,
         FilenameUtils.class,
-        ImageStorageService.class})
+        StringUtils.class})
 public class ImageStorageServiceTest {
 
     @Mock
@@ -53,7 +53,7 @@ public class ImageStorageServiceTest {
         mockStatic(FileUtils.class);
         mockStatic(FilenameUtils.class);
         mockStatic(ImageIO.class);
-        mockStatic(Path.class);
+        mockStatic(StringUtils.class);
     }
 
     @Test
@@ -61,7 +61,7 @@ public class ImageStorageServiceTest {
         final MultipartFile file = mock(MultipartFile.class);
         final InputStream inputStream = mock(InputStream.class);
         final BufferedImage image = mock(BufferedImage.class);
-        final Path path = mock(Path.class);
+        final File destination = mock(File.class);
 
         when(file.getOriginalFilename()).thenReturn("image.jpg");
         when(FilenameUtils.getExtension(anyString())).thenReturn("jpg");
@@ -69,8 +69,8 @@ public class ImageStorageServiceTest {
         when(file.getInputStream()).thenReturn(inputStream);
         when(ImageIO.read(any(InputStream.class))).thenReturn(image);
         when(FilenameUtils.isExtension(anyString(), anyCollection())).thenReturn(true);
-        when(Path.of(anyString(), anyString())).thenReturn(path);
-        doNothing().when(file).transferTo(any(Path.class));
+        when(FileUtils.getFile(anyString(), anyString())).thenReturn(destination);
+        doNothing().when(file).transferTo(any(File.class));
 
         final String result = imageStorageService.store(file);
 
@@ -85,9 +85,14 @@ public class ImageStorageServiceTest {
         ImageIO.read(any(InputStream.class));
         verifyStatic(FilenameUtils.class, times(1));
         FilenameUtils.isExtension(anyString(), anyCollection());
-        verifyStatic(Path.class, times(1));
-        Path.of(anyString(), anyString());
-        verify(file, times(1)).transferTo(any(Path.class));
+        verifyStatic(FileUtils.class, times(1));
+        FileUtils.getFile(anyString(), anyString());
+        verify(file, times(1)).transferTo(any(File.class));
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifyStoreThrowsWhenFileIsNull() {
+        imageStorageService.store(null);
     }
 
     @Test(expected = StorageException.class)
@@ -134,18 +139,20 @@ public class ImageStorageServiceTest {
     @Test
     public void verifyDelete() throws IOException {
         final File file = mock(File.class);
-        final Path path = mock(Path.class);
 
-        when(Path.of(anyString(), anyString())).thenReturn(path);
-        when(path.toFile()).thenReturn(file);
+        when(StringUtils.isBlank(anyString())).thenReturn(false);
+        when(FileUtils.getFile(anyString(), anyString())).thenReturn(file);
+        when(file.isDirectory()).thenReturn(false);
         PowerMockito.doNothing().when(FileUtils.class);
         FileUtils.forceDelete(any(File.class));
 
-        imageStorageService.delete("image.jpg");
+        imageStorageService.delete("");
 
-        verifyStatic(Path.class, times(1));
-        Path.of(anyString(), anyString());
-        verify(path, times(1)).toFile();
+        verifyStatic(StringUtils.class, times(1));
+        StringUtils.isBlank(anyString());
+        verifyStatic(FileUtils.class, times(1));
+        FileUtils.getFile(anyString(), anyString());
+        verify(file, times(1)).isDirectory();
         verifyStatic(FileUtils.class, times(1));
         FileUtils.forceDelete(any(File.class));
     }
@@ -153,39 +160,68 @@ public class ImageStorageServiceTest {
     @Test(expected = MementoException.class)
     public void verifyDeleteThrowsWhenFileCannotBeDeleted() throws IOException {
         final File file = mock(File.class);
-        final Path path = mock(Path.class);
 
-        when(Path.of(anyString(), anyString())).thenReturn(path);
-        when(path.toFile()).thenReturn(file);
+        when(StringUtils.isBlank(anyString())).thenReturn(false);
+        when(FileUtils.getFile(anyString(), anyString())).thenReturn(file);
+        when(file.isDirectory()).thenReturn(false);
         PowerMockito.doThrow(new IOException()).when(FileUtils.class);
         FileUtils.forceDelete(any(File.class));
 
-        imageStorageService.delete("image.jpg");
+        imageStorageService.delete("");
     }
 
     @Test(expected = StorageException.class)
-    public void verifyDeleteThrowsWhenFileNameIsNull() {
-        imageStorageService.delete(null);
+    public void verifyDeleteThrowsWhenFileNameIsBlank() {
+        when(StringUtils.isBlank(anyString())).thenReturn(true);
+
+        imageStorageService.delete("");
     }
 
     @Test(expected = StorageException.class)
-    public void verifyDeleteThrowsWhenFileNameIsEmpty() {
+    public void verifyDeleteThrowsWhenFileNameIsDirectory() {
+        final File file = mock(File.class);
+        when(StringUtils.isBlank(anyString())).thenReturn(false);
+        when(FileUtils.getFile(anyString(), anyString())).thenReturn(file);
+        when(file.isDirectory()).thenReturn(true);
+
         imageStorageService.delete("");
     }
 
     @Test
     public void verifyLoadAsResource() {
-        final Path path = mock(Path.class);
         final Resource resource = mock(Resource.class);
+        final File file = mock(File.class);
 
-        when(Path.of(anyString(), anyString())).thenReturn(path);
-        when(path.toString()).thenReturn("");
+        when(StringUtils.isBlank(anyString())).thenReturn(false);
+        when(FileUtils.getFile(anyString(), anyString())).thenReturn(file);
+        when(file.isDirectory()).thenReturn(false);
+        when(file.toString()).thenReturn("");
         when(resourceLoader.getResource(anyString())).thenReturn(resource);
 
         imageStorageService.loadAsResource("");
 
-        verifyStatic(Path.class, times(1));
-        Path.of(anyString(), anyString());
+        verifyStatic(StringUtils.class, times(1));
+        StringUtils.isBlank(anyString());
+        verifyStatic(FileUtils.class, times(1));
+        FileUtils.getFile(anyString(), anyString());
+        verify(file, times(1)).isDirectory();
         verify(resourceLoader, times(1)).getResource(anyString());
+    }
+
+    @Test(expected = StorageException.class)
+    public void verifyLoadAsResourceThrowsWhenFileNameIsBlank() {
+        when(StringUtils.isBlank(anyString())).thenReturn(true);
+
+        imageStorageService.delete("");
+    }
+
+    @Test(expected = StorageException.class)
+    public void verifyLoadAsResourceThrowsWhenFileNameIsDirectory() {
+        final File file = mock(File.class);
+        when(StringUtils.isBlank(anyString())).thenReturn(false);
+        when(FileUtils.getFile(anyString(), anyString())).thenReturn(file);
+        when(file.isDirectory()).thenReturn(true);
+
+        imageStorageService.delete("");
     }
 }

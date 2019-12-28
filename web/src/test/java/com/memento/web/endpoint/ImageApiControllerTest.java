@@ -2,6 +2,7 @@ package com.memento.web.endpoint;
 
 import com.memento.model.Permission;
 import com.memento.service.ImageService;
+import com.memento.shared.exception.MementoException;
 import com.memento.shared.exception.ResourceNotFoundException;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
@@ -77,6 +78,44 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
     }
 
     @Test
+    public void verifyCreateImageWhenEstateIdIsNotFoundAndExpect404() throws Exception {
+        final MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "image.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "image".getBytes());
+
+        doThrow(ResourceNotFoundException.class).when(imageService).createImage(any(MultipartFile.class), anyLong());
+
+        mockMvc.perform(
+                multipart("/api/image/create/estate/id/1")
+                        .file(file)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isNotFound());
+
+        verify(imageService, times(1)).createImage(any(MultipartFile.class), anyLong());
+    }
+
+    @Test
+    public void verifyCreateImageWhenIOErrorOccursAndExpect500() throws Exception {
+        final MockMultipartFile file = new MockMultipartFile(
+                "file",
+                "image.jpg",
+                MediaType.IMAGE_JPEG_VALUE,
+                "image".getBytes());
+
+        doThrow(MementoException.class).when(imageService).createImage(any(MultipartFile.class), anyLong());
+
+        mockMvc.perform(
+                multipart("/api/image/create/estate/id/1")
+                        .file(file)
+                        .contentType(MediaType.MULTIPART_FORM_DATA))
+                .andExpect(status().isInternalServerError());
+
+        verify(imageService, times(1)).createImage(any(MultipartFile.class), anyLong());
+    }
+
+    @Test
     @WithMockUser(authorities = Permission.Value.ADMIN)
     public void verifyDeleteImageAndExpect200() throws Exception {
         doNothing().when(imageService).deleteImage(anyString());
@@ -96,6 +135,18 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
         mockMvc.perform(
                 delete("/api/image/delete/name/image_name"))
                 .andExpect(status().isNotFound());
+
+        verify(imageService, times(1)).deleteImage(anyString());
+    }
+
+    @Test
+    @WithMockUser(authorities = Permission.Value.ADMIN)
+    public void verifyDeleteImageWhenIOErrorOccursAndExpect500() throws Exception {
+        doThrow(MementoException.class).when(imageService).deleteImage(anyString());
+
+        mockMvc.perform(
+                delete("/api/image/delete/name/image_name"))
+                .andExpect(status().isInternalServerError());
 
         verify(imageService, times(1)).deleteImage(anyString());
     }
