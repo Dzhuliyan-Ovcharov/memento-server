@@ -146,7 +146,7 @@ public class ImageStorageServiceTest {
         PowerMockito.doNothing().when(FileUtils.class);
         FileUtils.forceDelete(any(File.class));
 
-        imageStorageService.delete("");
+        imageStorageService.delete(StringUtils.EMPTY);
 
         verifyStatic(StringUtils.class, times(1));
         StringUtils.isBlank(anyString());
@@ -167,14 +167,14 @@ public class ImageStorageServiceTest {
         PowerMockito.doThrow(new IOException()).when(FileUtils.class);
         FileUtils.forceDelete(any(File.class));
 
-        imageStorageService.delete("");
+        imageStorageService.delete(StringUtils.EMPTY);
     }
 
     @Test(expected = StorageException.class)
     public void verifyDeleteThrowsWhenFileNameIsBlank() {
         when(StringUtils.isBlank(anyString())).thenReturn(true);
 
-        imageStorageService.delete("");
+        imageStorageService.delete(StringUtils.EMPTY);
     }
 
     @Test(expected = StorageException.class)
@@ -184,7 +184,7 @@ public class ImageStorageServiceTest {
         when(FileUtils.getFile(anyString(), anyString())).thenReturn(file);
         when(file.isDirectory()).thenReturn(true);
 
-        imageStorageService.delete("");
+        imageStorageService.delete(StringUtils.EMPTY);
     }
 
     @Test
@@ -195,10 +195,10 @@ public class ImageStorageServiceTest {
         when(StringUtils.isBlank(anyString())).thenReturn(false);
         when(FileUtils.getFile(anyString(), anyString())).thenReturn(file);
         when(file.isDirectory()).thenReturn(false);
-        when(file.toString()).thenReturn("");
+        when(file.toString()).thenReturn(StringUtils.EMPTY);
         when(resourceLoader.getResource(anyString())).thenReturn(resource);
 
-        imageStorageService.loadAsResource("");
+        imageStorageService.loadAsResource(StringUtils.EMPTY);
 
         verifyStatic(StringUtils.class, times(1));
         StringUtils.isBlank(anyString());
@@ -212,7 +212,7 @@ public class ImageStorageServiceTest {
     public void verifyLoadAsResourceThrowsWhenFileNameIsBlank() {
         when(StringUtils.isBlank(anyString())).thenReturn(true);
 
-        imageStorageService.delete("");
+        imageStorageService.delete(StringUtils.EMPTY);
     }
 
     @Test(expected = StorageException.class)
@@ -222,6 +222,6 @@ public class ImageStorageServiceTest {
         when(FileUtils.getFile(anyString(), anyString())).thenReturn(file);
         when(file.isDirectory()).thenReturn(true);
 
-        imageStorageService.delete("");
+        imageStorageService.delete(StringUtils.EMPTY);
     }
 }

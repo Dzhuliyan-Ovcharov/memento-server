@@ -6,6 +6,7 @@ import com.memento.repository.EstateRepository;
 import com.memento.repository.ImageRepository;
 import com.memento.service.StorageService;
 import com.memento.shared.exception.ResourceNotFoundException;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,10 +52,10 @@ public class ImageServiceImplTest {
     public void verifyFindOneImageWhenImageIsFound() {
         final Resource resource = mock(Resource.class);
         when(imageRepository.findByName(anyString())).thenReturn(Optional.of(image));
-        when(image.getName()).thenReturn("");
+        when(image.getName()).thenReturn(StringUtils.EMPTY);
         when(storageService.loadAsResource(anyString())).thenReturn(resource);
 
-        imageService.findOneImage("");
+        imageService.findOneImage(StringUtils.EMPTY);
 
         verify(imageRepository, times(1)).findByName(anyString());
         verify(image, times(1)).getName();
@@ -65,7 +66,7 @@ public class ImageServiceImplTest {
     public void verifyFindOneImageThrowsWhenImageIsNotFound() {
         when(imageRepository.findByName(anyString())).thenReturn(Optional.empty());
 
-        imageService.findOneImage("");
+        imageService.findOneImage(StringUtils.EMPTY);
 
         verify(imageRepository, times(1)).findByName(anyString());
         verify(storageService, never()).loadAsResource(anyString());
@@ -75,7 +76,7 @@ public class ImageServiceImplTest {
     public void verifyGetAllImagesByEstateId() {
         final Resource resource = mock(Resource.class);
         when(imageRepository.findAllByEstateId(anyLong())).thenReturn(Collections.singletonList(image));
-        when(image.getName()).thenReturn("");
+        when(image.getName()).thenReturn(StringUtils.EMPTY);
         when(storageService.loadAsResource(anyString())).thenReturn(resource);
 
         List<Resource> images = imageService.getAllImagesByEstateId(1L);
@@ -103,7 +104,7 @@ public class ImageServiceImplTest {
         final MultipartFile file = mock(MultipartFile.class);
 
         when(estateRepository.findById(anyLong())).thenReturn(Optional.of(estate));
-        when(storageService.store(any(MultipartFile.class))).thenReturn("");
+        when(storageService.store(any(MultipartFile.class))).thenReturn(StringUtils.EMPTY);
         when(imageRepository.save(any(Image.class))).thenReturn(image);
 
         imageService.createImage(file, 1L);
@@ -132,7 +133,7 @@ public class ImageServiceImplTest {
         doNothing().when(imageRepository).delete(any(Image.class));
         doNothing().when(storageService).delete(anyString());
 
-        imageService.deleteImage("");
+        imageService.deleteImage(StringUtils.EMPTY);
 
         verify(imageRepository, times(1)).findByName(anyString());
         verify(imageRepository, times(1)).delete(any(Image.class));
@@ -143,7 +144,7 @@ public class ImageServiceImplTest {
     public void verifyDeleteImageThrowsWhenImageIsNotFound() {
         when(imageRepository.findByName(anyString())).thenReturn(Optional.empty());
 
-        imageService.deleteImage("");
+        imageService.deleteImage(StringUtils.EMPTY);
 
         verify(imageRepository, times(1)).findByName(anyString());
         verify(imageRepository, never()).delete(any(Image.class));

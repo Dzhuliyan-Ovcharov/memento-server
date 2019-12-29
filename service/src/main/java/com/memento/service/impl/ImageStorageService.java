@@ -44,7 +44,8 @@ public class ImageStorageService implements StorageService {
         Objects.requireNonNull(file);
         final String newFileName = generateFileName(file.getOriginalFilename());
         try {
-            if (file.isEmpty() || ImageIO.read(file.getInputStream()) == null ||
+            if (file.isEmpty() ||
+                    ImageIO.read(file.getInputStream()) == null ||
                     !FilenameUtils.isExtension(file.getOriginalFilename(), SUPPORTED_FILE_EXTENSIONS)) {
                 log.error("The file {} is either empty or its type is not supported.", file.getOriginalFilename());
                 throw new StorageException(String.format("The file %s is either empty or its not an image with supported extension. Current supported file extensions are %s.", file.getOriginalFilename(), SUPPORTED_FILE_EXTENSIONS));
@@ -84,8 +85,7 @@ public class ImageStorageService implements StorageService {
     private File getFile(final String fileName) {
         final File file;
         if (StringUtils.isBlank(fileName) ||
-                (file = FileUtils.getFile(storageRootDirectory, fileName))
-                        .isDirectory()) {
+                (file = FileUtils.getFile(storageRootDirectory, fileName)).isDirectory()) {
             log.error("File name {} must not be empty or null", fileName);
             throw new StorageException("File name must not be empty or null");
         }
