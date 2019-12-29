@@ -60,7 +60,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
 
         final Image image = Image.builder()
                 .id(8L)
-                .path("Path")
+                .name("Image name")
                 .build();
 
         estate = Estate.builder()
@@ -133,7 +133,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$.images.*", hasSize(1)))
                 .andExpect(jsonPath("$.images[0].*", hasSize(3)))
                 .andExpect(jsonPath("$.images[0].id", is(8)))
-                .andExpect(jsonPath("$.images[0].path", is("Path")))
+                .andExpect(jsonPath("$.images[0].name", is("Image name")))
                 .andExpect(jsonPath("$.images[0].estate", is(nullValue())));
 
         verify(estateService, times(1)).save(any(Estate.class));

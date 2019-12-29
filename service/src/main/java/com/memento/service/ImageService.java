@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface ImageService {
 
-    Resource findOneImage(String path);
+    Resource findOneImage(String imageName);
 
     List<Resource> getAllImagesByEstateId(Long estateId);
 
-    void createImage(MultipartFile file);
+    void createImage(MultipartFile file, Long estateId);
 
-    void deleteImage(String path);
+    void deleteImage(String imageName);
 }

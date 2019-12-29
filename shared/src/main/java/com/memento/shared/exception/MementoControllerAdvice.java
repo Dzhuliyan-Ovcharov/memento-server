@@ -22,7 +22,7 @@ public class MementoControllerAdvice {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler({DuplicateKeyException.class, EmailVerificationTimeExpiryException.class, MailSendException.class})
+    @ExceptionHandler({DuplicateKeyException.class, EmailVerificationTimeExpiryException.class, MailSendException.class, StorageException.class})
     public ResponseEntity<?> handleBadRequestException(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
