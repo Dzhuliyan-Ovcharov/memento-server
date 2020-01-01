@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Set;
 
+import static com.memento.web.RequestUrlConstant.CITIES_BASE_URL;
+
 @RestController
-@RequestMapping(value = "/api/city", produces = { MediaType.APPLICATION_JSON_VALUE })
+@RequestMapping(value = CITIES_BASE_URL, produces = { MediaType.APPLICATION_JSON_VALUE })
 public class CityApiController implements CityApi {
 
     private final CityService cityService;
@@ -25,22 +27,28 @@ public class CityApiController implements CityApi {
     }
 
     @Override
-    @GetMapping(value = "/all")
+    @GetMapping
     public ResponseEntity<Set<City>> getAll() {
         return ResponseEntity.ok(cityService.getAll());
     }
 
     @Override
-    @Secured(Permission.Value.ADMIN)
-    @PostMapping(value = "/save")
+    @Secured(value = Permission.Value.ADMIN)
+    @PostMapping
     public ResponseEntity<City> save(@Valid @RequestBody final City city) {
         return ResponseEntity.ok(cityService.save(city));
     }
 
     @Override
-    @Secured(Permission.Value.ADMIN)
-    @PutMapping(value = "/update")
-    public ResponseEntity<City> update(@Valid @RequestBody final City city) {
-        return ResponseEntity.ok(cityService.update(city));
+    @Secured(value = Permission.Value.ADMIN)
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<City> update(@Valid @PathVariable final Long id, @RequestBody final City city) {
+        return ResponseEntity.ok(cityService.update(id, city));
+    }
+
+    @Override
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<City> findById(@PathVariable final Long id) {
+        return ResponseEntity.ok(cityService.findById(id));
     }
 }

@@ -17,5 +17,8 @@ public interface CityApi {
     ResponseEntity<City> save(City city);
 
     @ApiOperation(value = "Update city", response = City.class)
-    ResponseEntity<City> update(City city);
+    ResponseEntity<City> update(Long id, City city);
+
+    @ApiOperation(value = "Find city by id", response = City.class)
+    ResponseEntity<City> findById(Long id);
 }

@@ -2,6 +2,7 @@ package com.memento.service.impl;
 
 import com.memento.model.City;
 import com.memento.repository.CityRepository;
+import com.memento.shared.exception.BadRequestException;
 import com.memento.shared.exception.ResourceNotFoundException;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,9 +52,9 @@ public class CityServiceImplTest {
         when(cityRepository.findById(anyLong())).thenReturn(Optional.of(oldCity));
         when(cityRepository.save(any(City.class))).thenReturn(newCity);
 
-        cityService.update(city);
+        cityService.update(city.getId(), city);
 
-        verify(city, times(1)).getId();
+        verify(city, times(2)).getId();
         verify(cityRepository, times(1)).findById(anyLong());
         verify(oldCity, times(1)).getNeighborhoods();
         verify(oldCity, times(1)).getId();
@@ -68,6 +69,14 @@ public class CityServiceImplTest {
 
         when(cityRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        cityService.update(city);
+        cityService.update(city.getId(), city);
+    }
+
+    @Test(expected = BadRequestException.class)
+    public void throwsWhenCityIdDoesNotMatchWithPassedId() {
+        City city = mock(City.class);
+
+        cityService.update(1L, city);
+        verify(city, times(1)).getId();
     }
 }

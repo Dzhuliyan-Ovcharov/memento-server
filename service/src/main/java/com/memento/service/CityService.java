@@ -10,5 +10,7 @@ public interface CityService {
 
     City save(City city);
 
-    City update(City city);
+    City update(Long id, City city);
+
+    City findById(Long id);
 }

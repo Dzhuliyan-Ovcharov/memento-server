@@ -15,6 +15,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import java.util.Collections;
 import java.util.Set;
 
+import static com.memento.web.RequestUrlConstant.CITIES_BASE_URL;
 import static org.hamcrest.Matchers.*;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.*;
@@ -24,10 +25,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = CityApiController.class)
 public class CityApiControllerTest extends BaseApiControllerTest {
 
-    @MockBean
-    private CityService cityService;
+    private static final Long id = 1L;
 
     private City city;
+
+    @MockBean
+    private CityService cityService;
 
     @Before
     public void init() {
@@ -50,7 +53,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
         when(cityService.getAll()).thenReturn(cities);
 
         mockMvc.perform(
-                get("/api/city/all")
+                get(CITIES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -71,7 +74,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
         when(cityService.getAll()).thenReturn(Collections.emptySet());
 
         mockMvc.perform(
-                get("/api/city/all")
+                get(CITIES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -88,7 +91,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
         when(cityService.save(any(City.class))).thenReturn(city);
 
         mockMvc.perform(
-                post("/api/city/save")
+                post(CITIES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
@@ -111,7 +114,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
         final String jsonString = objectMapper.writeValueAsString(null);
 
         mockMvc.perform(
-                post("/api/city/save")
+                post(CITIES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
@@ -126,7 +129,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
         final String jsonString = objectMapper.writeValueAsString(city);
 
         mockMvc.perform(
-                post("/api/city/save")
+                post(CITIES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
@@ -140,7 +143,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
         final String jsonString = objectMapper.writeValueAsString(city);
 
         mockMvc.perform(
-                post("/api/city/save")
+                post(CITIES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
@@ -154,10 +157,10 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     public void verifyUpdateWhenCityIsFoundAndExpect200() throws Exception {
         final String jsonString = objectMapper.writeValueAsString(city);
 
-        when(cityService.update(any(City.class))).thenReturn(city);
+        when(cityService.update(anyLong(), any(City.class))).thenReturn(city);
 
         mockMvc.perform(
-                put("/api/city/update")
+                put(CITIES_BASE_URL + "/" + id)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
@@ -171,7 +174,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$.neighborhoods[0].id", is(2)))
                 .andExpect(jsonPath("$.neighborhoods[0].name", is("Neighborhood")));
 
-        verify(cityService, times(1)).update(any(City.class));
+        verify(cityService, times(1)).update(eq(id), any(City.class));
     }
 
     @Test
@@ -179,16 +182,16 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     public void verifyUpdateWhenCityIsNotFoundAndExpect404() throws Exception {
         final String jsonString = objectMapper.writeValueAsString(city);
 
-        when(cityService.update(any(City.class))).thenThrow(ResourceNotFoundException.class);
+        when(cityService.update(anyLong(), any(City.class))).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(
-                put("/api/city/update")
+                put(CITIES_BASE_URL + "/" + id)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
                 .andExpect(status().isNotFound());
 
-        verify(cityService, times(1)).update(any(City.class));
+        verify(cityService, times(1)).update(eq(id), any(City.class));
     }
 
     @Test
@@ -197,13 +200,13 @@ public class CityApiControllerTest extends BaseApiControllerTest {
         final String jsonString = objectMapper.writeValueAsString(null);
 
         mockMvc.perform(
-                put("/api/city/update")
+                put(CITIES_BASE_URL + "/" + id)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
                 .andExpect(status().isBadRequest());
 
-        verify(cityService, never()).update(any(City.class));
+        verify(cityService, never()).update(eq(id), any(City.class));
     }
 
     @Test
@@ -212,13 +215,13 @@ public class CityApiControllerTest extends BaseApiControllerTest {
         final String jsonString = objectMapper.writeValueAsString(city);
 
         mockMvc.perform(
-                put("/api/city/update")
+                put(CITIES_BASE_URL + "/" + id)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
                 .andExpect(status().isForbidden());
 
-        verify(cityService, never()).update(any(City.class));
+        verify(cityService, never()).update(eq(id), any(City.class));
     }
 
     @Test
@@ -226,12 +229,12 @@ public class CityApiControllerTest extends BaseApiControllerTest {
         final String jsonString = objectMapper.writeValueAsString(city);
 
         mockMvc.perform(
-                put("/api/city/update")
+                put(CITIES_BASE_URL + "/" + id)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonString))
                 .andExpect(status().isUnauthorized());
 
-        verify(cityService, never()).update(any(City.class));
+        verify(cityService, never()).update(eq(id), any(City.class));
     }
 }

@@ -3,12 +3,15 @@ package com.memento.service.impl;
 import com.memento.model.City;
 import com.memento.repository.CityRepository;
 import com.memento.service.CityService;
+import com.memento.shared.exception.BadRequestException;
 import com.memento.shared.exception.ResourceNotFoundException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Set;
 
@@ -31,14 +34,18 @@ public class CityServiceImpl implements CityService {
 
     @Override
     @Transactional
-    public City save(City city) {
+    public City save(@NonNull City city) {
         return cityRepository.save(city);
     }
 
     @Override
     @Transactional
-    public City update(City city) {
-        final City oldCity = cityRepository.findById(city.getId()).orElseThrow(ResourceNotFoundException::new);
+    public City update(@NonNull Long id, @NonNull City city) {
+        if(!id.equals(city.getId())) {
+            throw new BadRequestException(String.format("The ids does not match. First id is %d. Second id is %d", id, city.getId()));
+        }
+
+        final City oldCity = findById(id);
         oldCity.getNeighborhoods().clear();
 
         final City newCity = City.builder()
@@ -48,5 +55,11 @@ public class CityServiceImpl implements CityService {
                 .build();
 
         return cityRepository.save(newCity);
+    }
+
+    @Override
+    public City findById(@NonNull Long id) {
+        return cityRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("City with id %d does not exists", id)));
     }
 }
