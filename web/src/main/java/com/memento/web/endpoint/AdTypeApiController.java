@@ -7,7 +7,7 @@ import com.memento.web.endpoint.api.AdTypeApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -25,7 +25,7 @@ public class AdTypeApiController implements AdTypeApi {
     }
 
     @Override
-    @Secured(Permission.Value.ADMIN)
+    @PreAuthorize(value = "hasRole('" + Permission.Value.ADMIN + "')")
     @PostMapping(value = "/save")
     public ResponseEntity<AdType> save(@RequestBody @Valid final AdType adType) {
         return ResponseEntity.ok(adTypeService.save(adType));

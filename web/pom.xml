@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>web</artifactId>
+    <artifactId>memento-web</artifactId>
 
     <dependencies>
         <dependency>
@@ -21,10 +21,6 @@
             <groupId>com.memento</groupId>
             <artifactId>memento-shared</artifactId>
             <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.modelmapper</groupId>
-            <artifactId>modelmapper</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>

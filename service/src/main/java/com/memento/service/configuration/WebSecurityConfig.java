@@ -1,5 +1,8 @@
-package com.memento.service.configuration.security;
+package com.memento.service.configuration;
 
+import com.memento.service.impl.security.AuthenticationSuccessHandler;
+import com.memento.service.impl.security.JwtAuthenticationEntryPoint;
+import com.memento.service.impl.security.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -12,12 +15,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
-import java.util.List;
-
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -38,10 +39,10 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     };
 
     @Autowired
-    public SecurityConfiguration(final AuthenticationProvider authenticationProvider,
-                                 final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                                 final JwtRequestFilter jwtRequestFilter,
-                                 final AuthenticationSuccessHandler authenticationSuccessHandler) {
+    public WebSecurityConfig(final AuthenticationProvider authenticationProvider,
+                             final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+                             final JwtRequestFilter jwtRequestFilter,
+                             final AuthenticationSuccessHandler authenticationSuccessHandler) {
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtRequestFilter = jwtRequestFilter;
