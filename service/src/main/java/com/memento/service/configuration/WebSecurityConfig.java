@@ -35,7 +35,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/webjars/**",
             // -- public endpoints
             "/api/user/register",
-            "/apu/user/login"
+            "/api/user/login"
     };
 
     @Autowired
