@@ -4,6 +4,7 @@ import com.memento.model.*;
 import com.memento.service.EstateService;
 import com.memento.shared.exception.ResourceNotFoundException;
 import com.memento.web.dto.EstateRequest;
+import com.memento.web.dto.EstateResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
@@ -143,7 +144,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$.images[0].name", is(IMAGE_NAME)));
 
         verify(estateService, times(1)).findById(ID);
-        verify(modelMapper, times(1)).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, times(1)).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -156,7 +157,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(status().isNotFound());
 
         verify(estateService, times(1)).findById(ID);
-        verify(modelMapper, never()).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -193,7 +194,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$[0].images[0].name", is(IMAGE_NAME)));
 
         verify(estateService, times(1)).getAll();
-        verify(modelMapper, times(1)).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, times(1)).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -208,7 +209,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$", is(empty())));
 
         verify(estateService, times(1)).getAll();
-        verify(modelMapper, never()).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -249,9 +250,9 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$.images[0].*", hasSize(1)))
                 .andExpect(jsonPath("$.images[0].name", is(IMAGE_NAME)));
 
-        verify(modelMapper, times(1)).map(any(EstateRequest.class), any(Class.class));
+        verify(modelMapper, times(1)).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, times(1)).save(any(Estate.class));
-        verify(modelMapper, times(1)).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, times(1)).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -268,9 +269,9 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isNotFound());
 
-        verify(modelMapper, times(1)).map(any(EstateRequest.class), any(Class.class));
+        verify(modelMapper, times(1)).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, times(1)).save(any(Estate.class));
-        verify(modelMapper, never()).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -285,9 +286,9 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isBadRequest());
 
-        verify(modelMapper, never()).map(any(EstateRequest.class), any(Class.class));
+        verify(modelMapper, never()).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, never()).save(any(Estate.class));
-        verify(modelMapper, never()).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -302,9 +303,9 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isForbidden());
 
-        verify(modelMapper, never()).map(any(EstateRequest.class), any(Class.class));
+        verify(modelMapper, never()).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, never()).save(any(Estate.class));
-        verify(modelMapper, never()).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -318,9 +319,9 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isUnauthorized());
 
-        verify(modelMapper, never()).map(any(EstateRequest.class), any(Class.class));
+        verify(modelMapper, never()).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, never()).save(any(Estate.class));
-        verify(modelMapper, never()).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -361,9 +362,9 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$.images[0].*", hasSize(1)))
                 .andExpect(jsonPath("$.images[0].name", is(IMAGE_NAME)));
 
-        verify(modelMapper, times(1)).map(any(EstateRequest.class), any(Class.class));
+        verify(modelMapper, times(1)).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, times(1)).update(eq(ID), any(Estate.class));
-        verify(modelMapper, times(1)).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, times(1)).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -380,9 +381,9 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isNotFound());
 
-        verify(modelMapper, times(1)).map(any(EstateRequest.class), any(Class.class));
+        verify(modelMapper, times(1)).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, times(1)).update(eq(ID), any(Estate.class));
-        verify(modelMapper, never()).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -397,9 +398,9 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isBadRequest());
 
-        verify(modelMapper, never()).map(any(EstateRequest.class), any(Class.class));
+        verify(modelMapper, never()).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, never()).update(eq(ID), any(Estate.class));
-        verify(modelMapper, never()).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -414,9 +415,9 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isForbidden());
 
-        verify(modelMapper, never()).map(any(EstateRequest.class), any(Class.class));
+        verify(modelMapper, never()).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, never()).update(eq(ID), any(Estate.class));
-        verify(modelMapper, never()).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
 
     @Test
@@ -430,8 +431,8 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isUnauthorized());
 
-        verify(modelMapper, never()).map(any(EstateRequest.class), any(Class.class));
+        verify(modelMapper, never()).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, never()).update(eq(ID), any(Estate.class));
-        verify(modelMapper, never()).map(any(Estate.class), any(Class.class));
+        verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
 }
