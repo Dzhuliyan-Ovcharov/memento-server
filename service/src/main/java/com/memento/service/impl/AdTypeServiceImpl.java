@@ -3,6 +3,7 @@ package com.memento.service.impl;
 import com.memento.model.AdType;
 import com.memento.repository.AdTypeRepository;
 import com.memento.service.AdTypeService;
+import com.memento.shared.exception.ResourceNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -21,6 +22,12 @@ public class AdTypeServiceImpl implements AdTypeService {
     @Autowired
     public AdTypeServiceImpl(final AdTypeRepository adTypeRepository) {
         this.adTypeRepository = adTypeRepository;
+    }
+
+    @Override
+    public AdType findByType(final String type) {
+        return adTypeRepository.findAdTypeByType(type)
+                .orElseThrow(ResourceNotFoundException::new);
     }
 
     @Override
