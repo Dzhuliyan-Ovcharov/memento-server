@@ -47,5 +47,5 @@ public class EstateResponse {
     private String email;
 
     @NotNull
-    private List<ImageResponse> images;
+    private List<String> images;
 }
