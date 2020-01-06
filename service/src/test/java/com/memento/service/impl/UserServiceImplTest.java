@@ -9,6 +9,7 @@ import com.memento.service.EmailService;
 import com.memento.service.EmailVerificationService;
 import com.memento.service.RoleService;
 import com.memento.shared.exception.ResourceNotFoundException;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +26,12 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class UserServiceImplTest {
+
+    private static final Long ID = 1L;
+    private static final String EMAIL = "email";
+    private static final String PASSWORD = "password";
+
+    private User user;
 
     @Mock
     private UserRepository userRepository;
@@ -44,8 +51,6 @@ public class UserServiceImplTest {
     @InjectMocks
     private UserServiceImpl userService;
 
-    private User user;
-
     @Before
     public void setUp() {
         user = mock(User.class);
@@ -61,61 +66,61 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void verifyRegisterWhenUserIsNew() {
-        Role role = mock(Role.class);
-        User savedUser = mock(User.class);
+    public void verifyRegister() {
+        final Role role = mock(Role.class);
+        final User savedUser = mock(User.class);
 
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-        when(user.getEmail()).thenReturn("");
+        when(user.getEmail()).thenReturn(EMAIL);
         when(user.getRole()).thenReturn(role);
         when(role.getPermission()).thenReturn(Permission.BUYER);
         when(roleService.findRoleByPermission(any(Permission.class))).thenReturn(role);
-        when(user.getPassword()).thenReturn("");
-        when(bCryptPasswordEncoder.encode(anyString())).thenReturn("");
+        when(user.getPassword()).thenReturn(PASSWORD);
+        when(bCryptPasswordEncoder.encode(anyString())).thenReturn(StringUtils.EMPTY);
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
         doNothing().when(emailService).sendMail(anyString(), anyString());
         doNothing().when(emailVerificationService).save(any(EmailVerificationToken.class));
 
         userService.register(user);
 
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).findByEmail(EMAIL);
         verify(user, times(2)).getEmail();
         verify(user, times(1)).getFirstName();
         verify(user, times(1)).getLastName();
-        verify(roleService, times(1)).findRoleByPermission(any(Permission.class));
+        verify(roleService, times(1)).findRoleByPermission(Permission.BUYER);
         verify(user, times(1)).getRole();
         verify(role, times(1)).getPermission();
-        verify(bCryptPasswordEncoder, times(1)).encode(anyString());
+        verify(bCryptPasswordEncoder, times(1)).encode(PASSWORD);
         verify(user, times(1)).getPassword();
         verify(userRepository, times(1)).save(any(User.class));
-        verify(emailService, times(1)).sendMail(anyString(), anyString());
+        verify(emailService, times(1)).sendMail(eq(EMAIL), anyString());
         verify(emailVerificationService, times(1)).save(any(EmailVerificationToken.class));
     }
 
     @Test(expected = NullPointerException.class)
-    public void throwsWhenUserIsNull() {
+    public void verifyRegisterThrowsWhenUserIsNull() {
         userService.register(null);
     }
 
     @Test(expected = DuplicateKeyException.class)
-    public void throwsWhenUserEmailExists() {
+    public void verifyRegisterThrowsWhenUserEmailExists() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
-        when(user.getEmail()).thenReturn("");
+        when(user.getEmail()).thenReturn(EMAIL);
 
         userService.register(user);
 
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).findByEmail(EMAIL);
         verify(user, times(1)).getEmail();
     }
 
     @Test
-    public void verifyUpdateWhenUserIsNotNull() {
-        User oldUser = mock(User.class);
-        User newUser = mock(User.class);
+    public void verifyUpdate() {
+        final User oldUser = mock(User.class);
+        final User newUser = mock(User.class);
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(oldUser));
-        when(user.getPassword()).thenReturn("");
-        when(bCryptPasswordEncoder.encode(anyString())).thenReturn("");
+        when(user.getPassword()).thenReturn(PASSWORD);
+        when(bCryptPasswordEncoder.encode(anyString())).thenReturn(StringUtils.EMPTY);
         when(userRepository.save(any(User.class))).thenReturn(newUser);
 
         userService.update(user);
@@ -126,7 +131,7 @@ public class UserServiceImplTest {
         verify(user, times(1)).getFirstName();
         verify(user, times(1)).getLastName();
         verify(user, times(1)).getPassword();
-        verify(bCryptPasswordEncoder, times(1)).encode(anyString());
+        verify(bCryptPasswordEncoder, times(1)).encode(PASSWORD);
         verify(user, times(1)).getRole();
         verify(userRepository, times(1)).save(any(User.class));
     }
@@ -137,7 +142,7 @@ public class UserServiceImplTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void throwsWhenUserIsNotFound() {
+    public void verifyUpdateThrowsWhenUserIsNotFound() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
         userService.update(user);
@@ -147,69 +152,78 @@ public class UserServiceImplTest {
     }
 
     @Test
-    public void verifyFindByEmailWhenUserEmailIsFound() {
+    public void verifyFindByEmail() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
 
-        userService.findByEmail("");
+        userService.findByEmail(EMAIL);
 
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).findByEmail(EMAIL);
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void throwsWhenUserEmailIsNotFound() {
+    public void verifyFindByEmailThrowsWhenUserEmailIsNotFound() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
-        userService.findByEmail("");
+        userService.findByEmail(EMAIL);
 
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).findByEmail(EMAIL);
     }
 
+    @Test(expected = NullPointerException.class)
+    public void verifyFindByEmailThrowsWhenUserEmailIsNull() {
+        userService.findByEmail(null);
+    }
 
     @Test
-    public void verifyFindByIdWhenIdIsValid() {
+    public void verifyFindById() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
 
-        userService.findById(1L);
+        userService.findById(ID);
 
-        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(ID);
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void throwsWhenIdIsNotValid() {
+    public void verifyFindByIdThrowsWhenIdIsNotValid() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        userService.findById(0L);
+        userService.findById(ID);
 
-        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(ID);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifyFindByIdThrowsWhenIdIsNull() {
+        userService.findById(null);
     }
 
     @Test
-    public void verifyLoadUserByUsernameWhenEmailIsValid() {
-        Role role = mock(Role.class);
+    public void verifyLoadUserByUsername() {
+        final Role role = mock(Role.class);
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
-        when(user.getEmail()).thenReturn("email");
-        when(user.getPassword()).thenReturn("");
+        when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getPassword()).thenReturn(PASSWORD);
         when(user.getRole()).thenReturn(role);
 
-        userService.loadUserByUsername("");
+        userService.loadUserByUsername(EMAIL);
 
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).findByEmail(EMAIL);
         verify(user, times(1)).getEmail();
         verify(user, times(1)).getPassword();
         verify(user, times(1)).getRole();
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void throwsWhenUserEmailIsNotPresent() {
+    public void verifyLoadUserByUsernameThrowsWhenUserEmailIsNotPresent() {
         when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
-        userService.loadUserByUsername("");
+        userService.loadUserByUsername(EMAIL);
 
-        verify(userRepository, times(1)).findByEmail(anyString());
+        verify(userRepository, times(1)).findByEmail(EMAIL);
     }
 
     @Test(expected = NullPointerException.class)
-    public void throwsWhenEmailIsNull() {
+    public void verifyLoadUserByUsernameThrowsWhenEmailIsNull() {
         userService.loadUserByUsername(null);
     }
 }

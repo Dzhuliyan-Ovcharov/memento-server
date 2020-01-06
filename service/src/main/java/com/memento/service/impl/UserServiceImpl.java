@@ -8,6 +8,7 @@ import com.memento.service.EmailVerificationService;
 import com.memento.service.RoleService;
 import com.memento.service.UserService;
 import com.memento.shared.exception.ResourceNotFoundException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -17,7 +18,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -51,9 +51,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public void register(final User user) {
-        Objects.requireNonNull(user, "User cannot be null.");
-
+    public void register(@NonNull final User user) {
         if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
             throw new DuplicateKeyException("email exists.");
         }
@@ -73,8 +71,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User update(final User user) {
-        Objects.requireNonNull(user, "User cannot be null.");
+    public User update(@NonNull final User user) {
         final User oldUser = userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with id: " + user.getId()));
         final User newUser = User.builder()
                 .id(oldUser.getId())
@@ -87,21 +84,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByEmail(final String email) {
+    public User findByEmail(@NonNull final String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with email: " + email));
     }
 
     @Override
-    public User findById(final Long id) {
-        Objects.requireNonNull(id, "id cannot be null.");
+    public User findById(@NonNull final Long id) {
         log.info("Search for user with id: " + id);
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with id: " + id));
     }
 
     @Override
-    public UserDetails loadUserByUsername(final String email) {
-        Objects.requireNonNull(email, "Email cannot be null.");
-        final User user =  userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cannot find Email with email: " + email));
+    public UserDetails loadUserByUsername(@NonNull final String email) {
+        final User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cannot find Email with email: " + email));
         return org.springframework.security.core.userdetails.User.builder()
                 .username(user.getEmail())
                 .password(user.getPassword())
