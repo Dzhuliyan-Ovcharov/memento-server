@@ -11,12 +11,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 @Configuration
 public class BeanConfig {
 
-    private final UserService userService;
-
     @Autowired
-    public BeanConfig(final UserService userService) {
-        this.userService = userService;
-    }
+    private UserService userService;
 
     @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {

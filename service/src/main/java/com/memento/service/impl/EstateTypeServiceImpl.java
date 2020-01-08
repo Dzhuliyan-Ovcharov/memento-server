@@ -26,6 +26,12 @@ public class EstateTypeServiceImpl implements EstateTypeService {
     }
 
     @Override
+    public EstateType findByType(final String type) {
+        return estateTypeRepository.findEstateTypeByType(type)
+                .orElseThrow(ResourceNotFoundException::new);
+    }
+
+    @Override
     public Set<EstateType> getAll() {
         return Set.copyOf(estateTypeRepository.findAll());
     }

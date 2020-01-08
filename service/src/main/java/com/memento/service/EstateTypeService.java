@@ -6,6 +6,8 @@ import java.util.Set;
 
 public interface EstateTypeService {
 
+    EstateType findByType(String type);
+
     Set<EstateType> getAll();
 
     EstateType save(EstateType estateType);

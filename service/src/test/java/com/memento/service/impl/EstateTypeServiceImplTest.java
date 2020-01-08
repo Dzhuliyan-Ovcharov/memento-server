@@ -3,6 +3,8 @@ package com.memento.service.impl;
 import com.memento.model.EstateType;
 import com.memento.repository.EstateTypeRepository;
 import com.memento.shared.exception.ResourceNotFoundException;
+import org.apache.commons.lang3.StringUtils;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -17,11 +19,34 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class EstateTypeServiceImplTest {
 
+    private EstateType estateType;
+
     @Mock
     private EstateTypeRepository estateTypeRepository;
 
     @InjectMocks
     private EstateTypeServiceImpl estateTypeService;
+
+    @Before
+    public void setUp() {
+        estateType = mock(EstateType.class);
+    }
+
+    @Test
+    public void verifyFindByType() {
+        when(estateTypeRepository.findEstateTypeByType(anyString())).thenReturn(Optional.of(estateType));
+
+        estateTypeService.findByType(StringUtils.EMPTY);
+
+        verify(estateTypeRepository, times(1)).findEstateTypeByType(anyString());
+    }
+
+    @Test(expected = ResourceNotFoundException.class)
+    public void verifyFindByTypeThrowsWhenTypeIsNotFound() {
+        when(estateTypeRepository.findEstateTypeByType(anyString())).thenReturn(Optional.empty());
+
+        estateTypeService.findByType(StringUtils.EMPTY);
+    }
 
     @Test
     public void verifyGetAllEstateTypes() {
@@ -34,7 +59,6 @@ public class EstateTypeServiceImplTest {
 
     @Test
     public void verifySaveWhenEstateTypeIsNotNull() {
-        EstateType estateType = mock(EstateType.class);
         when(estateTypeRepository.save(any(EstateType.class))).thenReturn(estateType);
 
         estateTypeService.save(estateType);
@@ -44,9 +68,8 @@ public class EstateTypeServiceImplTest {
 
     @Test
     public void verifyUpdateWhenEstateTypeIdIsFound() {
-        EstateType estateType = mock(EstateType.class);
-        EstateType oldEstateType = mock(EstateType.class);
-        EstateType newEstateType = mock(EstateType.class);
+        final EstateType oldEstateType = mock(EstateType.class);
+        final EstateType newEstateType = mock(EstateType.class);
 
         when(estateTypeRepository.findById(anyLong())).thenReturn(Optional.of(oldEstateType));
         when(estateTypeRepository.save(any(EstateType.class))).thenReturn(newEstateType);
@@ -62,11 +85,9 @@ public class EstateTypeServiceImplTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void throwsWhenEstateTypeIdIsNotFound() {
-        EstateType newEstateType = mock(EstateType.class);
-
+    public void verifyUpdateThrowsWhenEstateTypeIdIsNotFound() {
         when(estateTypeRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        estateTypeService.update(newEstateType);
+        estateTypeService.update(estateType);
     }
 }
