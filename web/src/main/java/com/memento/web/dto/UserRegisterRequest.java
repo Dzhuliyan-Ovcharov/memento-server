@@ -17,23 +17,22 @@ import javax.validation.constraints.NotNull;
 @PasswordMatches(password = "password", confirmPassword = "confirmPassword")
 public class UserRegisterRequest {
 
-    @NotNull
+    @NotEmpty
     private String firstName;
 
-    @NotNull
+    @NotEmpty
     private String lastName;
 
     @ValidEmail
-    @NotNull
     @NotEmpty
     private String email;
 
     @NotNull
     private Permission permission;
 
-    @NotNull
+    @NotEmpty
     private String password;
 
-    @NotNull
+    @NotEmpty
     private String confirmPassword;
 }

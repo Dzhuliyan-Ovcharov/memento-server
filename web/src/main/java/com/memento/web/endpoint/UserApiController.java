@@ -3,6 +3,8 @@ package com.memento.web.endpoint;
 import com.memento.model.Permission;
 import com.memento.model.User;
 import com.memento.service.UserService;
+import com.memento.web.converter.UserRegisterRequestToUserPropertyMap;
+import com.memento.web.converter.UserToUserRegisterRequestPropertyMap;
 import com.memento.web.dto.UserRegisterRequest;
 import com.memento.web.endpoint.api.UserApi;
 import org.modelmapper.ModelMapper;
@@ -17,8 +19,10 @@ import javax.validation.Valid;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.memento.web.RequestUrlConstant.USERS_BASE_URL;
+
 @RestController
-@RequestMapping(value = "/api/user", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = USERS_BASE_URL, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class UserApiController implements UserApi {
 
     private final UserService userService;
@@ -29,17 +33,22 @@ public class UserApiController implements UserApi {
                              final ModelMapper modelMapper) {
         this.userService = userService;
         this.modelMapper = modelMapper;
+        modelMapper.addMappings(new UserToUserRegisterRequestPropertyMap());
+        modelMapper.addMappings(new UserRegisterRequestToUserPropertyMap());
     }
 
     @Override
     @Secured(Permission.Value.ADMIN)
-    @GetMapping(value = "/all")
+    @GetMapping
     public ResponseEntity<Set<UserRegisterRequest>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAll().stream().map(u -> modelMapper.map(u, UserRegisterRequest.class)).collect(Collectors.toSet()));
+        return ResponseEntity.ok(userService.getAll()
+                .stream()
+                .map(user -> modelMapper.map(user, UserRegisterRequest.class))
+                .collect(Collectors.toSet()));
     }
 
     @Override
-    @PostMapping(value = "/register")
+    @PostMapping
     public ResponseEntity<HttpStatus> register(@Valid @RequestBody final UserRegisterRequest userRegisterRequest) {
         final User user = modelMapper.map(userRegisterRequest, User.class);
         userService.register(user);

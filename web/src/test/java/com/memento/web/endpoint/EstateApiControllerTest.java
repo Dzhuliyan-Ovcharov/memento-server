@@ -140,8 +140,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$.email", is(EMAIL)))
 
                 .andExpect(jsonPath("$.images.*", hasSize(1)))
-                .andExpect(jsonPath("$.images[0].*", hasSize(1)))
-                .andExpect(jsonPath("$.images[0].name", is(IMAGE_NAME)));
+                .andExpect(jsonPath("$.images[0]", is(IMAGE_NAME)));
 
         verify(estateService, times(1)).findById(ID);
         verify(modelMapper, times(1)).map(any(Estate.class), eq(EstateResponse.class));
@@ -190,8 +189,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$[0].email", is(EMAIL)))
 
                 .andExpect(jsonPath("$[0].images.*", hasSize(1)))
-                .andExpect(jsonPath("$[0].images[0].*", hasSize(1)))
-                .andExpect(jsonPath("$[0].images[0].name", is(IMAGE_NAME)));
+                .andExpect(jsonPath("$[0].images[0]", is(IMAGE_NAME)));
 
         verify(estateService, times(1)).getAll();
         verify(modelMapper, times(1)).map(any(Estate.class), eq(EstateResponse.class));
@@ -247,8 +245,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$.email", is(EMAIL)))
 
                 .andExpect(jsonPath("$.images.*", hasSize(1)))
-                .andExpect(jsonPath("$.images[0].*", hasSize(1)))
-                .andExpect(jsonPath("$.images[0].name", is(IMAGE_NAME)));
+                .andExpect(jsonPath("$.images[0]", is(IMAGE_NAME)));
 
         verify(modelMapper, times(1)).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, times(1)).save(any(Estate.class));
@@ -359,8 +356,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                 .andExpect(jsonPath("$.email", is(EMAIL)))
 
                 .andExpect(jsonPath("$.images.*", hasSize(1)))
-                .andExpect(jsonPath("$.images[0].*", hasSize(1)))
-                .andExpect(jsonPath("$.images[0].name", is(IMAGE_NAME)));
+                .andExpect(jsonPath("$.images[0]", is(IMAGE_NAME)));
 
         verify(modelMapper, times(1)).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, times(1)).update(eq(ID), any(Estate.class));
