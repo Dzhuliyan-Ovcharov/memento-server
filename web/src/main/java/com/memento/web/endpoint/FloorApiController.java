@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Set;
 
+import static com.memento.web.RequestUrlConstant.FLOORS_BASE_URL;
+
 @RestController
-@RequestMapping(value = "/api/floor", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = FLOORS_BASE_URL, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class FloorApiController implements FloorApi {
 
     private final FloorService floorService;
@@ -22,17 +24,17 @@ public class FloorApiController implements FloorApi {
         this.floorService = floorService;
     }
 
-    @GetMapping(value = "/all")
+    @GetMapping
     public ResponseEntity<Set<Floor>> getAll() {
         return ResponseEntity.ok(floorService.getAll());
     }
 
-    @GetMapping(value = "/number/{number}")
+    @GetMapping(value = "/{number}")
     public ResponseEntity<Floor> findByNumber(@PathVariable(value = "number") final Integer number) {
         return ResponseEntity.ok(floorService.findByNumber(number));
     }
 
-    @PostMapping(value = "/save")
+    @PostMapping
     public ResponseEntity<Floor> save(@Valid @RequestBody final Floor floor) {
         return ResponseEntity.ok(floorService.save(floor));
     }

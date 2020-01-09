@@ -4,13 +4,13 @@ import com.memento.model.Floor;
 import com.memento.repository.FloorRepository;
 import com.memento.service.FloorService;
 import com.memento.shared.exception.ResourceNotFoundException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -32,13 +32,13 @@ public class FloorServiceImpl implements FloorService {
     }
 
     @Override
-    public Floor save(final Floor floor) {
-        Objects.requireNonNull(floor, "floor cannot be null.");
+    public Floor save(@NonNull final Floor floor) {
         return floorRepository.save(floor);
     }
 
     @Override
-    public Floor findByNumber(final Integer number) {
-        return floorRepository.findFloorByNumber(number).orElseThrow(() -> new ResourceNotFoundException("Floor cannot be find with number: " + number));
+    public Floor findByNumber(@NonNull final Integer number) {
+        return floorRepository.findFloorByNumber(number)
+                .orElseThrow(() -> new ResourceNotFoundException("Floor cannot be find with number: " + number));
     }
 }

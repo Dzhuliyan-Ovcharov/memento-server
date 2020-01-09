@@ -10,6 +10,7 @@ public class RequestUrlConstant {
 
     public static final String ESTATE_TYPES_BASE_URL = "/v1/estate-types";
 
-    public static final String USERS_BASE_URL = "/v1/users";
+    public static final String FLOORS_BASE_URL = "/v1/floors";
 
+    public static final String USERS_BASE_URL = "/v1/users";
 }
