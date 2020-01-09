@@ -12,5 +12,7 @@ public class RequestUrlConstant {
 
     public static final String FLOORS_BASE_URL = "/v1/floors";
 
+    public static final String NEIGHBORHOOD_BASE_URL = "/v1/neighborhoods";
+
     public static final String USERS_BASE_URL = "/v1/users";
 }
