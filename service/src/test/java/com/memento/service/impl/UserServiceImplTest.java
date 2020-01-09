@@ -9,7 +9,6 @@ import com.memento.service.EmailService;
 import com.memento.service.EmailVerificationService;
 import com.memento.service.RoleService;
 import com.memento.shared.exception.ResourceNotFoundException;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,8 +29,11 @@ public class UserServiceImplTest {
     private static final Long ID = 1L;
     private static final String EMAIL = "email";
     private static final String PASSWORD = "password";
+    private static final String ENCODED_PASSWORD = "encoded password";
 
     private User user;
+
+    private Role role;
 
     @Mock
     private UserRepository userRepository;
@@ -53,7 +55,14 @@ public class UserServiceImplTest {
 
     @Before
     public void setUp() {
+        role = mock(Role.class);
+        when(role.getPermission()).thenReturn(Permission.BUYER);
+
         user = mock(User.class);
+        when(user.getId()).thenReturn(ID);
+        when(user.getEmail()).thenReturn(EMAIL);
+        when(user.getRole()).thenReturn(role);
+        when(user.getPassword()).thenReturn(PASSWORD);
     }
 
     @Test
@@ -67,16 +76,11 @@ public class UserServiceImplTest {
 
     @Test
     public void verifyRegister() {
-        final Role role = mock(Role.class);
         final User savedUser = mock(User.class);
 
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
-        when(user.getEmail()).thenReturn(EMAIL);
-        when(user.getRole()).thenReturn(role);
-        when(role.getPermission()).thenReturn(Permission.BUYER);
-        when(roleService.findRoleByPermission(any(Permission.class))).thenReturn(role);
-        when(user.getPassword()).thenReturn(PASSWORD);
-        when(bCryptPasswordEncoder.encode(anyString())).thenReturn(StringUtils.EMPTY);
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
+        when(roleService.findRoleByPermission(Permission.BUYER)).thenReturn(role);
+        when(bCryptPasswordEncoder.encode(PASSWORD)).thenReturn(ENCODED_PASSWORD);
         when(userRepository.save(any(User.class))).thenReturn(savedUser);
         doNothing().when(emailService).sendMail(anyString(), anyString());
         doNothing().when(emailVerificationService).save(any(EmailVerificationToken.class));
@@ -89,7 +93,7 @@ public class UserServiceImplTest {
         verify(user, times(1)).getLastName();
         verify(roleService, times(1)).findRoleByPermission(Permission.BUYER);
         verify(user, times(1)).getRole();
-        verify(role, times(1)).getPermission();
+        verify(user.getRole(), times(1)).getPermission();
         verify(bCryptPasswordEncoder, times(1)).encode(PASSWORD);
         verify(user, times(1)).getPassword();
         verify(userRepository, times(1)).save(any(User.class));
@@ -104,8 +108,7 @@ public class UserServiceImplTest {
 
     @Test(expected = DuplicateKeyException.class)
     public void verifyRegisterThrowsWhenUserEmailExists() {
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
-        when(user.getEmail()).thenReturn(EMAIL);
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
         userService.register(user);
 
@@ -120,12 +123,12 @@ public class UserServiceImplTest {
 
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(oldUser));
         when(user.getPassword()).thenReturn(PASSWORD);
-        when(bCryptPasswordEncoder.encode(anyString())).thenReturn(StringUtils.EMPTY);
+        when(bCryptPasswordEncoder.encode(PASSWORD)).thenReturn(ENCODED_PASSWORD);
         when(userRepository.save(any(User.class))).thenReturn(newUser);
 
         userService.update(user);
 
-        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(ID);
         verify(user, times(1)).getId();
         verify(oldUser, times(1)).getId();
         verify(user, times(1)).getFirstName();
@@ -143,11 +146,11 @@ public class UserServiceImplTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void verifyUpdateThrowsWhenUserIsNotFound() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.findById(ID)).thenReturn(Optional.empty());
 
         userService.update(user);
 
-        verify(userRepository, times(1)).findById(anyLong());
+        verify(userRepository, times(1)).findById(ID);
         verify(user, times(1)).getId();
     }
 
@@ -176,7 +179,7 @@ public class UserServiceImplTest {
 
     @Test
     public void verifyFindById() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(userRepository.findById(ID)).thenReturn(Optional.of(user));
 
         userService.findById(ID);
 
@@ -185,7 +188,7 @@ public class UserServiceImplTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void verifyFindByIdThrowsWhenIdIsNotValid() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(userRepository.findById(ID)).thenReturn(Optional.empty());
 
         userService.findById(ID);
 
@@ -199,11 +202,7 @@ public class UserServiceImplTest {
 
     @Test
     public void verifyLoadUserByUsername() {
-        final Role role = mock(Role.class);
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.of(user));
-        when(user.getEmail()).thenReturn(EMAIL);
-        when(user.getPassword()).thenReturn(PASSWORD);
-        when(user.getRole()).thenReturn(role);
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
 
         userService.loadUserByUsername(EMAIL);
 
@@ -215,7 +214,7 @@ public class UserServiceImplTest {
 
     @Test(expected = ResourceNotFoundException.class)
     public void verifyLoadUserByUsernameThrowsWhenUserEmailIsNotPresent() {
-        when(userRepository.findByEmail(anyString())).thenReturn(Optional.empty());
+        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
 
         userService.loadUserByUsername(EMAIL);
 

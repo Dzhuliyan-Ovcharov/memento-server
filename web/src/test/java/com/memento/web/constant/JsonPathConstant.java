@@ -15,4 +15,7 @@ public class JsonPathConstant {
     public static final String FLOOR_COLLECTION_JSON_PATH = "data/floor-api-controller/floor-collection.json";
 
     public static final String NEIGHBORHOOD_COLLECTION_JSON_PATH = "data/neighborhood-api-controller/neighborhood-collection.json";
+
+    public static final String USER_REGISTER_REQUEST_JSON_PATH = "data/user-api-controller/user-register-request.json";
+    public static final String USER_REGISTER_REQUEST_COLLECTION_JSON_PATH = "data/user-api-controller/user-register-request-collection.json";
 }

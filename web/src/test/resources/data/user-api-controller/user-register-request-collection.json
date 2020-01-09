@@ -1,0 +1,10 @@
+[
+  {
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "email@email.email",
+    "permission": "BUYER",
+    "password": "password",
+    "confirmPassword": null
+  }
+]
