@@ -7,6 +7,7 @@ import com.memento.repository.ImageRepository;
 import com.memento.service.ImageService;
 import com.memento.service.StorageService;
 import com.memento.shared.exception.ResourceNotFoundException;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -32,13 +33,13 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public Resource findOneImage(final String imageName) {
+    public Resource findOneImage(@NonNull final String imageName) {
         final Image image = imageRepository.findByName(imageName).orElseThrow(ResourceNotFoundException::new);
         return storageService.loadAsResource(image.getName());
     }
 
     @Override
-    public List<Resource> getAllImagesByEstateId(final Long estateId) {
+    public List<Resource> getAllImagesByEstateId(@NonNull final Long estateId) {
         return imageRepository.findAllByEstateId(estateId)
                 .stream()
                 .map(image -> storageService.loadAsResource(image.getName()))
@@ -46,7 +47,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void createImage(final MultipartFile file, final Long estateId) {
+    public void createImage(@NonNull final MultipartFile file, @NonNull final Long estateId) {
         final Estate estate = estateRepository.findById(estateId).orElseThrow(ResourceNotFoundException::new);
         final String imageName = storageService.store(file);
         imageRepository.save(Image.builder()
@@ -56,7 +57,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
-    public void deleteImage(final String imageName) {
+    public void deleteImage(@NonNull final String imageName) {
         final Image image = imageRepository.findByName(imageName).orElseThrow(ResourceNotFoundException::new);
         imageRepository.delete(image);
         storageService.delete(imageName);

@@ -6,7 +6,6 @@ import com.memento.repository.EstateRepository;
 import com.memento.repository.ImageRepository;
 import com.memento.service.StorageService;
 import com.memento.shared.exception.ResourceNotFoundException;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +28,11 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class ImageServiceImplTest {
 
+    private static final Long ESTATE_ID = 1L;
+    private static final String IMAGE_NAME = "image.jpg";
+
+    private Image image;
+
     @Mock
     private StorageService storageService;
 
@@ -41,8 +45,6 @@ public class ImageServiceImplTest {
     @InjectMocks
     private ImageServiceImpl imageService;
 
-    private Image image;
-
     @Before
     public void setUp() {
         image = mock(Image.class);
@@ -51,51 +53,61 @@ public class ImageServiceImplTest {
     @Test
     public void verifyFindOneImageWhenImageIsFound() {
         final Resource resource = mock(Resource.class);
-        when(imageRepository.findByName(anyString())).thenReturn(Optional.of(image));
-        when(image.getName()).thenReturn(StringUtils.EMPTY);
-        when(storageService.loadAsResource(anyString())).thenReturn(resource);
+        when(imageRepository.findByName(IMAGE_NAME)).thenReturn(Optional.of(image));
+        when(image.getName()).thenReturn(IMAGE_NAME);
+        when(storageService.loadAsResource(IMAGE_NAME)).thenReturn(resource);
 
-        imageService.findOneImage(StringUtils.EMPTY);
+        imageService.findOneImage(IMAGE_NAME);
 
-        verify(imageRepository, times(1)).findByName(anyString());
+        verify(imageRepository, times(1)).findByName(IMAGE_NAME);
         verify(image, times(1)).getName();
-        verify(storageService, times(1)).loadAsResource(anyString());
+        verify(storageService, times(1)).loadAsResource(IMAGE_NAME);
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void verifyFindOneImageThrowsWhenImageIsNotFound() {
-        when(imageRepository.findByName(anyString())).thenReturn(Optional.empty());
+        when(imageRepository.findByName(IMAGE_NAME)).thenReturn(Optional.empty());
 
-        imageService.findOneImage(StringUtils.EMPTY);
+        imageService.findOneImage(IMAGE_NAME);
 
-        verify(imageRepository, times(1)).findByName(anyString());
+        verify(imageRepository, times(1)).findByName(IMAGE_NAME);
         verify(storageService, never()).loadAsResource(anyString());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifyFindOneImageThrowsWhenImageNameIsNull() {
+        imageService.findOneImage(null);
     }
 
     @Test
     public void verifyGetAllImagesByEstateId() {
         final Resource resource = mock(Resource.class);
-        when(imageRepository.findAllByEstateId(anyLong())).thenReturn(Collections.singletonList(image));
-        when(image.getName()).thenReturn(StringUtils.EMPTY);
-        when(storageService.loadAsResource(anyString())).thenReturn(resource);
+        when(imageRepository.findAllByEstateId(ESTATE_ID)).thenReturn(Collections.singletonList(image));
+        when(image.getName()).thenReturn(IMAGE_NAME);
+        when(storageService.loadAsResource(IMAGE_NAME)).thenReturn(resource);
 
-        List<Resource> images = imageService.getAllImagesByEstateId(1L);
+        final List<Resource> images = imageService.getAllImagesByEstateId(ESTATE_ID);
 
         assertThat(images, hasSize(1));
-        verify(imageRepository, times(1)).findAllByEstateId(anyLong());
-        verify(storageService, times(1)).loadAsResource(anyString());
+        verify(imageRepository, times(1)).findAllByEstateId(ESTATE_ID);
+        verify(storageService, times(1)).loadAsResource(IMAGE_NAME);
         verify(image, times(1)).getName();
     }
 
     @Test
     public void verifyGetAllImagesByEstateIdWhenEstateIdIsNotPresent() {
-        when(imageRepository.findAllByEstateId(anyLong())).thenReturn(Collections.emptyList());
+        when(imageRepository.findAllByEstateId(ESTATE_ID)).thenReturn(Collections.emptyList());
 
-        List<Resource> images = imageService.getAllImagesByEstateId(1L);
+        final List<Resource> images = imageService.getAllImagesByEstateId(ESTATE_ID);
 
         assertThat(images, is(empty()));
-        verify(imageRepository, times(1)).findAllByEstateId(anyLong());
+        verify(imageRepository, times(1)).findAllByEstateId(ESTATE_ID);
         verify(storageService, never()).loadAsResource(anyString());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifyGetAllImagesByEstateIdThrowsWhenEstateIdIsNull() {
+        imageService.getAllImagesByEstateId(null);
     }
 
     @Test
@@ -103,14 +115,14 @@ public class ImageServiceImplTest {
         final Estate estate = mock(Estate.class);
         final MultipartFile file = mock(MultipartFile.class);
 
-        when(estateRepository.findById(anyLong())).thenReturn(Optional.of(estate));
-        when(storageService.store(any(MultipartFile.class))).thenReturn(StringUtils.EMPTY);
+        when(estateRepository.findById(ESTATE_ID)).thenReturn(Optional.of(estate));
+        when(storageService.store(file)).thenReturn(IMAGE_NAME);
         when(imageRepository.save(any(Image.class))).thenReturn(image);
 
-        imageService.createImage(file, 1L);
+        imageService.createImage(file, ESTATE_ID);
 
-        verify(estateRepository, times(1)).findById(anyLong());
-        verify(storageService, times(1)).store(any(MultipartFile.class));
+        verify(estateRepository, times(1)).findById(ESTATE_ID);
+        verify(storageService, times(1)).store(file);
         verify(imageRepository, times(1)).save(any(Image.class));
     }
 
@@ -118,36 +130,52 @@ public class ImageServiceImplTest {
     public void verifyCreateImageThrowsWhenEstateIdIsNotPresent() {
         final MultipartFile file = mock(MultipartFile.class);
 
-        when(estateRepository.findById(anyLong())).thenReturn(Optional.empty());
+        when(estateRepository.findById(ESTATE_ID)).thenReturn(Optional.empty());
 
-        imageService.createImage(file, 1L);
+        imageService.createImage(file, ESTATE_ID);
 
-        verify(estateRepository, times(1)).findById(anyLong());
+        verify(estateRepository, times(1)).findById(ESTATE_ID);
         verify(storageService, never()).store(any(MultipartFile.class));
         verify(imageRepository, never()).save(any(Image.class));
     }
 
+    @Test(expected = NullPointerException.class)
+    public void verifyCreateImageThrowsWhenFileIsNull() {
+        imageService.createImage(null, ESTATE_ID);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifyCreateImageThrowsWhenEstateIdIsNull() {
+        final MultipartFile file = mock(MultipartFile.class);
+        imageService.createImage(file, null);
+    }
+
     @Test
     public void verifyDeleteImage() {
-        when(imageRepository.findByName(anyString())).thenReturn(Optional.of(image));
-        doNothing().when(imageRepository).delete(any(Image.class));
-        doNothing().when(storageService).delete(anyString());
+        when(imageRepository.findByName(IMAGE_NAME)).thenReturn(Optional.of(image));
+        doNothing().when(imageRepository).delete(image);
+        doNothing().when(storageService).delete(IMAGE_NAME);
 
-        imageService.deleteImage(StringUtils.EMPTY);
+        imageService.deleteImage(IMAGE_NAME);
 
-        verify(imageRepository, times(1)).findByName(anyString());
-        verify(imageRepository, times(1)).delete(any(Image.class));
-        verify(storageService, times(1)).delete(anyString());
+        verify(imageRepository, times(1)).findByName(IMAGE_NAME);
+        verify(imageRepository, times(1)).delete(image);
+        verify(storageService, times(1)).delete(IMAGE_NAME);
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void verifyDeleteImageThrowsWhenImageIsNotFound() {
-        when(imageRepository.findByName(anyString())).thenReturn(Optional.empty());
+        when(imageRepository.findByName(IMAGE_NAME)).thenReturn(Optional.empty());
 
-        imageService.deleteImage(StringUtils.EMPTY);
+        imageService.deleteImage(IMAGE_NAME);
 
-        verify(imageRepository, times(1)).findByName(anyString());
+        verify(imageRepository, times(1)).findByName(IMAGE_NAME);
         verify(imageRepository, never()).delete(any(Image.class));
         verify(storageService, never()).delete(anyString());
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifyDeleteImageThrowsWhenImageNameIsNull() {
+        imageService.deleteImage(null);
     }
 }
