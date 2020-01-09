@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 
 import java.util.Set;
 
-@Api(value = "Ad type API")
+@Api(value = "Estate type API")
 public interface EstateTypeApi {
 
     @ApiOperation(value = "Get all estate types", response = Set.class)
@@ -17,5 +17,5 @@ public interface EstateTypeApi {
     ResponseEntity<EstateType> save(EstateType estateType);
 
     @ApiOperation(value = "Update estate type", response = EstateType.class)
-    ResponseEntity<EstateType> update(EstateType estateType);
+    ResponseEntity<EstateType> update(Long id, EstateType estateType);
 }

@@ -7,4 +7,7 @@ public class JsonPathConstant {
 
     public static final String CITY_JSON_PATH = "data/city-api-controller/city.json";
     public static final String CITY_COLLECTION_JSON_PATH = "data/city-api-controller/city-collection.json";
+
+    public static final String ESTATE_TYPE_JSON_PATH = "data/estate-type-api-controller/estate-type.json";
+    public static final String ESTATE_TYPE_COLLECTION_JSON_PATH = "data/estate-type-api-controller/estate-type-collection.json";
 }
