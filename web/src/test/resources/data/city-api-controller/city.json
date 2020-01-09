@@ -1,0 +1,10 @@
+{
+  "id": 1,
+  "name": "City name",
+  "neighborhoods": [
+    {
+      "id": 1,
+      "name": "Neighborhood name"
+    }
+  ]
+}
