@@ -11,8 +11,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.memento.web.RequestUrlConstant.EMAIL_VERIFICATION_BASE_URL;
+
 @RestController
-@RequestMapping(value = "/api/email", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = EMAIL_VERIFICATION_BASE_URL, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class EmailVerificationApiController implements EmailVerificationApi {
 
     private final EmailVerificationService emailVerificationService;
@@ -22,8 +24,8 @@ public class EmailVerificationApiController implements EmailVerificationApi {
         this.emailVerificationService = emailVerificationService;
     }
 
-    @GetMapping(value = "/verify")
-    public ResponseEntity<HttpStatus> confirmRegistration(@RequestParam String token) {
+    @GetMapping
+    public ResponseEntity<HttpStatus> confirmRegistration(@RequestParam final String token) {
         emailVerificationService.verifyEmail(token);
         return ResponseEntity.ok().build();
     }

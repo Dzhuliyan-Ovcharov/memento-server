@@ -22,6 +22,9 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class EmailVerificationServiceImplTest {
 
+    private static final String EMAIL = "email";
+    private static final String TOKEN = "token";
+
     @Mock
     private EmailVerificationRepository emailVerificationRepository;
 
@@ -37,48 +40,53 @@ public class EmailVerificationServiceImplTest {
 
     @Test
     public void verifyIsEmailVerifiedWhenTokenIsNotPresent() {
-        when(emailVerificationRepository.findByUser_Email(anyString())).thenReturn(Optional.empty());
+        when(emailVerificationRepository.findByUser_Email(EMAIL)).thenReturn(Optional.empty());
 
-        boolean isEmailVerified = emailVerificationService.isEmailVerified("");
+        boolean isEmailVerified = emailVerificationService.isEmailVerified(EMAIL);
 
         assertFalse(isEmailVerified);
-        verify(emailVerificationRepository, times(1)).findByUser_Email(anyString());
+        verify(emailVerificationRepository, times(1)).findByUser_Email(EMAIL);
     }
 
     @Test
     public void verifyIsEmailVerifiedWhenEmailIsNotVerified() {
         when(token.isEmailVerified()).thenReturn(false);
-        when(emailVerificationRepository.findByUser_Email(anyString())).thenReturn(Optional.of(token));
+        when(emailVerificationRepository.findByUser_Email(EMAIL)).thenReturn(Optional.of(token));
 
-        boolean isEmailVerified = emailVerificationService.isEmailVerified("");
+        boolean isEmailVerified = emailVerificationService.isEmailVerified(EMAIL);
 
         assertFalse(isEmailVerified);
-        verify(emailVerificationRepository, times(1)).findByUser_Email(anyString());
+        verify(emailVerificationRepository, times(1)).findByUser_Email(EMAIL);
         verify(token, times(1)).isEmailVerified();
     }
 
     @Test
     public void verifyIsEmailVerifiedWhenTokenIsPresentAndEmailIsVerified() {
         when(token.isEmailVerified()).thenReturn(true);
-        when(emailVerificationRepository.findByUser_Email(anyString())).thenReturn(Optional.of(token));
+        when(emailVerificationRepository.findByUser_Email(EMAIL)).thenReturn(Optional.of(token));
 
-        boolean isEmailVerified = emailVerificationService.isEmailVerified("");
+        boolean isEmailVerified = emailVerificationService.isEmailVerified(EMAIL);
 
         assertTrue(isEmailVerified);
-        verify(emailVerificationRepository, times(1)).findByUser_Email(anyString());
+        verify(emailVerificationRepository, times(1)).findByUser_Email(EMAIL);
         verify(token, times(1)).isEmailVerified();
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifyIsEmailVerifiedThrowsWhenEmailIsNull() {
+        emailVerificationService.verifyEmail(null);
     }
 
     @Test
     public void verifyVerifyEmailWhenTokenIsPresentAndValid() {
         Instant expiryTime = Instant.ofEpochSecond(Instant.now().getEpochSecond() + 10);
-        when(emailVerificationRepository.findByToken(anyString())).thenReturn(Optional.of(token));
+        when(emailVerificationRepository.findByToken(TOKEN)).thenReturn(Optional.of(token));
         when(token.getExpiryTime()).thenReturn(expiryTime);
         when(emailVerificationRepository.save(any(EmailVerificationToken.class))).thenReturn(token);
 
-        emailVerificationService.verifyEmail("");
+        emailVerificationService.verifyEmail(TOKEN);
 
-        verify(emailVerificationRepository, times(1)).findByToken(anyString());
+        verify(emailVerificationRepository, times(1)).findByToken(TOKEN);
         verify(token, times(2)).getExpiryTime();
         verify(token, times(1)).getId();
         verify(token, times(1)).getUser();
@@ -86,31 +94,41 @@ public class EmailVerificationServiceImplTest {
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void throwsWhenTokenIsNotPresent() {
+    public void verifyVerifyEmailThrowsWhenTokenIsNotPresent() {
         when(emailVerificationRepository.findByToken(anyString())).thenReturn(Optional.empty());
 
-        emailVerificationService.verifyEmail("");
+        emailVerificationService.verifyEmail(TOKEN);
 
-        verify(emailVerificationRepository, times(1)).findByToken(anyString());
+        verify(emailVerificationRepository, times(1)).findByToken(TOKEN);
     }
 
     @Test(expected = EmailVerificationTimeExpiryException.class)
-    public void throwsWhenTokenHasExpired() {
-        when(emailVerificationRepository.findByToken(anyString())).thenReturn(Optional.of(token));
+    public void verifyVerifyEmailThrowsWhenTokenHasExpired() {
+        when(emailVerificationRepository.findByToken(TOKEN)).thenReturn(Optional.of(token));
         when(token.getExpiryTime()).thenReturn(Instant.now());
 
-        emailVerificationService.verifyEmail("");
+        emailVerificationService.verifyEmail(TOKEN);
 
-        verify(emailVerificationRepository, times(1)).findByToken(anyString());
+        verify(emailVerificationRepository, times(1)).findByToken(TOKEN);
         verify(token, times(1)).getExpiryTime();
     }
 
+    @Test(expected = NullPointerException.class)
+    public void verifyVerifyEmailThrowsWhenTokenIsNull() {
+        emailVerificationService.verifyEmail(null);
+    }
+
     @Test
-    public void verifySaveWhenTokenIsNotNull() {
-        when(emailVerificationRepository.save(any(EmailVerificationToken.class))).thenReturn(token);
+    public void verifySave() {
+        when(emailVerificationRepository.save(token)).thenReturn(token);
 
         emailVerificationService.save(token);
 
-        verify(emailVerificationRepository, times(1)).save(any(EmailVerificationToken.class));
+        verify(emailVerificationRepository, times(1)).save(token);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifySaveWhenTokenIsNull() {
+        emailVerificationService.save(null);
     }
 }

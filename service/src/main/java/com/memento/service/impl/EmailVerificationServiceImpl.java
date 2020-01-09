@@ -5,6 +5,7 @@ import com.memento.repository.EmailVerificationRepository;
 import com.memento.service.EmailVerificationService;
 import com.memento.shared.exception.EmailVerificationTimeExpiryException;
 import com.memento.shared.exception.ResourceNotFoundException;
+import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,14 +24,14 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     }
 
     @Override
-    public boolean isEmailVerified(String email) {
+    public boolean isEmailVerified(@NonNull final String email) {
         final Optional<EmailVerificationToken> token = emailVerificationRepository.findByUser_Email(email);
         return token.isPresent() && token.get().isEmailVerified();
     }
 
     @Override
     @Transactional
-    public void verifyEmail(String verificationToken) {
+    public void verifyEmail(@NonNull final String verificationToken) {
         final EmailVerificationToken emailVerificationToken = getEmailVerificationToken(verificationToken);
         validateVerificationActiveToken(emailVerificationToken);
         final EmailVerificationToken verifiedToken =
@@ -45,16 +46,16 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
     }
 
     @Override
-    public void save(EmailVerificationToken emailVerificationToken) {
+    public void save(@NonNull final EmailVerificationToken emailVerificationToken) {
         emailVerificationRepository.save(emailVerificationToken);
     }
 
-    private EmailVerificationToken getEmailVerificationToken(String verificationToken) {
+    private EmailVerificationToken getEmailVerificationToken(final String verificationToken) {
         return emailVerificationRepository.findByToken(verificationToken)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("Invalid verification token %s", verificationToken)));
     }
 
-    private void validateVerificationActiveToken(EmailVerificationToken emailVerificationToken) {
+    private void validateVerificationActiveToken(final EmailVerificationToken emailVerificationToken) {
         if (emailVerificationToken.getExpiryTime().toEpochMilli() - Instant.now().toEpochMilli() <= 0) {
             throw new EmailVerificationTimeExpiryException("Verification token has expired.");
         }

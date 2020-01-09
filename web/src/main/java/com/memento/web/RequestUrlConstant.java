@@ -6,6 +6,8 @@ public class RequestUrlConstant {
 
     public static final String CITIES_BASE_URL = "/v1/cities";
 
+    public static final String EMAIL_VERIFICATION_BASE_URL = "/v1/email-verification";
+
     public static final String ESTATES_BASE_URL = "/v1/estates";
 
     public static final String ESTATE_TYPES_BASE_URL = "/v1/estate-types";
