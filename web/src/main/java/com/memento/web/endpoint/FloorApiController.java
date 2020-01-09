@@ -24,16 +24,19 @@ public class FloorApiController implements FloorApi {
         this.floorService = floorService;
     }
 
+    @Override
     @GetMapping
     public ResponseEntity<Set<Floor>> getAll() {
         return ResponseEntity.ok(floorService.getAll());
     }
 
-    @GetMapping(value = "/{number}")
-    public ResponseEntity<Floor> findByNumber(@PathVariable(value = "number") final Integer number) {
+    @Override
+    @GetMapping(params = "number")
+    public ResponseEntity<Floor> findByNumber(@RequestParam(value = "number") final Integer number) {
         return ResponseEntity.ok(floorService.findByNumber(number));
     }
 
+    @Override
     @PostMapping
     public ResponseEntity<Floor> save(@Valid @RequestBody final Floor floor) {
         return ResponseEntity.ok(floorService.save(floor));

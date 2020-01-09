@@ -26,6 +26,8 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
     private static final Long ID = 1L;
     private static final Integer NUMBER = 1;
 
+    private static final String NUMBER_PARAM = "number";
+
     private Floor floor;
 
     @MockBean
@@ -76,8 +78,9 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
         when(floorService.findByNumber(NUMBER)).thenReturn(floor);
 
         mockMvc.perform(
-                get(FLOORS_BASE_URL + "/" + NUMBER)
-                        .accept(MediaType.APPLICATION_JSON))
+                get(FLOORS_BASE_URL)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .param(NUMBER_PARAM, String.valueOf(NUMBER)))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(jsonResponse, true));
@@ -87,11 +90,12 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyFindByNumberWhenNumberIsNotFoundAndExpect404() throws Exception {
-        when(floorService.findByNumber(anyInt())).thenThrow(ResourceNotFoundException.class);
+        when(floorService.findByNumber(NUMBER)).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(
-                get(FLOORS_BASE_URL + "/" + NUMBER)
-                        .accept(MediaType.APPLICATION_JSON))
+                get(FLOORS_BASE_URL)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .param(NUMBER_PARAM, String.valueOf(NUMBER)))
                 .andExpect(status().isNotFound());
 
         verify(floorService, times(1)).findByNumber(NUMBER);

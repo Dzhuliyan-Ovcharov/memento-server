@@ -11,7 +11,7 @@ import org.springframework.http.MediaType;
 
 import java.util.Collections;
 
-import static com.memento.web.RequestUrlConstant.NEIGHBORHOOD_BASE_URL;
+import static com.memento.web.RequestUrlConstant.NEIGHBORHOODS_BASE_URL;
 import static com.memento.web.constant.JsonPathConstant.NEIGHBORHOOD_COLLECTION_JSON_PATH;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -24,6 +24,8 @@ public class NeighborhoodApiControllerTest extends BaseApiControllerTest {
     private static final Long ID = 1L;
     private static final String NAME = "Neighborhood name";
     private static final String CITY_NAME = "City name";
+
+    private static final String CITY_NAME_PARAM = "city_name";
 
     private Neighborhood neighborhood;
 
@@ -43,11 +45,12 @@ public class NeighborhoodApiControllerTest extends BaseApiControllerTest {
     public void verifyFindAllByCityNameAndExpect200() throws Exception {
         final String jsonResponse = loadJsonResource(NEIGHBORHOOD_COLLECTION_JSON_PATH, Neighborhood[].class);
 
-        when(neighborhoodService.findAllByCityName(anyString())).thenReturn(Collections.singletonList(neighborhood));
+        when(neighborhoodService.findAllByCityName(CITY_NAME)).thenReturn(Collections.singletonList(neighborhood));
 
         mockMvc.perform(
-                get(NEIGHBORHOOD_BASE_URL + "/city/" + CITY_NAME)
-                        .accept(MediaType.APPLICATION_JSON))
+                get(NEIGHBORHOODS_BASE_URL)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .param(CITY_NAME_PARAM, CITY_NAME))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(jsonResponse, true));
@@ -57,11 +60,12 @@ public class NeighborhoodApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyFindAllByCityNameWhenCityIsNotFoundAndExpect200() throws Exception {
-        when(neighborhoodService.findAllByCityName(anyString())).thenReturn(Collections.emptyList());
+        when(neighborhoodService.findAllByCityName(CITY_NAME)).thenReturn(Collections.emptyList());
 
         mockMvc.perform(
-                get(NEIGHBORHOOD_BASE_URL + "/city/" + CITY_NAME)
-                        .accept(MediaType.APPLICATION_JSON))
+                get(NEIGHBORHOODS_BASE_URL)
+                        .accept(MediaType.APPLICATION_JSON)
+                        .param(CITY_NAME_PARAM, CITY_NAME))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(EMPTY_JSON_COLLECTION, true));
