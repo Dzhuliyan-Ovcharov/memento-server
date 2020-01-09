@@ -3,7 +3,6 @@ package com.memento.service.impl;
 import com.memento.model.AdType;
 import com.memento.repository.AdTypeRepository;
 import com.memento.shared.exception.ResourceNotFoundException;
-import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,6 +17,8 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class AdTypeServiceImplTest {
+
+    private static final String TYPE = "Ad type";
 
     private AdType adType;
 
@@ -36,16 +37,21 @@ public class AdTypeServiceImplTest {
     public void verifyFindByType() {
         when(adTypeRepository.findAdTypeByType(anyString())).thenReturn(Optional.of(adType));
 
-        adTypeService.findByType(StringUtils.EMPTY);
+        adTypeService.findByType(TYPE);
 
-        verify(adTypeRepository, times(1)).findAdTypeByType(anyString());
+        verify(adTypeRepository, times(1)).findAdTypeByType(TYPE);
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void verifyFindByTypeThrowsWhenTypeIsNotFound() {
         when(adTypeRepository.findAdTypeByType(anyString())).thenReturn(Optional.empty());
 
-        adTypeService.findByType(StringUtils.EMPTY);
+        adTypeService.findByType(TYPE);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifyFindByTypeThrowsWhenTypeIsNull() {
+        adTypeService.findByType(null);
     }
 
     @Test
@@ -58,11 +64,16 @@ public class AdTypeServiceImplTest {
     }
 
     @Test
-    public void verifySaveWhenAdTypeIsNotNull() {
+    public void verifySave() {
         when(adTypeRepository.save(any(AdType.class))).thenReturn(adType);
 
         adTypeService.save(adType);
 
-        verify(adTypeRepository, times(1)).save(any(AdType.class));
+        verify(adTypeRepository, times(1)).save(adType);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifySaveThrowsWhenAdTypeIsNull() {
+        adTypeService.save(null);
     }
 }

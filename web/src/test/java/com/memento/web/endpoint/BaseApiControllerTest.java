@@ -16,7 +16,11 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.context.WebApplicationContext;
+
+import java.io.File;
+import java.io.IOException;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
@@ -24,6 +28,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 @ContextConfiguration(classes = {WebSecurityConfig.class, BeanConfig.class, MementoStarter.class})
 @Import(AopAutoConfiguration.class)
 public abstract class BaseApiControllerTest {
+
+    static final String EMPTY_JSON = "";
+    static final String EMPTY_JSON_COLLECTION = "[]";
 
     @Autowired
     ObjectMapper objectMapper;
@@ -42,5 +49,11 @@ public abstract class BaseApiControllerTest {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext)
                 .alwaysDo(print())
                 .build();
+    }
+
+    <T> String loadJsonResource(final String fileName, final Class<T> targetClass) throws IOException {
+        final File file = ResourceUtils.getFile(ResourceUtils.CLASSPATH_URL_PREFIX + fileName);
+        final T targetObject = objectMapper.readValue(file, targetClass);
+        return objectMapper.writeValueAsString(targetObject);
     }
 }
