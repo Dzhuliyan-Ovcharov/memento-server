@@ -32,6 +32,8 @@ public abstract class BaseApiControllerTest {
     static final String EMPTY_JSON = "";
     static final String EMPTY_JSON_COLLECTION = "[]";
 
+    MockMvc mockMvc;
+
     @Autowired
     ObjectMapper objectMapper;
 
@@ -40,8 +42,6 @@ public abstract class BaseApiControllerTest {
 
     @MockBean
     UserService userService;
-
-    MockMvc mockMvc;
 
     @Before
     public void setUp() {

@@ -1,7 +1,9 @@
 package com.memento.web.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.memento.model.Quadrature;
+import com.memento.model.serializer.MoneyJsonDeserializer;
 import com.memento.model.serializer.MoneyJsonSerializer;
 import lombok.*;
 import org.joda.money.Money;
@@ -20,6 +22,7 @@ public class EstateResponse {
 
     @NotNull
     @JsonSerialize(using = MoneyJsonSerializer.class)
+    @JsonDeserialize(using = MoneyJsonDeserializer.class)
     private Money price;
 
     @NotNull

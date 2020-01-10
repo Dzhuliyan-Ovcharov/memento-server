@@ -8,6 +8,10 @@ public class JsonPathConstant {
     public static final String CITY_JSON_PATH = "data/city-api-controller/city.json";
     public static final String CITY_COLLECTION_JSON_PATH = "data/city-api-controller/city-collection.json";
 
+    public static final String ESTATE_REQUEST_JSON_PATH = "data/estate-api-controller/estate-request.json";
+    public static final String ESTATE_RESPONSE_JSON_PATH = "data/estate-api-controller/estate-response.json";
+    public static final String ESTATE_RESPONSE_COLLECTION_JSON_PATH = "data/estate-api-controller/estate-response-collection.json";
+
     public static final String ESTATE_TYPE_JSON_PATH = "data/estate-type-api-controller/estate-type.json";
     public static final String ESTATE_TYPE_COLLECTION_JSON_PATH = "data/estate-type-api-controller/estate-type-collection.json";
 

@@ -1,0 +1,21 @@
+{
+  "price": {
+    "currency": "USD",
+    "amount": 1000.0
+  },
+  "quadrature": {
+    "builtUpArea": 100.0,
+    "pureArea": 50.0,
+    "difference": 50.0
+  },
+  "description": "Description",
+  "floorNumber": 1,
+  "estateType": "Estate type",
+  "adType": "Ad type",
+  "firstName": "First name",
+  "lastName": "Last name",
+  "email": "email@email.email",
+  "images": [
+    "image.jpg"
+  ]
+}
