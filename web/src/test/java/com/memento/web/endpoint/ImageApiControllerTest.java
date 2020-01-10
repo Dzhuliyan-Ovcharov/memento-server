@@ -27,9 +27,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = ImageApiController.class)
 public class ImageApiControllerTest extends BaseApiControllerTest {
 
-    private static final String NAME_PARAM = "name";
-    private static final String ESTATE_ID_PARAM = "estate_id";
-
     private static final Long ESTATE_ID = 1L;
     private static final String IMAGE_NAME = "image.jpg";
 
@@ -56,9 +53,8 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
         when(resource.getInputStream()).thenReturn(inputStream);
 
         mockMvc.perform(
-                get(IMAGES_BASE_URL)
-                        .accept(MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG)
-                        .param(NAME_PARAM, IMAGE_NAME))
+                get(IMAGES_BASE_URL + "/name/" + IMAGE_NAME)
+                        .accept(MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG))
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.IMAGE_JPEG));
 
@@ -70,9 +66,8 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
         when(imageService.findOneImage(IMAGE_NAME)).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(
-                get(IMAGES_BASE_URL)
-                        .accept(MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG)
-                        .param(NAME_PARAM, IMAGE_NAME))
+                get(IMAGES_BASE_URL + "/name/" + IMAGE_NAME)
+                        .accept(MediaType.IMAGE_JPEG, MediaType.IMAGE_PNG))
                 .andExpect(status().isNotFound());
 
         verify(imageService, times(1)).findOneImage(IMAGE_NAME);
@@ -83,9 +78,8 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
         doNothing().when(imageService).createImage(file, ESTATE_ID);
 
         mockMvc.perform(
-                multipart(IMAGES_BASE_URL)
+                multipart(IMAGES_BASE_URL + "/estate/" + ESTATE_ID)
                         .file(file)
-                        .param(ESTATE_ID_PARAM, String.valueOf(ESTATE_ID))
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isOk());
 
@@ -97,9 +91,8 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
         doThrow(ResourceNotFoundException.class).when(imageService).createImage(file, ESTATE_ID);
 
         mockMvc.perform(
-                multipart(IMAGES_BASE_URL)
+                multipart(IMAGES_BASE_URL + "/estate/" + ESTATE_ID)
                         .file(file)
-                        .param(ESTATE_ID_PARAM, String.valueOf(ESTATE_ID))
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isNotFound());
 
@@ -111,9 +104,8 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
         doThrow(MementoException.class).when(imageService).createImage(file, ESTATE_ID);
 
         mockMvc.perform(
-                multipart(IMAGES_BASE_URL)
+                multipart(IMAGES_BASE_URL + "/estate/" + ESTATE_ID)
                         .file(file)
-                        .param(ESTATE_ID_PARAM, String.valueOf(ESTATE_ID))
                         .contentType(MediaType.MULTIPART_FORM_DATA))
                 .andExpect(status().isInternalServerError());
 
@@ -126,8 +118,7 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
         doNothing().when(imageService).deleteImage(IMAGE_NAME);
 
         mockMvc.perform(
-                delete(IMAGES_BASE_URL)
-                        .param(NAME_PARAM, IMAGE_NAME))
+                delete(IMAGES_BASE_URL + "/name/" + IMAGE_NAME))
                 .andExpect(status().isOk());
 
         verify(imageService, times(1)).deleteImage(IMAGE_NAME);
@@ -139,8 +130,7 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
         doThrow(ResourceNotFoundException.class).when(imageService).deleteImage(IMAGE_NAME);
 
         mockMvc.perform(
-                delete(IMAGES_BASE_URL)
-                        .param(NAME_PARAM, IMAGE_NAME))
+                delete(IMAGES_BASE_URL + "/name/" + IMAGE_NAME))
                 .andExpect(status().isNotFound());
 
         verify(imageService, times(1)).deleteImage(IMAGE_NAME);
@@ -152,8 +142,7 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
         doThrow(MementoException.class).when(imageService).deleteImage(IMAGE_NAME);
 
         mockMvc.perform(
-                delete(IMAGES_BASE_URL)
-                        .param(NAME_PARAM, IMAGE_NAME))
+                delete(IMAGES_BASE_URL + "/name/" + IMAGE_NAME))
                 .andExpect(status().isInternalServerError());
 
         verify(imageService, times(1)).deleteImage(IMAGE_NAME);
@@ -163,8 +152,7 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
     @WithMockUser(authorities = {Permission.Value.AGENCY, Permission.Value.BUYER})
     public void verifyDeleteImageWhenUserIsNotAuthorizedAndExpect403() throws Exception {
         mockMvc.perform(
-                delete(IMAGES_BASE_URL)
-                        .param(NAME_PARAM, IMAGE_NAME))
+                delete(IMAGES_BASE_URL + "/name/" + IMAGE_NAME))
                 .andExpect(status().isForbidden());
 
         verify(imageService, never()).deleteImage(anyString());
@@ -173,8 +161,7 @@ public class ImageApiControllerTest extends BaseApiControllerTest {
     @Test
     public void verifyDeleteImageWhenUserIsNotAuthenticatedAndExpect401() throws Exception {
         mockMvc.perform(
-                delete(IMAGES_BASE_URL)
-                        .param(NAME_PARAM, IMAGE_NAME))
+                delete(IMAGES_BASE_URL + "/name/" + IMAGE_NAME))
                 .andExpect(status().isUnauthorized());
 
         verify(imageService, never()).deleteImage(anyString());

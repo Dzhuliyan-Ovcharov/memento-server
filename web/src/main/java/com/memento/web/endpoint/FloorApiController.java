@@ -31,8 +31,8 @@ public class FloorApiController implements FloorApi {
     }
 
     @Override
-    @GetMapping(params = "number")
-    public ResponseEntity<Floor> findByNumber(@RequestParam(value = "number") final Integer number) {
+    @GetMapping("/number/{number}")
+    public ResponseEntity<Floor> findByNumber(@PathVariable(value = "number") final Integer number) {
         return ResponseEntity.ok(floorService.findByNumber(number));
     }
 

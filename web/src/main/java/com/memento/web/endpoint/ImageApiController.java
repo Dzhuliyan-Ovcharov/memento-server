@@ -28,28 +28,28 @@ public class ImageApiController implements ImageApi {
     }
 
     @Override
-    @GetMapping(params = "name", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
-    public ResponseEntity<Resource> findOneImage(@RequestParam(value = "name") final String imageName) {
+    @GetMapping(value = "/name/{imageName}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<Resource> findOneImage(@PathVariable(value = "imageName") final String imageName) {
         return ResponseEntity.ok(imageService.findOneImage(imageName));
     }
 
     @Override
-    @GetMapping(params = "estate_id", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
-    public ResponseEntity<List<Resource>> getAllImagesByEstateId(@RequestParam(value = "estate_id") final Long estateId) {
+    @GetMapping(value = "/estate/{estateId}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    public ResponseEntity<List<Resource>> getAllImagesByEstateId(@PathVariable(value = "estateId") final Long estateId) {
         return ResponseEntity.ok(imageService.getAllImagesByEstateId(estateId));
     }
 
     @Override
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<HttpStatus> createImage(@RequestParam(value = "file") final MultipartFile file, @RequestParam(value = "estate_id") final Long estateId) {
+    @PostMapping(value = "/estate/{estateId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<HttpStatus> createImage(@RequestParam(value = "file") final MultipartFile file, @PathVariable(value = "estateId") final Long estateId) {
         imageService.createImage(file, estateId);
         return ResponseEntity.ok().build();
     }
 
     @Override
     @Secured(Permission.Value.ADMIN)
-    @DeleteMapping
-    public ResponseEntity<HttpStatus> deleteImage(@RequestParam(value = "name") final String imageName) {
+    @DeleteMapping(value = "/name/{imageName}")
+    public ResponseEntity<HttpStatus> deleteImage(@PathVariable(value = "imageName") final String imageName) {
         imageService.deleteImage(imageName);
         return ResponseEntity.ok().build();
     }

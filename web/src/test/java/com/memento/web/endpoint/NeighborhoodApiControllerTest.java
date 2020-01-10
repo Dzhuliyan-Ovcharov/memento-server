@@ -25,8 +25,6 @@ public class NeighborhoodApiControllerTest extends BaseApiControllerTest {
     private static final String NAME = "Neighborhood name";
     private static final String CITY_NAME = "City name";
 
-    private static final String CITY_NAME_PARAM = "city_name";
-
     private Neighborhood neighborhood;
 
     @MockBean
@@ -48,9 +46,8 @@ public class NeighborhoodApiControllerTest extends BaseApiControllerTest {
         when(neighborhoodService.findAllByCityName(CITY_NAME)).thenReturn(Collections.singletonList(neighborhood));
 
         mockMvc.perform(
-                get(NEIGHBORHOODS_BASE_URL)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .param(CITY_NAME_PARAM, CITY_NAME))
+                get(NEIGHBORHOODS_BASE_URL + "/city/name/" + CITY_NAME)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(jsonResponse, true));
@@ -63,9 +60,8 @@ public class NeighborhoodApiControllerTest extends BaseApiControllerTest {
         when(neighborhoodService.findAllByCityName(CITY_NAME)).thenReturn(Collections.emptyList());
 
         mockMvc.perform(
-                get(NEIGHBORHOODS_BASE_URL)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .param(CITY_NAME_PARAM, CITY_NAME))
+                get(NEIGHBORHOODS_BASE_URL + "/city/name/" + CITY_NAME)
+                        .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(content().json(EMPTY_JSON_COLLECTION, true));
