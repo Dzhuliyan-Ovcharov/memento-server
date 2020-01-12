@@ -84,7 +84,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     public void verifySaveAndExpect200() throws Exception {
         final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
 
-        when(cityService.save(city)).thenReturn(city);
+        when(cityService.save(any(City.class))).thenReturn(city);
 
         mockMvc.perform(
                 post(CITIES_BASE_URL)
@@ -145,7 +145,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     public void verifyUpdateAndExpect200() throws Exception {
         final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
 
-        when(cityService.update(ID, city)).thenReturn(city);
+        when(cityService.update(eq(ID), any(City.class))).thenReturn(city);
 
         mockMvc.perform(
                 put(CITIES_BASE_URL + "/" + ID)
@@ -164,7 +164,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     public void verifyUpdateWhenCityIdDoesNotMatchWithPassedIdAndExpect400() throws Exception {
         final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
 
-        when(cityService.update(anyLong(), any(City.class))).thenThrow(BadRequestException.class);
+        when(cityService.update(eq(ID), any(City.class))).thenThrow(BadRequestException.class);
 
         mockMvc.perform(
                 put(CITIES_BASE_URL + "/" + ID)
@@ -173,7 +173,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isBadRequest());
 
-        verify(cityService, times(1)).update(ID, city);
+        verify(cityService, times(1)).update(eq(ID), any(City.class));
     }
 
     @Test
@@ -181,7 +181,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     public void verifyUpdateWhenCityIsNotFoundAndExpect404() throws Exception {
         final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
 
-        when(cityService.update(anyLong(), any(City.class))).thenThrow(ResourceNotFoundException.class);
+        when(cityService.update(eq(ID), any(City.class))).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(
                 put(CITIES_BASE_URL + "/" + ID)
@@ -190,7 +190,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isNotFound());
 
-        verify(cityService, times(1)).update(ID, city);
+        verify(cityService, times(1)).update(eq(ID), any(City.class));
     }
 
     @Test

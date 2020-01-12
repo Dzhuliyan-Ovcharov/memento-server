@@ -101,7 +101,7 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
     public void verifySaveWhenFloorIsNotNullAndExpect200() throws Exception {
         final String jsonRequest = loadJsonResource(FLOOR_JSON_PATH, Floor.class);
 
-        when(floorService.save(floor)).thenReturn(floor);
+        when(floorService.save(any(Floor.class))).thenReturn(floor);
 
         mockMvc.perform(
                 post(FLOORS_BASE_URL)

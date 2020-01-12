@@ -130,7 +130,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyFindByIdWhenIdIsNotFoundAndExpect404() throws Exception {
-        when(estateService.findById(anyLong())).thenThrow(ResourceNotFoundException.class);
+        when(estateService.findById(ID)).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(
                 get(ESTATES_BASE_URL + "/" + ID)
@@ -209,7 +209,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isNotFound());
 
-        verify(modelMapper, times(1)).map(estateRequest, Estate.class);
+        verify(modelMapper, times(1)).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, times(1)).save(any(Estate.class));
         verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
@@ -298,7 +298,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isNotFound());
 
-        verify(modelMapper, times(1)).map(estateRequest, Estate.class);
+        verify(modelMapper, times(1)).map(any(EstateRequest.class), eq(Estate.class));
         verify(estateService, times(1)).update(eq(ID), any(Estate.class));
         verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
     }
