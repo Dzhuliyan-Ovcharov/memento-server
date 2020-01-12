@@ -21,11 +21,12 @@ import java.math.BigDecimal;
 import java.util.Collections;
 
 import static com.memento.web.RequestUrlConstant.ESTATES_BASE_URL;
-import static org.hamcrest.Matchers.*;
+import static com.memento.web.constant.JsonPathConstant.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = EstateApiController.class)
 public class EstateApiControllerTest extends BaseApiControllerTest {
@@ -34,7 +35,6 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     private static final Double PRICE = 1000.00;
     private static final Double BUILT_UP_AREA = 100.00;
     private static final Double PURE_AREA = 50.00;
-    private static final Double AREA_DIFFERENCE = BUILT_UP_AREA - PURE_AREA;
     private static final Integer FLOOR_NUMBER = 1;
     private static final String DESCRIPTION = "Description";
     private static final String ESTATE_TYPE = "Estate type";
@@ -113,42 +113,24 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyFindByIdAndExpect200() throws Exception {
-        when(estateService.findById(anyLong())).thenReturn(estate);
+        final String jsonResponse = loadJsonResource(ESTATE_RESPONSE_JSON_PATH, EstateResponse.class);
+
+        when(estateService.findById(ID)).thenReturn(estate);
 
         mockMvc.perform(
                 get(ESTATES_BASE_URL + "/" + ID)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.*", hasSize(10)))
-
-                .andExpect(jsonPath("$.price.*", hasSize(2)))
-                .andExpect(jsonPath("$.price.currency", is(CurrencyUnit.USD.getCode())))
-                .andExpect(jsonPath("$.price.amount", is(PRICE)))
-
-                .andExpect(jsonPath("$.quadrature.*", hasSize(3)))
-                .andExpect(jsonPath("$.quadrature.builtUpArea", is(BUILT_UP_AREA)))
-                .andExpect(jsonPath("$.quadrature.pureArea", is(PURE_AREA)))
-                .andExpect(jsonPath("$.quadrature.difference", is(AREA_DIFFERENCE)))
-
-                .andExpect(jsonPath("$.description", is(DESCRIPTION)))
-                .andExpect(jsonPath("$.floorNumber", is(FLOOR_NUMBER)))
-                .andExpect(jsonPath("$.estateType", is(ESTATE_TYPE)))
-                .andExpect(jsonPath("$.adType", is(AD_TYPE)))
-                .andExpect(jsonPath("$.firstName", is(FIRST_NAME)))
-                .andExpect(jsonPath("$.lastName", is(LAST_NAME)))
-                .andExpect(jsonPath("$.email", is(EMAIL)))
-
-                .andExpect(jsonPath("$.images.*", hasSize(1)))
-                .andExpect(jsonPath("$.images[0]", is(IMAGE_NAME)));
+                .andExpect(content().json(jsonResponse, true));
 
         verify(estateService, times(1)).findById(ID);
-        verify(modelMapper, times(1)).map(any(Estate.class), eq(EstateResponse.class));
+        verify(modelMapper, times(1)).map(estate, EstateResponse.class);
     }
 
     @Test
     public void verifyFindByIdWhenIdIsNotFoundAndExpect404() throws Exception {
-        when(estateService.findById(anyLong())).thenThrow(ResourceNotFoundException.class);
+        when(estateService.findById(ID)).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(
                 get(ESTATES_BASE_URL + "/" + ID)
@@ -161,6 +143,8 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyGetAllAndExpect200() throws Exception {
+        final String jsonResponse = loadJsonResource(ESTATE_RESPONSE_COLLECTION_JSON_PATH, EstateResponse[].class);
+
         when(estateService.getAll()).thenReturn(Collections.singleton(estate));
 
         mockMvc.perform(
@@ -168,28 +152,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$[0].*", hasSize(10)))
-
-                .andExpect(jsonPath("$[0].price.*", hasSize(2)))
-                .andExpect(jsonPath("$[0].price.currency", is(CurrencyUnit.USD.getCode())))
-                .andExpect(jsonPath("$[0].price.amount", is(PRICE)))
-
-                .andExpect(jsonPath("$[0].quadrature.*", hasSize(3)))
-                .andExpect(jsonPath("$[0].quadrature.builtUpArea", is(BUILT_UP_AREA)))
-                .andExpect(jsonPath("$[0].quadrature.pureArea", is(PURE_AREA)))
-                .andExpect(jsonPath("$[0].quadrature.difference", is(AREA_DIFFERENCE)))
-
-                .andExpect(jsonPath("$[0].description", is(DESCRIPTION)))
-                .andExpect(jsonPath("$[0].floorNumber", is(FLOOR_NUMBER)))
-                .andExpect(jsonPath("$[0].estateType", is(ESTATE_TYPE)))
-                .andExpect(jsonPath("$[0].adType", is(AD_TYPE)))
-                .andExpect(jsonPath("$[0].firstName", is(FIRST_NAME)))
-                .andExpect(jsonPath("$[0].lastName", is(LAST_NAME)))
-                .andExpect(jsonPath("$[0].email", is(EMAIL)))
-
-                .andExpect(jsonPath("$[0].images.*", hasSize(1)))
-                .andExpect(jsonPath("$[0].images[0]", is(IMAGE_NAME)));
+                .andExpect(content().json(jsonResponse, true));
 
         verify(estateService, times(1)).getAll();
         verify(modelMapper, times(1)).map(any(Estate.class), eq(EstateResponse.class));
@@ -204,7 +167,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", is(empty())));
+                .andExpect(content().json(EMPTY_JSON_COLLECTION, true));
 
         verify(estateService, times(1)).getAll();
         verify(modelMapper, never()).map(any(Estate.class), eq(EstateResponse.class));
@@ -213,7 +176,8 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.ADMIN, Permission.Value.AGENCY})
     public void verifySaveAndExpect200() throws Exception {
-        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
+        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
+        final String jsonResponse = loadJsonResource(ESTATE_RESPONSE_JSON_PATH, EstateResponse.class);
 
         when(estateService.save(any(Estate.class))).thenReturn(estate);
 
@@ -224,38 +188,17 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(jsonResponse, true));
 
-                .andExpect(jsonPath("$.*", hasSize(10)))
-
-                .andExpect(jsonPath("$.price.*", hasSize(2)))
-                .andExpect(jsonPath("$.price.currency", is(CurrencyUnit.USD.getCode())))
-                .andExpect(jsonPath("$.price.amount", is(PRICE)))
-
-                .andExpect(jsonPath("$.quadrature.*", hasSize(3)))
-                .andExpect(jsonPath("$.quadrature.builtUpArea", is(BUILT_UP_AREA)))
-                .andExpect(jsonPath("$.quadrature.pureArea", is(PURE_AREA)))
-                .andExpect(jsonPath("$.quadrature.difference", is(AREA_DIFFERENCE)))
-
-                .andExpect(jsonPath("$.description", is(DESCRIPTION)))
-                .andExpect(jsonPath("$.floorNumber", is(FLOOR_NUMBER)))
-                .andExpect(jsonPath("$.estateType", is(ESTATE_TYPE)))
-                .andExpect(jsonPath("$.adType", is(AD_TYPE)))
-                .andExpect(jsonPath("$.firstName", is(FIRST_NAME)))
-                .andExpect(jsonPath("$.lastName", is(LAST_NAME)))
-                .andExpect(jsonPath("$.email", is(EMAIL)))
-
-                .andExpect(jsonPath("$.images.*", hasSize(1)))
-                .andExpect(jsonPath("$.images[0]", is(IMAGE_NAME)));
-
-        verify(modelMapper, times(1)).map(any(EstateRequest.class), eq(Estate.class));
+        verify(modelMapper, times(1)).map(estateRequest, Estate.class);
         verify(estateService, times(1)).save(any(Estate.class));
-        verify(modelMapper, times(1)).map(any(Estate.class), eq(EstateResponse.class));
+        verify(modelMapper, times(1)).map(estate, EstateResponse.class);
     }
 
     @Test
     @WithMockUser(authorities = {Permission.Value.ADMIN, Permission.Value.AGENCY})
     public void verifySaveWhenEstateRequestIsNotValidAndExpect404() throws Exception {
-        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
+        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
 
         when(estateService.save(any(Estate.class))).thenThrow(ResourceNotFoundException.class);
 
@@ -274,13 +217,11 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.ADMIN, Permission.Value.AGENCY})
     public void verifySaveWhenEstateRequestIsNullAndExpect400() throws Exception {
-        final String jsonRequest = objectMapper.writeValueAsString(null);
-
         mockMvc.perform(
                 post(ESTATES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
+                        .content(EMPTY_JSON))
                 .andExpect(status().isBadRequest());
 
         verify(modelMapper, never()).map(any(EstateRequest.class), eq(Estate.class));
@@ -291,7 +232,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = Permission.Value.BUYER)
     public void verifySaveWhenUserIsNotAuthorizedAndExpect403() throws Exception {
-        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
+        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
 
         mockMvc.perform(
                 post(ESTATES_BASE_URL)
@@ -307,7 +248,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifySaveWhenUserIsNotAuthenticatedAndExpect401() throws Exception {
-        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
+        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
 
         mockMvc.perform(
                 post(ESTATES_BASE_URL)
@@ -324,9 +265,10 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.ADMIN, Permission.Value.AGENCY})
     public void verifyUpdateAndExpect200() throws Exception {
-        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
+        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
+        final String jsonResponse = loadJsonResource(ESTATE_RESPONSE_JSON_PATH, EstateResponse.class);
 
-        when(estateService.update(anyLong(), any(Estate.class))).thenReturn(estate);
+        when(estateService.update(eq(ID), any(Estate.class))).thenReturn(estate);
 
         mockMvc.perform(
                 put(ESTATES_BASE_URL + "/" + ID)
@@ -335,40 +277,19 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
                         .content(jsonRequest))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(content().json(jsonResponse, true));
 
-                .andExpect(jsonPath("$.*", hasSize(10)))
-
-                .andExpect(jsonPath("$.price.*", hasSize(2)))
-                .andExpect(jsonPath("$.price.currency", is(CurrencyUnit.USD.getCode())))
-                .andExpect(jsonPath("$.price.amount", is(PRICE)))
-
-                .andExpect(jsonPath("$.quadrature.*", hasSize(3)))
-                .andExpect(jsonPath("$.quadrature.builtUpArea", is(BUILT_UP_AREA)))
-                .andExpect(jsonPath("$.quadrature.pureArea", is(PURE_AREA)))
-                .andExpect(jsonPath("$.quadrature.difference", is(AREA_DIFFERENCE)))
-
-                .andExpect(jsonPath("$.description", is(DESCRIPTION)))
-                .andExpect(jsonPath("$.floorNumber", is(FLOOR_NUMBER)))
-                .andExpect(jsonPath("$.estateType", is(ESTATE_TYPE)))
-                .andExpect(jsonPath("$.adType", is(AD_TYPE)))
-                .andExpect(jsonPath("$.firstName", is(FIRST_NAME)))
-                .andExpect(jsonPath("$.lastName", is(LAST_NAME)))
-                .andExpect(jsonPath("$.email", is(EMAIL)))
-
-                .andExpect(jsonPath("$.images.*", hasSize(1)))
-                .andExpect(jsonPath("$.images[0]", is(IMAGE_NAME)));
-
-        verify(modelMapper, times(1)).map(any(EstateRequest.class), eq(Estate.class));
+        verify(modelMapper, times(1)).map(estateRequest, Estate.class);
         verify(estateService, times(1)).update(eq(ID), any(Estate.class));
-        verify(modelMapper, times(1)).map(any(Estate.class), eq(EstateResponse.class));
+        verify(modelMapper, times(1)).map(estate, EstateResponse.class);
     }
 
     @Test
     @WithMockUser(authorities = {Permission.Value.ADMIN, Permission.Value.AGENCY})
     public void verifyUpdateWhenEstateRequestIsNotValidAndExpect404() throws Exception {
-        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
+        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
 
-        when(estateService.update(anyLong(), any(Estate.class))).thenThrow(ResourceNotFoundException.class);
+        when(estateService.update(eq(ID), any(Estate.class))).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(
                 put(ESTATES_BASE_URL + "/" + ID)
@@ -385,13 +306,11 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.ADMIN, Permission.Value.AGENCY})
     public void verifyUpdateWhenEstateRequestIsNullAndExpect400() throws Exception {
-        final String jsonRequest = objectMapper.writeValueAsString(null);
-
         mockMvc.perform(
                 put(ESTATES_BASE_URL + "/" + ID)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonRequest))
+                        .content(EMPTY_JSON))
                 .andExpect(status().isBadRequest());
 
         verify(modelMapper, never()).map(any(EstateRequest.class), eq(Estate.class));
@@ -402,7 +321,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = Permission.Value.BUYER)
     public void verifyUpdateWhenUserIsNotAuthorizedAndExpect403() throws Exception {
-        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
+        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
 
         mockMvc.perform(
                 put(ESTATES_BASE_URL + "/" + ID)
@@ -418,7 +337,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyUpdateWhenUserIsNotAuthenticatedAndExpect401() throws Exception {
-        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
+        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
 
         mockMvc.perform(
                 put(ESTATES_BASE_URL + "/" + ID)

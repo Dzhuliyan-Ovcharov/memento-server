@@ -14,8 +14,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
+import static com.memento.web.RequestUrlConstant.IMAGES_BASE_URL;
+
 @RestController
-@RequestMapping(value = "/api/image")
+@RequestMapping(value = IMAGES_BASE_URL, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class ImageApiController implements ImageApi {
 
     private final ImageService imageService;
@@ -32,13 +34,13 @@ public class ImageApiController implements ImageApi {
     }
 
     @Override
-    @GetMapping(value = "/all/estate/id/{estateId}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
+    @GetMapping(value = "/estate/{estateId}", produces = {MediaType.IMAGE_JPEG_VALUE, MediaType.IMAGE_PNG_VALUE})
     public ResponseEntity<List<Resource>> getAllImagesByEstateId(@PathVariable(value = "estateId") final Long estateId) {
         return ResponseEntity.ok(imageService.getAllImagesByEstateId(estateId));
     }
 
     @Override
-    @PostMapping(value = "/create/estate/id/{estateId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/estate/{estateId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<HttpStatus> createImage(@RequestParam(value = "file") final MultipartFile file, @PathVariable(value = "estateId") final Long estateId) {
         imageService.createImage(file, estateId);
         return ResponseEntity.ok().build();
@@ -46,7 +48,7 @@ public class ImageApiController implements ImageApi {
 
     @Override
     @Secured(Permission.Value.ADMIN)
-    @DeleteMapping(value = "/delete/name/{imageName}")
+    @DeleteMapping(value = "/name/{imageName}")
     public ResponseEntity<HttpStatus> deleteImage(@PathVariable(value = "imageName") final String imageName) {
         imageService.deleteImage(imageName);
         return ResponseEntity.ok().build();

@@ -12,5 +12,5 @@ public interface EstateTypeService {
 
     EstateType save(EstateType estateType);
 
-    EstateType update(EstateType estateType);
+    EstateType update(Long id, EstateType estateType);
 }

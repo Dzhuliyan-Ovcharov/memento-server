@@ -18,13 +18,15 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class FloorServiceImplTest {
 
+    private static final Integer NUMBER = 1;
+
+    private Floor floor;
+
     @Mock
     private FloorRepository floorRepository;
 
     @InjectMocks
     private FloorServiceImpl floorService;
-
-    private Floor floor;
 
     @Before
     public void setUp() {
@@ -41,34 +43,39 @@ public class FloorServiceImplTest {
     }
 
     @Test
-    public void verifySaveWhenFloorIsNotNull() {
-        when(floorRepository.save(any(Floor.class))).thenReturn(floor);
+    public void verifySave() {
+        when(floorRepository.save(floor)).thenReturn(floor);
 
         floorService.save(floor);
 
-        verify(floorRepository, times(1)).save(any(Floor.class));
+        verify(floorRepository, times(1)).save(floor);
     }
 
     @Test(expected = NullPointerException.class)
-    public void throwsWhenFloorIsNull() {
+    public void verifySaveThrowsWhenFloorIsNull() {
         floorService.save(null);
     }
 
     @Test
-    public void verifyFindByNumberWhenFloorIsFound() {
-        when(floorRepository.findFloorByNumber(anyInt())).thenReturn(Optional.of(floor));
+    public void verifyFindByNumber() {
+        when(floorRepository.findFloorByNumber(NUMBER)).thenReturn(Optional.of(floor));
 
-        floorService.findByNumber(0);
+        floorService.findByNumber(NUMBER);
 
-        verify(floorRepository, times(1)).findFloorByNumber(anyInt());
+        verify(floorRepository, times(1)).findFloorByNumber(NUMBER);
     }
 
     @Test(expected = ResourceNotFoundException.class)
-    public void throwsWhenFloorIsNotFound() {
+    public void verifyFindByNumberThrowsWhenFloorIsNotFound() {
         when(floorRepository.findFloorByNumber(anyInt())).thenReturn(Optional.empty());
 
-        floorService.findByNumber(0);
+        floorService.findByNumber(NUMBER);
 
-        verify(floorRepository, times(1)).findFloorByNumber(anyInt());
+        verify(floorRepository, times(1)).findFloorByNumber(NUMBER);
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void verifyFindByNumberWhenNumberIsNull() {
+        floorService.findByNumber(null);
     }
 }

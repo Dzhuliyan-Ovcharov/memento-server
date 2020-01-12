@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
+import static com.memento.web.RequestUrlConstant.EMAIL_VERIFICATION_BASE_URL;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -16,28 +17,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = EmailVerificationApiController.class)
 public class EmailVerificationApiControllerTest extends BaseApiControllerTest {
 
+    private static final String PARAM = "token";
+    private static final String TOKEN = "verification token";
+
     @MockBean
     private EmailVerificationService emailVerificationService;
 
     @Test
     public void verifyConfirmRegistrationAndExpect200() throws Exception {
-        doNothing().when(emailVerificationService).verifyEmail(anyString());
+        doNothing().when(emailVerificationService).verifyEmail(TOKEN);
 
         mockMvc.perform(
-                get("/api/email/verify")
+                get(EMAIL_VERIFICATION_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
-                        .param("token", "token"))
+                        .param(PARAM, TOKEN))
                 .andExpect(status().isOk());
 
-        verify(emailVerificationService, times(1)).verifyEmail(anyString());
+        verify(emailVerificationService, times(1)).verifyEmail(TOKEN);
     }
 
     @Test
     public void verifyConfirmRegistrationWhenTokenIsNotSendAndExpect400() throws Exception {
-        doNothing().when(emailVerificationService).verifyEmail(anyString());
-
         mockMvc.perform(
-                get("/api/email/verify")
+                get(EMAIL_VERIFICATION_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
 
@@ -46,27 +48,27 @@ public class EmailVerificationApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyConfirmRegistrationWhenTokenNotFoundAndExpect404() throws Exception {
-        doThrow(ResourceNotFoundException.class).when(emailVerificationService).verifyEmail(anyString());
+        doThrow(ResourceNotFoundException.class).when(emailVerificationService).verifyEmail(TOKEN);
 
         mockMvc.perform(
-                get("/api/email/verify")
+                get(EMAIL_VERIFICATION_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
-                        .param("token", "token"))
+                        .param(PARAM, TOKEN))
                 .andExpect(status().isNotFound());
 
-        verify(emailVerificationService, times(1)).verifyEmail(anyString());
+        verify(emailVerificationService, times(1)).verifyEmail(TOKEN);
     }
 
     @Test
     public void verifyConfirmRegistrationWhenTokenHasExpiredAndExpect400() throws Exception {
-        doThrow(EmailVerificationTimeExpiryException.class).when(emailVerificationService).verifyEmail(anyString());
+        doThrow(EmailVerificationTimeExpiryException.class).when(emailVerificationService).verifyEmail(TOKEN);
 
         mockMvc.perform(
-                get("/api/email/verify")
+                get(EMAIL_VERIFICATION_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
-                        .param("token", "token"))
+                        .param(PARAM, TOKEN))
                 .andExpect(status().isBadRequest());
 
-        verify(emailVerificationService, times(1)).verifyEmail(anyString());
+        verify(emailVerificationService, times(1)).verifyEmail(TOKEN);
     }
 }

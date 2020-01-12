@@ -4,6 +4,7 @@ import com.memento.model.AdType;
 import com.memento.repository.AdTypeRepository;
 import com.memento.service.AdTypeService;
 import com.memento.shared.exception.ResourceNotFoundException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -25,7 +26,7 @@ public class AdTypeServiceImpl implements AdTypeService {
     }
 
     @Override
-    public AdType findByType(final String type) {
+    public AdType findByType(@NonNull final String type) {
         return adTypeRepository.findAdTypeByType(type)
                 .orElseThrow(ResourceNotFoundException::new);
     }
@@ -37,7 +38,7 @@ public class AdTypeServiceImpl implements AdTypeService {
 
     @Override
     @Transactional
-    public AdType save(AdType adType) {
+    public AdType save(@NonNull final AdType adType) {
         return adTypeRepository.save(adType);
     }
 }

@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Set;
 
@@ -34,14 +33,14 @@ public class CityServiceImpl implements CityService {
 
     @Override
     @Transactional
-    public City save(@NonNull City city) {
+    public City save(@NonNull final City city) {
         return cityRepository.save(city);
     }
 
     @Override
     @Transactional
-    public City update(@NonNull Long id, @NonNull City city) {
-        if(!id.equals(city.getId())) {
+    public City update(@NonNull final Long id, @NonNull final City city) {
+        if (!id.equals(city.getId())) {
             throw new BadRequestException(String.format("The ids does not match. First id is %d. Second id is %d", id, city.getId()));
         }
 
@@ -58,7 +57,7 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public City findById(@NonNull Long id) {
+    public City findById(@NonNull final Long id) {
         return cityRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(String.format("City with id %d does not exists", id)));
     }

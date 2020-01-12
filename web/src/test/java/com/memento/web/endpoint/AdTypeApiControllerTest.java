@@ -11,28 +11,32 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import java.util.Collections;
-import java.util.Set;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
+import static com.memento.web.RequestUrlConstant.AD_TYPES_BASE_URL;
+import static com.memento.web.constant.JsonPathConstant.AD_TYPE_COLLECTION_JSON_PATH;
+import static com.memento.web.constant.JsonPathConstant.AD_TYPE_JSON_PATH;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = AdTypeApiController.class)
 public class AdTypeApiControllerTest extends BaseApiControllerTest {
 
-    @MockBean
-    private AdTypeService adTypeService;
+    private static final Long ID = 1L;
+    private static final String TYPE = "Ad type";
 
     private AdType adType;
+
+    @MockBean
+    private AdTypeService adTypeService;
 
     @Before
     public void init() {
         adType = AdType.builder()
-                .id(1L)
-                .type("Type")
+                .id(ID)
+                .type(TYPE)
                 .estates(Collections.emptySet())
                 .build();
     }
@@ -40,35 +44,30 @@ public class AdTypeApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = Permission.Value.ADMIN)
     public void verifySaveAdTypeAndExpect200() throws Exception {
-        final String jsonString = objectMapper.writeValueAsString(adType);
+        final String jsonRequest = loadJsonResource(AD_TYPE_JSON_PATH, AdType.class);
 
         when(adTypeService.save(any(AdType.class))).thenReturn(adType);
 
         mockMvc.perform(
-                post("/api/ad/type/save")
+                post(AD_TYPES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString))
+                        .content(jsonRequest))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.*", hasSize(3)))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.type", is("Type")))
-                .andExpect(jsonPath("$.estates", is(empty())));
+                .andExpect(content().json(jsonRequest, true));
 
-        verify(adTypeService, times(1)).save(any(AdType.class));
+        verify(adTypeService, times(1)).save(adType);
     }
 
     @Test
     @WithMockUser(authorities = Permission.Value.ADMIN)
     public void verifySaveWhenAdTypeIsNullAndExpect400() throws Exception {
-        final String jsonString = objectMapper.writeValueAsString(null);
-
         mockMvc.perform(
-                post("/api/ad/type/save")
+                post(AD_TYPES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString))
+                        .content(EMPTY_JSON))
                 .andExpect(status().isBadRequest());
 
         verify(adTypeService, never()).save(any(AdType.class));
@@ -77,13 +76,13 @@ public class AdTypeApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.AGENCY, Permission.Value.BUYER})
     public void verifySaveWhenUserIsNotAuthorizedAndExpect403() throws Exception {
-        final String jsonString = objectMapper.writeValueAsString(adType);
+        final String jsonRequest = loadJsonResource(AD_TYPE_JSON_PATH, AdType.class);
 
         mockMvc.perform(
-                post("/api/ad/type/save")
+                post(AD_TYPES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString))
+                        .content(jsonRequest))
                 .andExpect(status().isForbidden());
 
         verify(adTypeService, never()).save(any(AdType.class));
@@ -91,13 +90,13 @@ public class AdTypeApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifySaveWhenUserIsNotAuthenticatedAndExpect401() throws Exception {
-        final String jsonString = objectMapper.writeValueAsString(adType);
+        final String jsonRequest = loadJsonResource(AD_TYPE_JSON_PATH, AdType.class);
 
         mockMvc.perform(
-                post("/api/ad/type/save")
+                post(AD_TYPES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString))
+                        .content(jsonRequest))
                 .andExpect(status().isUnauthorized());
 
         verify(adTypeService, never()).save(any(AdType.class));
@@ -105,20 +104,16 @@ public class AdTypeApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyGetAllAdTypesAndExpect200() throws Exception {
-        final Set<AdType> adTypes = Collections.singleton(adType);
+        final String jsonResponse = loadJsonResource(AD_TYPE_COLLECTION_JSON_PATH, AdType[].class);
 
-        when(adTypeService.getAll()).thenReturn(adTypes);
+        when(adTypeService.getAll()).thenReturn(Collections.singleton(adType));
 
         mockMvc.perform(
-                get("/api/ad/type/all")
+                get(AD_TYPES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$.[0].*", hasSize(3)))
-                .andExpect(jsonPath("$.[0].id", is(1)))
-                .andExpect(jsonPath("$.[0].type", is("Type")))
-                .andExpect(jsonPath("$.[0].estates", is(empty())));
+                .andExpect(content().json(jsonResponse, true));
 
         verify(adTypeService, times(1)).getAll();
     }
@@ -128,11 +123,11 @@ public class AdTypeApiControllerTest extends BaseApiControllerTest {
         when(adTypeService.getAll()).thenReturn(Collections.emptySet());
 
         mockMvc.perform(
-                get("/api/ad/type/all")
+                get(AD_TYPES_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", is(empty())));
+                .andExpect(content().json(EMPTY_JSON_COLLECTION, true));
 
         verify(adTypeService, times(1)).getAll();
     }

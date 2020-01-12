@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Set;
 
+import static com.memento.web.RequestUrlConstant.AD_TYPES_BASE_URL;
+
 @RestController
-@RequestMapping(value = "/api/ad/type", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = AD_TYPES_BASE_URL, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class AdTypeApiController implements AdTypeApi {
 
     private final AdTypeService adTypeService;
@@ -26,13 +28,13 @@ public class AdTypeApiController implements AdTypeApi {
 
     @Override
     @Secured(value = Permission.Value.ADMIN)
-    @PostMapping(value = "/save")
+    @PostMapping
     public ResponseEntity<AdType> save(@RequestBody @Valid final AdType adType) {
         return ResponseEntity.ok(adTypeService.save(adType));
     }
 
     @Override
-    @GetMapping("/all")
+    @GetMapping
     public ResponseEntity<Set<AdType>> getAll() {
         return ResponseEntity.ok(adTypeService.getAll());
     }

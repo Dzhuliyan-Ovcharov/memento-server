@@ -13,34 +13,36 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.Set;
 
+import static com.memento.web.RequestUrlConstant.ESTATE_TYPES_BASE_URL;
+
 @RestController
-@RequestMapping(value = "/api/estate/type", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(value = ESTATE_TYPES_BASE_URL, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class EstateTypeApiController implements EstateTypeApi {
 
     private final EstateTypeService estateTypeService;
 
     @Autowired
-    public EstateTypeApiController(EstateTypeService estateTypeService) {
+    public EstateTypeApiController(final EstateTypeService estateTypeService) {
         this.estateTypeService = estateTypeService;
     }
 
     @Override
-    @GetMapping(value = "/all")
+    @GetMapping
     public ResponseEntity<Set<EstateType>> getAll() {
         return ResponseEntity.ok(estateTypeService.getAll());
     }
 
     @Override
     @Secured(Permission.Value.ADMIN)
-    @PostMapping(value = "/save")
+    @PostMapping
     public ResponseEntity<EstateType> save(@RequestBody @Valid final EstateType estateType) {
         return ResponseEntity.ok(estateTypeService.save(estateType));
     }
 
     @Override
     @Secured(Permission.Value.ADMIN)
-    @PutMapping(value = "/update")
-    public ResponseEntity<EstateType> update(@RequestBody @Valid final EstateType estateType) {
-        return ResponseEntity.ok(estateTypeService.update(estateType));
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<EstateType> update(@PathVariable final Long id, @RequestBody @Valid final EstateType estateType) {
+        return ResponseEntity.ok(estateTypeService.update(id, estateType));
     }
 }

@@ -10,46 +10,47 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
 import java.util.Collections;
-import java.util.Set;
 
-import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.any;
+import static com.memento.web.RequestUrlConstant.FLOORS_BASE_URL;
+import static com.memento.web.constant.JsonPathConstant.FLOOR_COLLECTION_JSON_PATH;
+import static com.memento.web.constant.JsonPathConstant.FLOOR_JSON_PATH;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(controllers = FloorApiController.class)
 public class FloorApiControllerTest extends BaseApiControllerTest {
 
-    @MockBean
-    private FloorService floorService;
+    private static final Long ID = 1L;
+    private static final Integer NUMBER = 1;
 
     private Floor floor;
+
+    @MockBean
+    private FloorService floorService;
 
     @Before
     public void init() {
         floor = Floor.builder()
-                .id(1L)
-                .number(2)
+                .id(ID)
+                .number(NUMBER)
                 .build();
     }
 
     @Test
     public void verifyGetAllFloorsAndExpect200() throws Exception {
-        final Set<Floor> floors = Collections.singleton(floor);
+        final String jsonResponse = loadJsonResource(FLOOR_COLLECTION_JSON_PATH, Floor[].class);
 
-        when(floorService.getAll()).thenReturn(floors);
+        when(floorService.getAll()).thenReturn(Collections.singleton(floor));
 
         mockMvc.perform(
-                get("/api/floor/all")
+                get(FLOORS_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", hasSize(1)))
-                .andExpect(jsonPath("$.[0].*", hasSize(2)))
-                .andExpect(jsonPath("$.[0].id", is(1)))
-                .andExpect(jsonPath("$.[0].number", is(2)));
+                .andExpect(content().json(jsonResponse, true));
 
         verify(floorService, times(1)).getAll();
     }
@@ -59,75 +60,70 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
         when(floorService.getAll()).thenReturn(Collections.emptySet());
 
         mockMvc.perform(
-                get("/api/floor/all")
+                get(FLOORS_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$", is(empty())));
+                .andExpect(content().json(EMPTY_JSON_COLLECTION, true));
 
         verify(floorService, times(1)).getAll();
     }
 
     @Test
     public void verifyFindByNumberWhenNumberIsFoundAndExpect200() throws Exception {
-        when(floorService.findByNumber(anyInt())).thenReturn(floor);
+        final String jsonResponse = loadJsonResource(FLOOR_JSON_PATH, Floor.class);
+
+        when(floorService.findByNumber(NUMBER)).thenReturn(floor);
 
         mockMvc.perform(
-                get("/api/floor/number/0")
+                get(FLOORS_BASE_URL + "/number/" + NUMBER)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.*", hasSize(2)))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.number", is(2)));
+                .andExpect(content().json(jsonResponse, true));
 
-        verify(floorService, times(1)).findByNumber(anyInt());
+        verify(floorService, times(1)).findByNumber(NUMBER);
     }
 
     @Test
     public void verifyFindByNumberWhenNumberIsNotFoundAndExpect404() throws Exception {
-        when(floorService.findByNumber(anyInt())).thenThrow(ResourceNotFoundException.class);
+        when(floorService.findByNumber(NUMBER)).thenThrow(ResourceNotFoundException.class);
 
         mockMvc.perform(
-                get("/api/floor/number/0")
+                get(FLOORS_BASE_URL + "/number/" + NUMBER)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
 
-        verify(floorService, times(1)).findByNumber(anyInt());
+        verify(floorService, times(1)).findByNumber(NUMBER);
     }
 
     @Test
     public void verifySaveWhenFloorIsNotNullAndExpect200() throws Exception {
-        final String jsonString = objectMapper.writeValueAsString(floor);
+        final String jsonRequest = loadJsonResource(FLOOR_JSON_PATH, Floor.class);
 
         when(floorService.save(any(Floor.class))).thenReturn(floor);
 
         mockMvc.perform(
-                post("/api/floor/save")
+                post(FLOORS_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString))
+                        .content(jsonRequest))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.*", hasSize(2)))
-                .andExpect(jsonPath("$.id", is(1)))
-                .andExpect(jsonPath("$.number", is(2)));
+                .andExpect(content().json(jsonRequest, true));
 
-        verify(floorService, times(1)).save(any(Floor.class));
+        verify(floorService, times(1)).save(floor);
     }
 
     @Test
     public void verifySaveWhenFloorIsNullAndExpect400() throws Exception {
-        final String jsonString = objectMapper.writeValueAsString(null);
-
         mockMvc.perform(
-                post("/api/floor/save")
+                post(FLOORS_BASE_URL)
                         .accept(MediaType.APPLICATION_JSON)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonString))
+                        .content(EMPTY_JSON))
                 .andExpect(status().isBadRequest());
 
         verify(floorService, never()).save(any(Floor.class));
     }
-
 }

@@ -13,6 +13,6 @@ public interface AdTypeApi {
     @ApiOperation(value = "Save ad type", response = AdType.class)
     ResponseEntity<AdType> save(AdType adType);
 
-    @ApiOperation(value = "Get all ad typess", response = Set.class)
+    @ApiOperation(value = "Get all ad types", response = Set.class)
     ResponseEntity<Set<AdType>> getAll();
 }

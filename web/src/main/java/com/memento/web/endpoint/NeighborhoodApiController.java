@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.memento.web.RequestUrlConstant.NEIGHBORHOODS_BASE_URL;
+
 @RestController
-@RequestMapping(value = "/api/neighborhood", produces = { MediaType.APPLICATION_JSON_VALUE })
+@RequestMapping(value = NEIGHBORHOODS_BASE_URL, produces = {MediaType.APPLICATION_JSON_VALUE})
 public class NeighborhoodApiController implements NeighborhoodApi {
 
     private final NeighborhoodService neighborhoodService;
@@ -26,7 +28,7 @@ public class NeighborhoodApiController implements NeighborhoodApi {
 
     @Override
     @GetMapping(value = "/city/name/{cityName}")
-    public ResponseEntity<List<Neighborhood>> findAllByCityName(@PathVariable(value = "cityName") String cityName) {
+    public ResponseEntity<List<Neighborhood>> findAllByCityName(@PathVariable(value = "cityName") final String cityName) {
         return ResponseEntity.ok(neighborhoodService.findAllByCityName(cityName));
     }
 

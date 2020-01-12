@@ -3,7 +3,9 @@ package com.memento.service.impl;
 import com.memento.model.EstateType;
 import com.memento.repository.EstateTypeRepository;
 import com.memento.service.EstateTypeService;
+import com.memento.shared.exception.BadRequestException;
 import com.memento.shared.exception.ResourceNotFoundException;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -26,7 +28,7 @@ public class EstateTypeServiceImpl implements EstateTypeService {
     }
 
     @Override
-    public EstateType findByType(final String type) {
+    public EstateType findByType(@NonNull final String type) {
         return estateTypeRepository.findEstateTypeByType(type)
                 .orElseThrow(ResourceNotFoundException::new);
     }
@@ -37,12 +39,16 @@ public class EstateTypeServiceImpl implements EstateTypeService {
     }
 
     @Override
-    public EstateType save(EstateType estateType) {
+    public EstateType save(@NonNull final EstateType estateType) {
         return estateTypeRepository.save(estateType);
     }
 
     @Override
-    public EstateType update(EstateType estateType) {
+    public EstateType update(@NonNull final Long id, @NonNull final EstateType estateType) {
+        if (!id.equals(estateType.getId())) {
+            throw new BadRequestException(String.format("The ids does not match. First id is %d. Second id is %d", id, estateType.getId()));
+        }
+
         final EstateType oldEstateType = estateTypeRepository.findById(estateType.getId()).orElseThrow(ResourceNotFoundException::new);
 
         final EstateType newEstateType = EstateType.builder()

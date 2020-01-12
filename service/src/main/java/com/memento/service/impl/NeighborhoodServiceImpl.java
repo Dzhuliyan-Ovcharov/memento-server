@@ -3,6 +3,7 @@ package com.memento.service.impl;
 import com.memento.model.Neighborhood;
 import com.memento.repository.NeighborhoodRepository;
 import com.memento.service.NeighborhoodService;
+import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
@@ -25,7 +26,7 @@ public class NeighborhoodServiceImpl implements NeighborhoodService {
     }
 
     @Override
-    public List<Neighborhood> findAllByCityName(String cityName) {
+    public List<Neighborhood> findAllByCityName(@NonNull final String cityName) {
         return neighborhoodRepository.findAllByCity_Name(cityName);
     }
 }
