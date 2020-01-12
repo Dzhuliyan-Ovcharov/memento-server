@@ -9,7 +9,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Set;
 
 import static com.memento.web.RequestUrlConstant.FLOORS_BASE_URL;
 import static com.memento.web.constant.JsonPathConstant.FLOOR_COLLECTION_JSON_PATH;
@@ -23,7 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = FloorApiController.class)
 public class FloorApiControllerTest extends BaseApiControllerTest {
 
-    private static final Long ID = 1L;
     private static final Integer NUMBER = 1;
 
     private Floor floor;
@@ -32,18 +33,19 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
     private FloorService floorService;
 
     @Before
-    public void init() {
-        floor = Floor.builder()
-                .id(ID)
-                .number(NUMBER)
-                .build();
+    public void init() throws IOException {
+        floor = objectMapper.readValue(getClass().getResource(FLOOR_JSON_PATH), Floor.class);
     }
 
     @Test
     public void verifyGetAllFloorsAndExpect200() throws Exception {
-        final String jsonResponse = loadJsonResource(FLOOR_COLLECTION_JSON_PATH, Floor[].class);
+        final Set<Floor> floors = objectMapper.readValue(
+                getClass().getResource(FLOOR_COLLECTION_JSON_PATH),
+                objectMapper.getTypeFactory().constructCollectionType(Set.class, Floor.class));
 
-        when(floorService.getAll()).thenReturn(Collections.singleton(floor));
+        final String jsonResponse = objectMapper.writeValueAsString(floors);
+
+        when(floorService.getAll()).thenReturn(floors);
 
         mockMvc.perform(
                 get(FLOORS_BASE_URL)
@@ -71,7 +73,7 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyFindByNumberWhenNumberIsFoundAndExpect200() throws Exception {
-        final String jsonResponse = loadJsonResource(FLOOR_JSON_PATH, Floor.class);
+        final String jsonResponse = objectMapper.writeValueAsString(floor);
 
         when(floorService.findByNumber(NUMBER)).thenReturn(floor);
 
@@ -99,7 +101,7 @@ public class FloorApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifySaveWhenFloorIsNotNullAndExpect200() throws Exception {
-        final String jsonRequest = loadJsonResource(FLOOR_JSON_PATH, Floor.class);
+        final String jsonRequest = objectMapper.writeValueAsString(floor);
 
         when(floorService.save(any(Floor.class))).thenReturn(floor);
 

@@ -1,0 +1,45 @@
+{
+  "id": 1,
+  "price": {
+    "currency": "USD",
+    "amount": 1000.0
+  },
+  "quadrature": {
+    "builtUpArea": 100.0,
+    "pureArea": 50.0
+  },
+  "description": "Description",
+  "floor": {
+    "id": 1,
+    "number": 1
+  },
+  "estateType": {
+    "id": 1,
+    "type": "Estate type",
+    "estates": []
+  },
+  "adType": {
+    "id": 1,
+    "type": "Ad type",
+    "estates": []
+  },
+  "user": {
+    "id": 1,
+    "firstName": "First name",
+    "lastName": "Last name",
+    "email": "email@email.email",
+    "password": "password",
+    "role": {
+      "id": 1,
+      "permission": "BUYER"
+    },
+    "estates": []
+  },
+  "images": [
+    {
+      "id": 1,
+      "name": "image.jpg",
+      "estate": null
+    }
+  ]
+}

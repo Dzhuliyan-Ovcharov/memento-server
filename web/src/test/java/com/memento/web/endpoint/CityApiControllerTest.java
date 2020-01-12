@@ -1,7 +1,6 @@
 package com.memento.web.endpoint;
 
 import com.memento.model.City;
-import com.memento.model.Neighborhood;
 import com.memento.model.Permission;
 import com.memento.service.CityService;
 import com.memento.shared.exception.BadRequestException;
@@ -13,7 +12,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Set;
 
 import static com.memento.web.RequestUrlConstant.CITIES_BASE_URL;
 import static com.memento.web.constant.JsonPathConstant.CITY_COLLECTION_JSON_PATH;
@@ -27,8 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class CityApiControllerTest extends BaseApiControllerTest {
 
     private static final Long ID = 1L;
-    private static final String NEIGHBORHOOD_NAME = "Neighborhood name";
-    private static final String CITY_NAME = "City name";
 
     private City city;
 
@@ -36,24 +35,19 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     private CityService cityService;
 
     @Before
-    public void init() {
-        final Neighborhood neighborhood = Neighborhood.builder()
-                .id(ID)
-                .name(NEIGHBORHOOD_NAME)
-                .build();
-
-        city = City.builder()
-                .id(ID)
-                .name(CITY_NAME)
-                .neighborhoods(Collections.singleton(neighborhood))
-                .build();
+    public void init() throws IOException {
+        city = objectMapper.readValue(getClass().getResource(CITY_JSON_PATH), City.class);
     }
 
     @Test
     public void verifyGetAllAndExpect200() throws Exception {
-        final String jsonResponse = loadJsonResource(CITY_COLLECTION_JSON_PATH, City[].class);
+        final Set<City> cities = objectMapper.readValue(
+                getClass().getResource(CITY_COLLECTION_JSON_PATH),
+                objectMapper.getTypeFactory().constructCollectionType(Set.class, City.class));
 
-        when(cityService.getAll()).thenReturn(Collections.singleton(city));
+        final String jsonResponse = objectMapper.writeValueAsString(cities);
+
+        when(cityService.getAll()).thenReturn(cities);
 
         mockMvc.perform(
                 get(CITIES_BASE_URL)
@@ -82,7 +76,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = Permission.Value.ADMIN)
     public void verifySaveAndExpect200() throws Exception {
-        final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
+        final String jsonRequest = objectMapper.writeValueAsString(city);
 
         when(cityService.save(any(City.class))).thenReturn(city);
 
@@ -114,7 +108,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.AGENCY, Permission.Value.BUYER})
     public void verifySaveWhenUserIsNotAuthorizedAndExpect403() throws Exception {
-        final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
+        final String jsonRequest = objectMapper.writeValueAsString(city);
 
         mockMvc.perform(
                 post(CITIES_BASE_URL)
@@ -128,7 +122,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifySaveWhenUserIsNotAuthenticatedAndExpect401() throws Exception {
-        final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
+        final String jsonRequest = objectMapper.writeValueAsString(city);
 
         mockMvc.perform(
                 post(CITIES_BASE_URL)
@@ -143,7 +137,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = Permission.Value.ADMIN)
     public void verifyUpdateAndExpect200() throws Exception {
-        final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
+        final String jsonRequest = objectMapper.writeValueAsString(city);
 
         when(cityService.update(eq(ID), any(City.class))).thenReturn(city);
 
@@ -162,7 +156,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = Permission.Value.ADMIN)
     public void verifyUpdateWhenCityIdDoesNotMatchWithPassedIdAndExpect400() throws Exception {
-        final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
+        final String jsonRequest = objectMapper.writeValueAsString(city);
 
         when(cityService.update(eq(ID), any(City.class))).thenThrow(BadRequestException.class);
 
@@ -179,7 +173,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = Permission.Value.ADMIN)
     public void verifyUpdateWhenCityIsNotFoundAndExpect404() throws Exception {
-        final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
+        final String jsonRequest = objectMapper.writeValueAsString(city);
 
         when(cityService.update(eq(ID), any(City.class))).thenThrow(ResourceNotFoundException.class);
 
@@ -209,7 +203,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.AGENCY, Permission.Value.BUYER})
     public void verifyUpdateWhenUserIsNotAuthorizedAndExpect403() throws Exception {
-        final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
+        final String jsonRequest = objectMapper.writeValueAsString(city);
 
         mockMvc.perform(
                 put(CITIES_BASE_URL + "/" + ID)
@@ -223,7 +217,7 @@ public class CityApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyUpdateWhenUserIsNotAuthenticatedAndExpect401() throws Exception {
-        final String jsonRequest = loadJsonResource(CITY_JSON_PATH, City.class);
+        final String jsonRequest = objectMapper.writeValueAsString(city);
 
         mockMvc.perform(
                 put(CITIES_BASE_URL + "/" + ID)
