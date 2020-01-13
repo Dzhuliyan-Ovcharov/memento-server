@@ -10,7 +10,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Set;
 
 import static com.memento.web.RequestUrlConstant.AD_TYPES_BASE_URL;
 import static com.memento.web.constant.JsonPathConstant.AD_TYPE_COLLECTION_JSON_PATH;
@@ -24,27 +26,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = AdTypeApiController.class)
 public class AdTypeApiControllerTest extends BaseApiControllerTest {
 
-    private static final Long ID = 1L;
-    private static final String TYPE = "Ad type";
-
     private AdType adType;
 
     @MockBean
     private AdTypeService adTypeService;
 
     @Before
-    public void init() {
-        adType = AdType.builder()
-                .id(ID)
-                .type(TYPE)
-                .estates(Collections.emptySet())
-                .build();
+    public void init() throws IOException {
+        adType = objectMapper.readValue(getClass().getResource(AD_TYPE_JSON_PATH), AdType.class);
     }
 
     @Test
     @WithMockUser(authorities = Permission.Value.ADMIN)
     public void verifySaveAdTypeAndExpect200() throws Exception {
-        final String jsonRequest = loadJsonResource(AD_TYPE_JSON_PATH, AdType.class);
+        final String jsonRequest = objectMapper.writeValueAsString(adType);
 
         when(adTypeService.save(any(AdType.class))).thenReturn(adType);
 
@@ -76,7 +71,7 @@ public class AdTypeApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.AGENCY, Permission.Value.BUYER})
     public void verifySaveWhenUserIsNotAuthorizedAndExpect403() throws Exception {
-        final String jsonRequest = loadJsonResource(AD_TYPE_JSON_PATH, AdType.class);
+        final String jsonRequest = objectMapper.writeValueAsString(adType);
 
         mockMvc.perform(
                 post(AD_TYPES_BASE_URL)
@@ -90,7 +85,7 @@ public class AdTypeApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifySaveWhenUserIsNotAuthenticatedAndExpect401() throws Exception {
-        final String jsonRequest = loadJsonResource(AD_TYPE_JSON_PATH, AdType.class);
+        final String jsonRequest = objectMapper.writeValueAsString(adType);
 
         mockMvc.perform(
                 post(AD_TYPES_BASE_URL)
@@ -104,9 +99,13 @@ public class AdTypeApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyGetAllAdTypesAndExpect200() throws Exception {
-        final String jsonResponse = loadJsonResource(AD_TYPE_COLLECTION_JSON_PATH, AdType[].class);
+        final Set<AdType> adTypes = objectMapper.readValue(
+                getClass().getResource(AD_TYPE_COLLECTION_JSON_PATH),
+                objectMapper.getTypeFactory().constructCollectionType(Set.class, AdType.class));
 
-        when(adTypeService.getAll()).thenReturn(Collections.singleton(adType));
+        final String jsonResponse = objectMapper.writeValueAsString(adTypes);
+
+        when(adTypeService.getAll()).thenReturn(adTypes);
 
         mockMvc.perform(
                 get(AD_TYPES_BASE_URL)

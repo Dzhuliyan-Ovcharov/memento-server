@@ -1,13 +1,11 @@
 package com.memento.web.endpoint;
 
-import com.memento.model.*;
+import com.memento.model.Estate;
+import com.memento.model.Permission;
 import com.memento.service.EstateService;
 import com.memento.shared.exception.ResourceNotFoundException;
 import com.memento.web.dto.EstateRequest;
 import com.memento.web.dto.EstateResponse;
-import org.apache.commons.lang3.StringUtils;
-import org.joda.money.CurrencyUnit;
-import org.joda.money.Money;
 import org.junit.Before;
 import org.junit.Test;
 import org.modelmapper.ModelMapper;
@@ -17,8 +15,9 @@ import org.springframework.boot.test.mock.mockito.SpyBean;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import java.math.BigDecimal;
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Set;
 
 import static com.memento.web.RequestUrlConstant.ESTATES_BASE_URL;
 import static com.memento.web.constant.JsonPathConstant.*;
@@ -32,21 +31,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class EstateApiControllerTest extends BaseApiControllerTest {
 
     private static final Long ID = 1L;
-    private static final Double PRICE = 1000.00;
-    private static final Double BUILT_UP_AREA = 100.00;
-    private static final Double PURE_AREA = 50.00;
-    private static final Integer FLOOR_NUMBER = 1;
-    private static final String DESCRIPTION = "Description";
-    private static final String ESTATE_TYPE = "Estate type";
-    private static final String AD_TYPE = "Ad type";
-    private static final String EMAIL = "email@email.email";
-    private static final String FIRST_NAME = "First name";
-    private static final String LAST_NAME = "Last name";
-    private static final String IMAGE_NAME = "image.jpg";
 
     private Estate estate;
 
     private EstateRequest estateRequest;
+
+    private EstateResponse estateResponse;
 
     @SpyBean
     private ModelMapper modelMapper;
@@ -55,65 +45,15 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     private EstateService estateService;
 
     @Before
-    public void init() {
-        final Floor floor = Floor.builder()
-                .id(ID)
-                .number(FLOOR_NUMBER)
-                .build();
-
-        final EstateType estateType = EstateType.builder()
-                .id(ID)
-                .type(ESTATE_TYPE)
-                .estates(Collections.emptySet())
-                .build();
-
-        final AdType adType = AdType.builder()
-                .id(ID)
-                .type(AD_TYPE)
-                .estates(Collections.emptySet())
-                .build();
-
-        final User user = User.builder()
-                .id(ID)
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
-                .email(EMAIL)
-                .password(StringUtils.EMPTY)
-                .role(Role.builder().id(ID).permission(Permission.BUYER).build())
-                .estates(Collections.emptyList())
-                .build();
-
-        final Image image = Image.builder()
-                .id(ID)
-                .name(IMAGE_NAME)
-                .build();
-
-        estate = Estate.builder()
-                .id(ID)
-                .price(Money.of(CurrencyUnit.USD, BigDecimal.valueOf(PRICE)))
-                .quadrature(Quadrature.of(BigDecimal.valueOf(BUILT_UP_AREA), BigDecimal.valueOf(PURE_AREA)))
-                .description(DESCRIPTION)
-                .floor(floor)
-                .estateType(estateType)
-                .adType(adType)
-                .user(user)
-                .images(Collections.singletonList(image))
-                .build();
-
-        estateRequest = EstateRequest.builder()
-                .price(Money.of(CurrencyUnit.USD, BigDecimal.valueOf(PRICE)))
-                .quadrature(Quadrature.of(BigDecimal.valueOf(BUILT_UP_AREA), BigDecimal.valueOf(PURE_AREA)))
-                .description(DESCRIPTION)
-                .floorNumber(FLOOR_NUMBER)
-                .estateType(ESTATE_TYPE)
-                .adType(AD_TYPE)
-                .email(EMAIL)
-                .build();
+    public void init() throws IOException {
+        estate = objectMapper.readValue(getClass().getResource(ESTATE_JSON_PATH), Estate.class);
+        estateRequest = objectMapper.readValue(getClass().getResource(ESTATE_REQUEST_JSON_PATH), EstateRequest.class);
+        estateResponse = objectMapper.readValue(getClass().getResource(ESTATE_RESPONSE_JSON_PATH), EstateResponse.class);
     }
 
     @Test
     public void verifyFindByIdAndExpect200() throws Exception {
-        final String jsonResponse = loadJsonResource(ESTATE_RESPONSE_JSON_PATH, EstateResponse.class);
+        final String jsonResponse = objectMapper.writeValueAsString(estateResponse);
 
         when(estateService.findById(ID)).thenReturn(estate);
 
@@ -143,7 +83,11 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyGetAllAndExpect200() throws Exception {
-        final String jsonResponse = loadJsonResource(ESTATE_RESPONSE_COLLECTION_JSON_PATH, EstateResponse[].class);
+        final Set<EstateResponse> estateResponseSet = objectMapper.readValue(
+                getClass().getResource(ESTATE_RESPONSE_COLLECTION_JSON_PATH),
+                objectMapper.getTypeFactory().constructCollectionType(Set.class, EstateResponse.class));
+
+        final String jsonResponse = objectMapper.writeValueAsString(estateResponseSet);
 
         when(estateService.getAll()).thenReturn(Collections.singleton(estate));
 
@@ -176,8 +120,8 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.ADMIN, Permission.Value.AGENCY})
     public void verifySaveAndExpect200() throws Exception {
-        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
-        final String jsonResponse = loadJsonResource(ESTATE_RESPONSE_JSON_PATH, EstateResponse.class);
+        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
+        final String jsonResponse = objectMapper.writeValueAsString(estateResponse);
 
         when(estateService.save(any(Estate.class))).thenReturn(estate);
 
@@ -198,7 +142,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.ADMIN, Permission.Value.AGENCY})
     public void verifySaveWhenEstateRequestIsNotValidAndExpect404() throws Exception {
-        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
+        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
 
         when(estateService.save(any(Estate.class))).thenThrow(ResourceNotFoundException.class);
 
@@ -232,7 +176,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = Permission.Value.BUYER)
     public void verifySaveWhenUserIsNotAuthorizedAndExpect403() throws Exception {
-        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
+        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
 
         mockMvc.perform(
                 post(ESTATES_BASE_URL)
@@ -248,7 +192,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifySaveWhenUserIsNotAuthenticatedAndExpect401() throws Exception {
-        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
+        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
 
         mockMvc.perform(
                 post(ESTATES_BASE_URL)
@@ -265,8 +209,8 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.ADMIN, Permission.Value.AGENCY})
     public void verifyUpdateAndExpect200() throws Exception {
-        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
-        final String jsonResponse = loadJsonResource(ESTATE_RESPONSE_JSON_PATH, EstateResponse.class);
+        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
+        final String jsonResponse = objectMapper.writeValueAsString(estateResponse);
 
         when(estateService.update(eq(ID), any(Estate.class))).thenReturn(estate);
 
@@ -287,7 +231,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = {Permission.Value.ADMIN, Permission.Value.AGENCY})
     public void verifyUpdateWhenEstateRequestIsNotValidAndExpect404() throws Exception {
-        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
+        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
 
         when(estateService.update(eq(ID), any(Estate.class))).thenThrow(ResourceNotFoundException.class);
 
@@ -321,7 +265,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
     @Test
     @WithMockUser(authorities = Permission.Value.BUYER)
     public void verifyUpdateWhenUserIsNotAuthorizedAndExpect403() throws Exception {
-        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
+        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
 
         mockMvc.perform(
                 put(ESTATES_BASE_URL + "/" + ID)
@@ -337,7 +281,7 @@ public class EstateApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyUpdateWhenUserIsNotAuthenticatedAndExpect401() throws Exception {
-        final String jsonRequest = loadJsonResource(ESTATE_REQUEST_JSON_PATH, EstateRequest.class);
+        final String jsonRequest = objectMapper.writeValueAsString(estateRequest);
 
         mockMvc.perform(
                 put(ESTATES_BASE_URL + "/" + ID)

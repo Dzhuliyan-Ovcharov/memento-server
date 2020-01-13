@@ -1,9 +1,9 @@
 package com.memento.web.endpoint;
 
 import com.memento.model.Permission;
-import com.memento.model.Role;
 import com.memento.model.User;
 import com.memento.web.dto.UserRegisterRequest;
+import org.junit.Before;
 import org.junit.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -13,11 +13,12 @@ import org.springframework.http.MediaType;
 import org.springframework.mail.MailSendException;
 import org.springframework.security.test.context.support.WithMockUser;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Set;
 
 import static com.memento.web.RequestUrlConstant.USERS_BASE_URL;
-import static com.memento.web.constant.JsonPathConstant.USER_REGISTER_REQUEST_COLLECTION_JSON_PATH;
-import static com.memento.web.constant.JsonPathConstant.USER_REGISTER_REQUEST_JSON_PATH;
+import static com.memento.web.constant.JsonPathConstant.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -28,29 +29,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(controllers = UserApiController.class)
 public class UserApiControllerTest extends BaseApiControllerTest {
 
-    private static final Long ID = 1L;
-    private static final String FIRST_NAME = "First name";
-    private static final String LAST_NAME = "Last name";
-    private static final String EMAIL = "email@email.email";
-    private static final String PASSWORD = "password";
+    private User user;
+
+    private UserRegisterRequest userRegisterRequest;
 
     @SpyBean
     private ModelMapper modelMapper;
 
+    @Before
+    public void init() throws IOException {
+        user = objectMapper.readValue(getClass().getResource(USER_JSON_PATH), User.class);
+        userRegisterRequest = objectMapper.readValue(getClass().getResource(USER_REGISTER_REQUEST_JSON_PATH), UserRegisterRequest.class);
+    }
+
     @Test
     @WithMockUser(authorities = Permission.Value.ADMIN)
     public void verifyGetAllUsersAndExpect200() throws Exception {
-        final User user = User.builder()
-                .id(ID)
-                .firstName(FIRST_NAME)
-                .lastName(LAST_NAME)
-                .email(EMAIL)
-                .password(PASSWORD)
-                .role(Role.builder().id(ID).permission(Permission.BUYER).build())
-                .estates(Collections.emptyList())
-                .build();
+        final Set<UserRegisterRequest> userRegisterRequests = objectMapper.readValue(
+                getClass().getResource(USER_REGISTER_REQUEST_COLLECTION_JSON_PATH),
+                objectMapper.getTypeFactory().constructCollectionType(Set.class, UserRegisterRequest.class));
 
-        final String jsonResponse = loadJsonResource(USER_REGISTER_REQUEST_COLLECTION_JSON_PATH, UserRegisterRequest[].class);
+        final String jsonResponse = objectMapper.writeValueAsString(userRegisterRequests);
 
         when(userService.getAll()).thenReturn(Collections.singleton(user));
 
@@ -110,7 +109,7 @@ public class UserApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyRegisterAndExpect200() throws Exception {
-        final String jsonRequest = loadJsonResource(USER_REGISTER_REQUEST_JSON_PATH, UserRegisterRequest.class);
+        final String jsonRequest = objectMapper.writeValueAsString(userRegisterRequest);
 
         doNothing().when(userService).register(any(User.class));
 
@@ -127,7 +126,7 @@ public class UserApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyRegisterWhenEmailExistsAndExpect400() throws Exception {
-        final String jsonRequest = loadJsonResource(USER_REGISTER_REQUEST_JSON_PATH, UserRegisterRequest.class);
+        final String jsonRequest = objectMapper.writeValueAsString(userRegisterRequest);
 
         doThrow(DuplicateKeyException.class).when(userService).register(any(User.class));
 
@@ -144,7 +143,7 @@ public class UserApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyRegisterWhenEmailCannotBeSendAndExpect400() throws Exception {
-        final String jsonRequest = loadJsonResource(USER_REGISTER_REQUEST_JSON_PATH, UserRegisterRequest.class);
+        final String jsonRequest = objectMapper.writeValueAsString(userRegisterRequest);
 
         doThrow(MailSendException.class).when(userService).register(any(User.class));
 
