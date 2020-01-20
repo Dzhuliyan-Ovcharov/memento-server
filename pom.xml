@@ -19,9 +19,11 @@
     <properties>
         <commons-io.version>2.6</commons-io.version>
         <commons-lang3.version>3.9</commons-lang3.version>
+        <h2.version>1.4.200</h2.version>
         <java.version>12</java.version>
         <joda-money.version>1.0.1</joda-money.version>
         <powermock.version>2.0.2</powermock.version>
+        <rest-assured.version>4.1.2</rest-assured.version>
         <swagger2.version>2.9.2</swagger2.version>
         <modelmapper.version>2.3.5</modelmapper.version>
     </properties>
@@ -113,6 +115,17 @@
                 <groupId>org.powermock</groupId>
                 <artifactId>powermock-api-mockito2</artifactId>
                 <version>${powermock.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.rest-assured</groupId>
+                <artifactId>rest-assured</artifactId>
+                <version>${rest-assured.version}</version>
+                <scope>test</scope>
             </dependency>
         </dependencies>
     </dependencyManagement>
