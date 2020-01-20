@@ -9,6 +9,7 @@ import com.memento.service.configuration.BeanConfig;
 import com.memento.service.impl.security.JwtTokenUtil;
 import com.memento.shared.exception.ResourceNotFoundException;
 import io.restassured.RestAssured;
+import io.restassured.builder.RequestSpecBuilder;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
 import org.junit.runner.RunWith;
@@ -21,9 +22,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = {BeanConfig.class, MementoStarter.class}, webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @TestPropertySource(locations = "classpath:application-integration-test.properties")
-public abstract class BaseApiControllerIntegrationTest {
+public abstract class BaseApiControllerIntTest {
 
-    static String JWT_TOKEN;
+    private static String JWT_TOKEN;
 
     SoftAssertions softAssertions;
 
@@ -36,7 +37,6 @@ public abstract class BaseApiControllerIntegrationTest {
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
-
     @LocalServerPort
     private Integer port;
 
@@ -44,11 +44,20 @@ public abstract class BaseApiControllerIntegrationTest {
     public void setUp() {
         softAssertions = new SoftAssertions();
         RestAssured.port = port;
+        if (JWT_TOKEN == null) {
+            JWT_TOKEN = generateJwtToken();
+            RestAssured.requestSpecification = new RequestSpecBuilder()
+                    .addHeader("Authorization", "Bearer " + JWT_TOKEN)
+                    .build();
+        }
+    }
+
+    private String generateJwtToken() {
         final User user = userRepository.findAll()
                 .stream()
                 .filter(u -> u.getRole().getPermission().getValue().equals(Permission.Value.ADMIN))
                 .findFirst()
                 .orElseThrow(ResourceNotFoundException::new);
-        JWT_TOKEN = jwtTokenUtil.generateToken(user, user.getRole().getAuthority());
+        return jwtTokenUtil.generateToken(user, user.getRole().getAuthority());
     }
 }

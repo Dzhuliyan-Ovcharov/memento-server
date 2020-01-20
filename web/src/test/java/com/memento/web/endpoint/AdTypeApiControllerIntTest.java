@@ -15,7 +15,7 @@ import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class AdTypeApiControllerIntegrationTest extends BaseApiControllerIntegrationTest {
+public class AdTypeApiControllerIntTest extends BaseApiControllerIntTest {
 
     private AdType adType;
 
@@ -27,15 +27,14 @@ public class AdTypeApiControllerIntegrationTest extends BaseApiControllerIntegra
     @Test
     public void verifySave() {
         final AdType response = given()
-                .header("Authorization", "Bearer " + JWT_TOKEN)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .body(adType)
-                .when()
+            .when()
                 .post(AD_TYPES_BASE_URL)
-                .then()
+            .then()
                 .statusCode(HttpStatus.SC_OK)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .extract()
+            .extract()
                 .body()
                 .as(AdType.class);
 
@@ -56,7 +55,7 @@ public class AdTypeApiControllerIntegrationTest extends BaseApiControllerIntegra
                         .extract()
                         .body()
                         .jsonPath()
-                        .get());
+                        .getList(".", AdType.class));
 
         final AdType expected = adType.toBuilder()
                 .id(response.iterator().next().getId())
