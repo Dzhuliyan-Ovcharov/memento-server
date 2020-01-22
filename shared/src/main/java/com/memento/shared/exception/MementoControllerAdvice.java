@@ -1,5 +1,6 @@
 package com.memento.shared.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +23,13 @@ public class MementoControllerAdvice {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ex.getMessage());
     }
 
-    @ExceptionHandler({BadRequestException.class, DuplicateKeyException.class, EmailVerificationTimeExpiryException.class, MailSendException.class, StorageException.class})
+    @ExceptionHandler({
+            BadRequestException.class,
+            DataIntegrityViolationException.class,
+            DuplicateKeyException.class,
+            EmailVerificationTimeExpiryException.class,
+            MailSendException.class,
+            StorageException.class})
     public ResponseEntity<?> handleBadRequestException(Exception ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
