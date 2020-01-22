@@ -22,6 +22,7 @@ public class JsonPathConstant {
     public static final String ESTATE_TYPE_COLLECTION_JSON_PATH = "/data/estate-type-api-controller/estate-type-collection.json";
 
     public static final String FLOOR_JSON_PATH = "/data/floor-api-controller/floor.json";
+    public static final String FLOOR2_JSON_PATH = "/data/floor-api-controller/floor2.json";
     public static final String FLOOR_COLLECTION_JSON_PATH = "/data/floor-api-controller/floor-collection.json";
 
     public static final String NEIGHBORHOOD_COLLECTION_JSON_PATH = "/data/neighborhood-api-controller/neighborhood-collection.json";
