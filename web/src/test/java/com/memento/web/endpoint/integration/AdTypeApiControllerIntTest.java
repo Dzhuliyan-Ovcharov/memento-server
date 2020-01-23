@@ -3,23 +3,21 @@ package com.memento.web.endpoint.integration;
 import com.memento.model.AdType;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
-import org.springframework.http.MediaType;
 
-import java.io.IOException;
 import java.util.Set;
 
 import static com.memento.web.RequestUrlConstant.AD_TYPES_BASE_URL;
-import static com.memento.web.constant.JsonPathConstant.AD_TYPE2_JSON_PATH;
-import static com.memento.web.constant.JsonPathConstant.AD_TYPE_JSON_PATH;
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AdTypeApiControllerIntTest extends BaseApiControllerIntTest {
 
+    private static final String AD_TYPE_1 = "Ad type";
+    private static final String AD_TYPE_2 = "Ad type2";
+
     @Test
-    public void crudHappyAdType() throws IOException {
-        final AdType toSave = objectMapper.readValue(getClass().getResource(AD_TYPE_JSON_PATH), AdType.class);
-        final AdType savedAdType = saveResource(AD_TYPES_BASE_URL, toSave, AdType.class);
+    public void crudHappyAdType() {
+        final AdType toSave = prepareAdType(AD_TYPE_1);
+        final AdType savedAdType = saveResource(toSave, AD_TYPES_BASE_URL, AdType.class);
         final AdType expectedToSave = toSave.toBuilder()
                 .id(savedAdType.getId())
                 .build();
@@ -29,16 +27,15 @@ public class AdTypeApiControllerIntTest extends BaseApiControllerIntTest {
     }
 
     @Test
-    public void saveDuplicateAdTypeAndExpect400() throws IOException {
-        final AdType adType = objectMapper.readValue(getClass().getResource(AD_TYPE2_JSON_PATH), AdType.class);
-        saveResource(AD_TYPES_BASE_URL, adType, AdType.class);
+    public void saveDuplicateAdTypeAndExpect400() {
+        final AdType toSave = prepareAdType(AD_TYPE_2);
+        saveResource(toSave, AD_TYPES_BASE_URL, HttpStatus.SC_OK);
+        saveResource(toSave, AD_TYPES_BASE_URL, HttpStatus.SC_BAD_REQUEST);
+    }
 
-        given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .body(adType)
-                .when()
-                    .post(AD_TYPES_BASE_URL)
-                .then()
-                    .statusCode(HttpStatus.SC_BAD_REQUEST);
+    private AdType prepareAdType(final String type) {
+        return AdType.builder()
+                .type(type)
+                .build();
     }
 }

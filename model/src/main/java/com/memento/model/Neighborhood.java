@@ -30,7 +30,7 @@ public class Neighborhood implements Serializable {
     private String name;
 
     @JsonBackReference
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.REMOVE}, fetch = FetchType.LAZY)
     @JoinColumn(name = "city_id", foreignKey = @ForeignKey(name = "fk_city_id"))
     private City city;
 }

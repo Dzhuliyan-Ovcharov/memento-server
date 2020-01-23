@@ -9,7 +9,8 @@ import com.memento.service.configuration.BeanConfig;
 import com.memento.service.impl.security.JwtTokenUtil;
 import com.memento.shared.exception.ResourceNotFoundException;
 import io.restassured.RestAssured;
-import io.restassured.builder.RequestSpecBuilder;
+import io.restassured.response.ValidatableResponse;
+import io.restassured.specification.RequestSpecification;
 import org.apache.http.HttpStatus;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
@@ -23,7 +24,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 
-import static io.restassured.RestAssured.get;
 import static io.restassured.RestAssured.given;
 
 @RunWith(SpringRunner.class)
@@ -53,26 +53,27 @@ public abstract class BaseApiControllerIntTest {
         RestAssured.port = port;
         if (JWT_TOKEN == null) {
             JWT_TOKEN = generateJwtToken();
-            RestAssured.requestSpecification = new RequestSpecBuilder()
-                    .addHeader("Authorization", "Bearer " + JWT_TOKEN)
-                    .build();
         }
     }
 
     <T> T getResource(final String requestURI, final Class<T> resourceClass) {
-        return get(requestURI)
-                .then()
-                    .statusCode(HttpStatus.SC_OK)
+        return getResource(requestURI, HttpStatus.SC_OK)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract()
                     .body()
                     .as(resourceClass);
     }
 
-    <T> List<T> getAll(final String requestURI, final Class<T> resourceClass) {
-        return get(requestURI)
+    ValidatableResponse getResource(final String requestURI, final Integer expectedStatusCode) {
+        return getDefaultRequestSpecification()
+                .when()
+                    .get(requestURI)
                 .then()
-                    .statusCode(HttpStatus.SC_OK)
+                    .statusCode(expectedStatusCode);
+    }
+
+    <T> List<T> getAll(final String requestURI, final Class<T> resourceClass) {
+        return getResource(requestURI, HttpStatus.SC_OK)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract()
                     .body()
@@ -80,32 +81,44 @@ public abstract class BaseApiControllerIntTest {
                     .getList(".", resourceClass);
     }
 
-    <T> T saveResource(final String requestURI, final T resource, final Class<T> resourceClass) {
-        return given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
-                    .body(resource)
-                .when()
-                    .post(requestURI)
-                .then()
-                    .statusCode(HttpStatus.SC_OK)
+    <T> T saveResource(final T resource, final String requestURI, final Class<T> resourceClass) {
+        return saveResource(resource, requestURI, HttpStatus.SC_OK)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract()
                     .body()
                     .as(resourceClass);
     }
 
-    <T> T updateResource(final String requestURI, final T resource, final Class<T> resourceClass) {
-        return given()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+    <T> ValidatableResponse saveResource(final T resource, final String requestURI, final Integer expectedStatusCode) {
+        return getDefaultRequestSpecification()
                     .body(resource)
                 .when()
-                    .put(requestURI)
+                    .post(requestURI)
                 .then()
-                    .statusCode(HttpStatus.SC_OK)
+                    .statusCode(expectedStatusCode);
+    }
+
+    <T> T updateResource(final T resource, final String requestURI, final Class<T> resourceClass) {
+        return updateResource(resource, requestURI, HttpStatus.SC_OK)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract()
                     .body()
                     .as(resourceClass);
+    }
+
+    <T> ValidatableResponse updateResource(final T resource, final String requestURI, final Integer expectedStatusCode) {
+        return getDefaultRequestSpecification()
+                    .body(resource)
+                .when()
+                    .put(requestURI)
+                .then()
+                    .statusCode(expectedStatusCode);
+    }
+
+    private RequestSpecification getDefaultRequestSpecification() {
+        return given()
+                .header("Authorization", "Bearer " + JWT_TOKEN)
+                .contentType(MediaType.APPLICATION_JSON_VALUE);
     }
 
     private String generateJwtToken() {

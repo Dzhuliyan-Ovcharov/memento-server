@@ -17,7 +17,7 @@ public class NeighborhoodApiControllerIntTest extends BaseApiControllerIntTest {
     @Test
     public void crudHappyNeighborhood() throws IOException {
         final City city = objectMapper.readValue(getClass().getResource(CITY_JSON_PATH), City.class);
-        final City savedCity = saveResource(CITIES_BASE_URL, city, City.class);
+        final City savedCity = saveResource(city, CITIES_BASE_URL, City.class);
         final Neighborhood savedNeighborhood = savedCity.getNeighborhoods().iterator().next();
         final Neighborhood expectedToSave = city.getNeighborhoods().iterator().next()
                 .toBuilder()
