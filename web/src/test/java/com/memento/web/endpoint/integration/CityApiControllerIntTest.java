@@ -13,19 +13,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class CityApiControllerIntTest extends BaseApiControllerIntTest {
 
-    private static final String CITY_NAME_1 = "City";
-    private static final String CITY_NAME_2 = "City2";
-    private static final String CITY_NAME_3 = "City3";
-    private static final String CITY_NAME_4 = "City4";
-    private static final String CITY_NAME_5 = "City5";
-    private static final String NEIGHBORHOOD_NAME_1 = "Neighborhood";
-    private static final String NEIGHBORHOOD_NAME_2 = "Neighborhood2";
-    private static final String NEIGHBORHOOD_NAME_3 = "Neighborhood3";
-    private static final String NEIGHBORHOOD_NAME_4 = "Neighborhood4";
-
     @Test
     public void crudHappyCity() {
-        final City toSave = prepareCity(CITY_NAME_1, NEIGHBORHOOD_NAME_1);
+        final City toSave = prepareCity();
         final City savedCity = saveResource(toSave, CITIES_BASE_URL, City.class);
         final City expectedToSave = toSave.toBuilder()
                 .id(savedCity.getId())
@@ -35,7 +25,7 @@ public class CityApiControllerIntTest extends BaseApiControllerIntTest {
         assertThat(resultAfterSave).isEqualTo(expectedToSave);
 
         final City toUpdate = resultAfterSave.toBuilder()
-                .name(CITY_NAME_2)
+                .name(generateRandomString())
                 .build();
         updateResource(toUpdate, CITIES_BASE_URL + "/" + toUpdate.getId(), HttpStatus.SC_OK);
 
@@ -47,17 +37,17 @@ public class CityApiControllerIntTest extends BaseApiControllerIntTest {
 
     @Test
     public void saveDuplicateCityAndExpect400() {
-        final City toSave = prepareCity(CITY_NAME_3, NEIGHBORHOOD_NAME_2);
+        final City toSave = prepareCity();
         saveResource(toSave, CITIES_BASE_URL, HttpStatus.SC_OK);
         saveResource(toSave, CITIES_BASE_URL, HttpStatus.SC_BAD_REQUEST);
     }
 
     @Test
     public void updateDuplicateCityAndExpect400() {
-        final City firstToSave = prepareCity(CITY_NAME_4, NEIGHBORHOOD_NAME_3);
+        final City firstToSave = prepareCity();
         final City firstSaved = saveResource(firstToSave, CITIES_BASE_URL, City.class);
 
-        final City secondToSave = prepareCity(CITY_NAME_5, NEIGHBORHOOD_NAME_4);
+        final City secondToSave = prepareCity();
         saveResource(secondToSave, CITIES_BASE_URL, HttpStatus.SC_OK);
 
         final City toUpdate = firstSaved.toBuilder()
@@ -66,13 +56,13 @@ public class CityApiControllerIntTest extends BaseApiControllerIntTest {
         updateResource(toUpdate, CITIES_BASE_URL + "/" + toUpdate.getId(), HttpStatus.SC_BAD_REQUEST);
     }
 
-    private City prepareCity(final String cityName, final String neighborhoodName) {
+    private City prepareCity() {
         final City city = City.builder()
-                .name(cityName)
+                .name(generateRandomString())
                 .neighborhoods(new HashSet<>())
                 .build();
         final Neighborhood neighborhood = Neighborhood.builder()
-                .name(neighborhoodName)
+                .name(generateRandomString())
                 .city(city)
                 .build();
         city.getNeighborhoods().add(neighborhood);

@@ -1,6 +1,7 @@
 package com.memento.web.endpoint.integration;
 
 import com.memento.model.Floor;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.http.HttpStatus;
 import org.junit.Test;
 
@@ -11,12 +12,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 public class FloorApiControllerIntTest extends BaseApiControllerIntTest {
 
-    private static final Integer FLOOR_NUMBER_1 = 1;
-    private static final Integer FLOOR_NUMBER_2 = 2;
-
     @Test
     public void crudHappyFloor() {
-        final Floor toSave = prepareFloor(FLOOR_NUMBER_1);
+        final Floor toSave = prepareFloor();
         final Floor savedFloor = saveResource(toSave, FLOORS_BASE_URL, Floor.class);
         final Floor expectedToSave = toSave.toBuilder()
                 .id(savedFloor.getId())
@@ -31,14 +29,14 @@ public class FloorApiControllerIntTest extends BaseApiControllerIntTest {
 
     @Test
     public void saveDuplicateFloorAndExpect400() {
-        final Floor toSave = prepareFloor(FLOOR_NUMBER_2);
+        final Floor toSave = prepareFloor();
         saveResource(toSave, FLOORS_BASE_URL, HttpStatus.SC_OK);
         saveResource(toSave, FLOORS_BASE_URL, HttpStatus.SC_BAD_REQUEST);
     }
 
-    private Floor prepareFloor(final Integer number) {
+    private Floor prepareFloor() {
         return Floor.builder()
-                .number(number)
+                .number(RandomUtils.nextInt())
                 .build();
     }
 }
