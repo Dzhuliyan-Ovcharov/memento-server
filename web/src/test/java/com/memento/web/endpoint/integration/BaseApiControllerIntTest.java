@@ -11,6 +11,7 @@ import com.memento.shared.exception.ResourceNotFoundException;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;
 import io.restassured.specification.RequestSpecification;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.http.HttpStatus;
 import org.assertj.core.api.SoftAssertions;
 import org.junit.Before;
@@ -56,12 +57,12 @@ public abstract class BaseApiControllerIntTest {
         }
     }
 
-    <T> T getResource(final String requestURI, final Class<T> resourceClass) {
+    <T> T getResource(final String requestURI, final Class<T> responseClass) {
         return getResource(requestURI, HttpStatus.SC_OK)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract()
                     .body()
-                    .as(resourceClass);
+                    .as(responseClass);
     }
 
     ValidatableResponse getResource(final String requestURI, final Integer expectedStatusCode) {
@@ -72,21 +73,21 @@ public abstract class BaseApiControllerIntTest {
                     .statusCode(expectedStatusCode);
     }
 
-    <T> List<T> getAll(final String requestURI, final Class<T> resourceClass) {
+    <T> List<T> getAll(final String requestURI, final Class<T> responseClass) {
         return getResource(requestURI, HttpStatus.SC_OK)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract()
                     .body()
                     .jsonPath()
-                    .getList(".", resourceClass);
+                    .getList(".", responseClass);
     }
 
-    <T> T saveResource(final T resource, final String requestURI, final Class<T> resourceClass) {
+    <T> T saveResource(final T resource, final String requestURI, final Class<T> responseClass) {
         return saveResource(resource, requestURI, HttpStatus.SC_OK)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract()
                     .body()
-                    .as(resourceClass);
+                    .as(responseClass);
     }
 
     <T> ValidatableResponse saveResource(final T resource, final String requestURI, final Integer expectedStatusCode) {
@@ -98,12 +99,12 @@ public abstract class BaseApiControllerIntTest {
                     .statusCode(expectedStatusCode);
     }
 
-    <T> T updateResource(final T resource, final String requestURI, final Class<T> resourceClass) {
+    <T> T updateResource(final T resource, final String requestURI, final Class<T> responseClass) {
         return updateResource(resource, requestURI, HttpStatus.SC_OK)
                     .contentType(MediaType.APPLICATION_JSON_VALUE)
                 .extract()
                     .body()
-                    .as(resourceClass);
+                    .as(responseClass);
     }
 
     <T> ValidatableResponse updateResource(final T resource, final String requestURI, final Integer expectedStatusCode) {
@@ -113,6 +114,10 @@ public abstract class BaseApiControllerIntTest {
                     .put(requestURI)
                 .then()
                     .statusCode(expectedStatusCode);
+    }
+
+    String generateRandomString() {
+        return RandomStringUtils.randomAlphabetic(30);
     }
 
     private RequestSpecification getDefaultRequestSpecification() {
