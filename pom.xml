@@ -25,7 +25,7 @@
         <powermock.version>2.0.5</powermock.version>
         <rest-assured.version>4.2.0</rest-assured.version>
         <swagger2.version>2.9.2</swagger2.version>
-        <modelmapper.version>2.3.5</modelmapper.version>
+        <modelmapper.version>2.3.6</modelmapper.version>
     </properties>
 
     <dependencies>
