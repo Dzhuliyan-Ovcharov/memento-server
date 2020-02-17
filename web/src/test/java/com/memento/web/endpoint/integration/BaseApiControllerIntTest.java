@@ -6,7 +6,7 @@ import com.memento.model.Permission;
 import com.memento.model.User;
 import com.memento.repository.UserRepository;
 import com.memento.service.configuration.BeanConfig;
-import com.memento.service.impl.security.JwtTokenUtil;
+import com.memento.web.security.JwtTokenUtil;
 import com.memento.shared.exception.ResourceNotFoundException;
 import io.restassured.RestAssured;
 import io.restassured.response.ValidatableResponse;

@@ -13,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.dao.DuplicateKeyException;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +51,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void register(@NonNull final User user) {
-        if (!userRepository.findByEmail(user.getEmail()).isEmpty()) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
             throw new DuplicateKeyException("email exists.");
         }
 
@@ -85,22 +84,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findByEmail(@NonNull final String email) {
-        return userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with email: " + email));
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with email: " + email));
     }
 
     @Override
     public User findById(@NonNull final Long id) {
         log.info("Search for user with id: " + id);
         return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with id: " + id));
-    }
-
-    @Override
-    public UserDetails loadUserByUsername(@NonNull final String email) {
-        final User user = userRepository.findByEmail(email).orElseThrow(() -> new ResourceNotFoundException("Cannot find Email with email: " + email));
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .authorities(Set.of(user.getRole()))
-                .build();
     }
 }

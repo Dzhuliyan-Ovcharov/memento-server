@@ -1,10 +1,11 @@
-package com.memento.service.impl.security;
+package com.memento.web.security;
 
 import com.memento.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
@@ -14,6 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
 
+@Component
 public class JwtTokenUtil implements Serializable {
 
     private static final long serialVersionUID = -6926300516515826505L;

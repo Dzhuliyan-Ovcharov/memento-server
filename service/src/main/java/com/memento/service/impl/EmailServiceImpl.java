@@ -16,12 +16,12 @@ import org.springframework.stereotype.Service;
 @Primary
 public class EmailServiceImpl implements EmailService {
 
-    private static final String EMAIL_VERIFY_ENDPOINT = "/api/email/verify?token=";
+    private static final String EMAIL_VERIFY_ENDPOINT = "/email-verification?token=";
 
     @Value("${spring.mail.username}")
     private String from;
 
-    @Value("${app.url.instance}")
+    @Value("${app.link.instance}")
     private String mementoUrl;
 
     private final JavaMailSender javaMailSender;
@@ -39,7 +39,8 @@ public class EmailServiceImpl implements EmailService {
             message.setFrom(from);
             message.setTo(emailTo);
             message.setSubject("Memento Email Verification");
-            message.setText(String.format("Please click on the following link to verify your email %s", url));
+            message.setText(String.format("Please click on the following link to verify your email %s. " +
+                    "This link is activated only 15 minutes.\nRegister again in case the link is inactive.", url));
             javaMailSender.send(message);
 
         } catch (MailException e) {

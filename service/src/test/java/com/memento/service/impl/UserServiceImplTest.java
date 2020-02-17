@@ -199,30 +199,4 @@ public class UserServiceImplTest {
     public void verifyFindByIdThrowsWhenIdIsNull() {
         userService.findById(null);
     }
-
-    @Test
-    public void verifyLoadUserByUsername() {
-        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.of(user));
-
-        userService.loadUserByUsername(EMAIL);
-
-        verify(userRepository, times(1)).findByEmail(EMAIL);
-        verify(user, times(1)).getEmail();
-        verify(user, times(1)).getPassword();
-        verify(user, times(1)).getRole();
-    }
-
-    @Test(expected = ResourceNotFoundException.class)
-    public void verifyLoadUserByUsernameThrowsWhenUserEmailIsNotPresent() {
-        when(userRepository.findByEmail(EMAIL)).thenReturn(Optional.empty());
-
-        userService.loadUserByUsername(EMAIL);
-
-        verify(userRepository, times(1)).findByEmail(EMAIL);
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void verifyLoadUserByUsernameThrowsWhenEmailIsNull() {
-        userService.loadUserByUsername(null);
-    }
 }

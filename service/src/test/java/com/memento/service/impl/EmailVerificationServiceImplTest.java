@@ -2,7 +2,7 @@ package com.memento.service.impl;
 
 import com.memento.model.EmailVerificationToken;
 import com.memento.repository.EmailVerificationRepository;
-import com.memento.shared.exception.EmailVerificationTimeExpiryException;
+import com.memento.shared.exception.EmailVerificationException;
 import com.memento.shared.exception.ResourceNotFoundException;
 import org.junit.Before;
 import org.junit.Test;
@@ -102,7 +102,7 @@ public class EmailVerificationServiceImplTest {
         verify(emailVerificationRepository, times(1)).findByToken(TOKEN);
     }
 
-    @Test(expected = EmailVerificationTimeExpiryException.class)
+    @Test(expected = EmailVerificationException.class)
     public void verifyVerifyEmailThrowsWhenTokenHasExpired() {
         when(emailVerificationRepository.findByToken(TOKEN)).thenReturn(Optional.of(token));
         when(token.getExpiryTime()).thenReturn(Instant.now());

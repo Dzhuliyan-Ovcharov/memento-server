@@ -37,7 +37,6 @@ public class AdTypeApiControllerTest extends BaseApiControllerTest {
     }
 
     @Test
-    @WithMockUser(authorities = Permission.Value.ADMIN)
     public void verifySaveAdTypeAndExpect200() throws Exception {
         final String jsonRequest = objectMapper.writeValueAsString(adType);
 

@@ -3,7 +3,7 @@ package com.memento.service.impl;
 import com.memento.model.EmailVerificationToken;
 import com.memento.repository.EmailVerificationRepository;
 import com.memento.service.EmailVerificationService;
-import com.memento.shared.exception.EmailVerificationTimeExpiryException;
+import com.memento.shared.exception.EmailVerificationException;
 import com.memento.shared.exception.ResourceNotFoundException;
 import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +37,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
         final EmailVerificationToken verifiedToken =
                 EmailVerificationToken.builder()
                         .id(emailVerificationToken.getId())
+                        .token(verificationToken)
                         .expiryTime(emailVerificationToken.getExpiryTime())
                         .user(emailVerificationToken.getUser())
                         .isEmailVerified(true)
@@ -57,7 +58,7 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     private void validateVerificationActiveToken(final EmailVerificationToken emailVerificationToken) {
         if (emailVerificationToken.getExpiryTime().toEpochMilli() - Instant.now().toEpochMilli() <= 0) {
-            throw new EmailVerificationTimeExpiryException("Verification token has expired.");
+            throw new EmailVerificationException("Verification token has expired.");
         }
     }
 }

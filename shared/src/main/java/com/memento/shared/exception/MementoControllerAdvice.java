@@ -27,7 +27,7 @@ public class MementoControllerAdvice {
             BadRequestException.class,
             DataIntegrityViolationException.class,
             DuplicateKeyException.class,
-            EmailVerificationTimeExpiryException.class,
+            EmailVerificationException.class,
             MailSendException.class,
             StorageException.class})
     public ResponseEntity<?> handleBadRequestException(Exception ex) {

@@ -1,7 +1,7 @@
 package com.memento.web.endpoint;
 
 import com.memento.service.EmailVerificationService;
-import com.memento.shared.exception.EmailVerificationTimeExpiryException;
+import com.memento.shared.exception.EmailVerificationException;
 import com.memento.shared.exception.ResourceNotFoundException;
 import org.junit.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -61,7 +61,7 @@ public class EmailVerificationApiControllerTest extends BaseApiControllerTest {
 
     @Test
     public void verifyConfirmRegistrationWhenTokenHasExpiredAndExpect400() throws Exception {
-        doThrow(EmailVerificationTimeExpiryException.class).when(emailVerificationService).verifyEmail(TOKEN);
+        doThrow(EmailVerificationException.class).when(emailVerificationService).verifyEmail(TOKEN);
 
         mockMvc.perform(
                 get(EMAIL_VERIFICATION_BASE_URL)

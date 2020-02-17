@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memento.MementoStarter;
 import com.memento.service.UserService;
 import com.memento.service.configuration.BeanConfig;
-import com.memento.service.configuration.WebSecurityConfig;
+import com.memento.web.configuration.WebSecurityConfig;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;
@@ -21,7 +21,7 @@ import org.springframework.web.context.WebApplicationContext;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 
 @RunWith(value = SpringRunner.class)
-@ContextConfiguration(classes = {WebSecurityConfig.class, BeanConfig.class, MementoStarter.class})
+@ContextConfiguration(classes = {BeanConfig.class, MementoStarter.class})
 @Import(AopAutoConfiguration.class)
 public abstract class BaseApiControllerTest {
 

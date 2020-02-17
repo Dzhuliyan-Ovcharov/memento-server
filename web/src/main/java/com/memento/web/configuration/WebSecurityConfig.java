@@ -1,10 +1,12 @@
-package com.memento.service.configuration;
+package com.memento.web.configuration;
 
-import com.memento.service.impl.security.AuthenticationSuccessHandler;
-import com.memento.service.impl.security.JwtAuthenticationEntryPoint;
-import com.memento.service.impl.security.JwtRequestFilter;
+import com.memento.web.security.AuthWhiteListHelper;
+import com.memento.web.security.JwtAuthenticationEntryPoint;
+import com.memento.web.security.JwtRequestFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
@@ -13,7 +15,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -23,30 +24,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtRequestFilter jwtRequestFilter;
-    private final AuthenticationSuccessHandler authenticationSuccessHandler;
-
-    private static final String[] AUTH_WHITELIST = {
-            // -- swagger ui
-            "/v2/api-docs",
-            "/swagger-resources/**",
-            "/configuration/ui",
-            "/configuration/security",
-            "/swagger-ui.html",
-            "/webjars/**",
-            // -- public endpoints
-            "/api/user/register",
-            "/api/user/login"
-    };
+    private final AuthWhiteListHelper authWhiteListHelper;
 
     @Autowired
     public WebSecurityConfig(final AuthenticationProvider authenticationProvider,
                              final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
                              final JwtRequestFilter jwtRequestFilter,
-                             final AuthenticationSuccessHandler authenticationSuccessHandler) {
+                             final AuthWhiteListHelper authWhiteListHelper) {
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtRequestFilter = jwtRequestFilter;
-        this.authenticationSuccessHandler = authenticationSuccessHandler;
+        this.authWhiteListHelper = authWhiteListHelper;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager() throws Exception {
+        return super.authenticationManager();
     }
 
     @Override
@@ -58,7 +51,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
         http
-                .authorizeRequests().antMatchers(AUTH_WHITELIST).permitAll()
+                .authorizeRequests().antMatchers(authWhiteListHelper.getAuthWhiteList().toArray(String[]::new)).permitAll()
             .and()
                 .sessionManagement()
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -71,14 +64,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .anyRequest()
                     .authenticated()
             .and()
-                .formLogin()
-                    .loginPage("/api/user/login")
-                    .usernameParameter("email")
-                    .successHandler(authenticationSuccessHandler)
-            .and()
-                .logout()
-                    .logoutRequestMatcher(new AntPathRequestMatcher("/user/logout"))
-            .and()
+                .formLogin().disable()
+                .logout().disable()
                 .csrf().disable();
         // @formatter:on
     }

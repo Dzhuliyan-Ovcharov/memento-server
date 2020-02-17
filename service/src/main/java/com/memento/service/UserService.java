@@ -1,12 +1,10 @@
 package com.memento.service;
 
 import com.memento.model.User;
-import org.springframework.security.core.userdetails.UserDetailsService;
 
-import java.util.List;
 import java.util.Set;
 
-public interface UserService extends UserDetailsService {
+public interface UserService {
 
     Set<User> getAll();
 

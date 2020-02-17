@@ -1,4 +1,4 @@
-package com.memento.service.configuration;
+package com.memento.web.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

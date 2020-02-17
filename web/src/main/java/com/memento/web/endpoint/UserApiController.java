@@ -5,14 +5,19 @@ import com.memento.model.User;
 import com.memento.service.UserService;
 import com.memento.web.converter.UserRegisterRequestToUserPropertyMap;
 import com.memento.web.converter.UserToUserRegisterRequestPropertyMap;
+import com.memento.web.dto.UserAuthenticateRequest;
 import com.memento.web.dto.UserRegisterRequest;
 import com.memento.web.endpoint.api.UserApi;
+import com.memento.web.security.JwtTokenUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -27,12 +32,18 @@ public class UserApiController implements UserApi {
 
     private final UserService userService;
     private final ModelMapper modelMapper;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
 
     @Autowired
     public UserApiController(final UserService userService,
-                             final ModelMapper modelMapper) {
+                             final AuthenticationManager authenticationManager,
+                             final ModelMapper modelMapper,
+                             final JwtTokenUtil jwtTokenUtil) {
         this.userService = userService;
+        this.authenticationManager = authenticationManager;
         this.modelMapper = modelMapper;
+        this.jwtTokenUtil = jwtTokenUtil;
         modelMapper.addMappings(new UserToUserRegisterRequestPropertyMap());
         modelMapper.addMappings(new UserRegisterRequestToUserPropertyMap());
     }
@@ -53,5 +64,14 @@ public class UserApiController implements UserApi {
         final User user = modelMapper.map(userRegisterRequest, User.class);
         userService.register(user);
         return ResponseEntity.ok().build();
+    }
+
+    @PostMapping(value = "/authenticate")
+    public ResponseEntity<String> authenticate(@Valid @RequestBody final UserAuthenticateRequest userAuthenticateRequest) {
+        final Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userAuthenticateRequest.getEmail(), userAuthenticateRequest.getPassword()));
+        final User user = (User) authentication.getPrincipal();
+        final String token = jwtTokenUtil.generateToken(user, user.getRole().getAuthority());
+        return ResponseEntity.ok(token);
     }
 }

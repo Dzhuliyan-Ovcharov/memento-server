@@ -5,8 +5,7 @@ import com.memento.shared.annotation.PasswordMatches;
 import com.memento.shared.annotation.ValidEmail;
 import lombok.*;
 
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.*;
 
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -18,9 +17,11 @@ import javax.validation.constraints.NotNull;
 public class UserRegisterRequest {
 
     @NotEmpty
+    @Size(min = 3)
     private String firstName;
 
     @NotEmpty
+    @Size(min = 3)
     private String lastName;
 
     @ValidEmail
@@ -31,8 +32,10 @@ public class UserRegisterRequest {
     private Permission permission;
 
     @NotEmpty
+    @Size(min = 8, max = 20)
     private String password;
 
     @NotEmpty
+    @Size(min = 8, max = 20)
     private String confirmPassword;
 }
