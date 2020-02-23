@@ -5,8 +5,11 @@ import com.memento.model.User;
 import com.memento.service.UserService;
 import com.memento.web.converter.UserRegisterRequestToUserPropertyMap;
 import com.memento.web.converter.UserToUserRegisterRequestPropertyMap;
+import com.memento.web.converter.user.UserToUserProfileResponsePropertyMap;
+import com.memento.web.dto.TokenResponse;
 import com.memento.web.dto.UserAuthenticateRequest;
 import com.memento.web.dto.UserRegisterRequest;
+import com.memento.web.dto.user.UserProfileResponse;
 import com.memento.web.endpoint.api.UserApi;
 import com.memento.web.security.JwtTokenUtil;
 import org.modelmapper.ModelMapper;
@@ -46,6 +49,7 @@ public class UserApiController implements UserApi {
         this.jwtTokenUtil = jwtTokenUtil;
         modelMapper.addMappings(new UserToUserRegisterRequestPropertyMap());
         modelMapper.addMappings(new UserRegisterRequestToUserPropertyMap());
+        modelMapper.addMappings(new UserToUserProfileResponsePropertyMap());
     }
 
     @Override
@@ -66,12 +70,21 @@ public class UserApiController implements UserApi {
         return ResponseEntity.ok().build();
     }
 
+    @Override
+    @GetMapping(value = "/{email}")
+    public ResponseEntity<UserProfileResponse> getUserProfile(@PathVariable final String email) {
+        final User user = userService.findByEmail(email);
+        final UserProfileResponse userProfileResponse = modelMapper.map(user, UserProfileResponse.class);
+        return ResponseEntity.ok(userProfileResponse);
+    }
+
+    @Override
     @PostMapping(value = "/authenticate")
-    public ResponseEntity<String> authenticate(@Valid @RequestBody final UserAuthenticateRequest userAuthenticateRequest) {
+    public ResponseEntity<TokenResponse> authenticate(@Valid @RequestBody final UserAuthenticateRequest userAuthenticateRequest) {
         final Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userAuthenticateRequest.getEmail(), userAuthenticateRequest.getPassword()));
         final User user = (User) authentication.getPrincipal();
         final String token = jwtTokenUtil.generateToken(user, user.getRole().getAuthority());
-        return ResponseEntity.ok(token);
+        return ResponseEntity.ok(TokenResponse.builder().token(token).build());
     }
 }
