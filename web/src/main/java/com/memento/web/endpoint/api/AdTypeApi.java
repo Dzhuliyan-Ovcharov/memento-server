@@ -15,4 +15,7 @@ public interface AdTypeApi {
 
     @ApiOperation(value = "Get all ad types", response = Set.class)
     ResponseEntity<Set<AdType>> getAll();
+
+    @ApiOperation(value = "Get the ad type by type", response = AdType.class)
+    ResponseEntity<AdType> findByType(String type);
 }

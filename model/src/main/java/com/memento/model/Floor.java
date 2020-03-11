@@ -20,7 +20,7 @@ public class Floor implements Serializable {
     @EqualsAndHashCode.Include
     @ToString.Include
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @EqualsAndHashCode.Include

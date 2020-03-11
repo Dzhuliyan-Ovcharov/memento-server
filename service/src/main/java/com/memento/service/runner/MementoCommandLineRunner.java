@@ -70,7 +70,7 @@ public class MementoCommandLineRunner {
         private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
         private static final String FIRST_AND_LAST_NAME = "admin";
-        private static final String PASSWORD = "admin";
+        private static final String PASSWORD = "0898351444";
         private static final String EMAIL = "ddd.bg@gmail.com";
 
         @Autowired

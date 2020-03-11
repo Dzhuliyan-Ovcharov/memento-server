@@ -45,4 +45,10 @@ public class EstateTypeApiController implements EstateTypeApi {
     public ResponseEntity<EstateType> update(@PathVariable final Long id, @RequestBody @Valid final EstateType estateType) {
         return ResponseEntity.ok(estateTypeService.update(id, estateType));
     }
+
+    @Override
+    @GetMapping(value = "/type/{type}")
+    public ResponseEntity<EstateType> findByType(@PathVariable(value = "type") final String type) {
+        return ResponseEntity.ok(estateTypeService.findByType(type));
+    }
 }

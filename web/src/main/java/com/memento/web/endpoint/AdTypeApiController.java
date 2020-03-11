@@ -38,4 +38,10 @@ public class AdTypeApiController implements AdTypeApi {
     public ResponseEntity<Set<AdType>> getAll() {
         return ResponseEntity.ok(adTypeService.getAll());
     }
+
+    @Override
+    @GetMapping(value = "/type/{type}")
+    public ResponseEntity<AdType> findByType(@PathVariable(value = "type") final String type) {
+        return ResponseEntity.ok(adTypeService.findByType(type));
+    }
 }

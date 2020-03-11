@@ -18,4 +18,7 @@ public interface EstateTypeApi {
 
     @ApiOperation(value = "Update estate type", response = EstateType.class)
     ResponseEntity<EstateType> update(Long id, EstateType estateType);
+
+    @ApiOperation(value = "Get estate type by type", response = EstateType.class)
+    ResponseEntity<EstateType> findByType(String type);
 }
