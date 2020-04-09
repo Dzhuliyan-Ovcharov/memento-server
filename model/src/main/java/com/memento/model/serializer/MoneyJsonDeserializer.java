@@ -10,6 +10,8 @@ import java.io.IOException;
 
 public class MoneyJsonDeserializer extends StdDeserializer<Money> {
 
+    private static final long serialVersionUID = -2305186700956039645L;
+
     public MoneyJsonDeserializer() {
         super(Money.class);
     }

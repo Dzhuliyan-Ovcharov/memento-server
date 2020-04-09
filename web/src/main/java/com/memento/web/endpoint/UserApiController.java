@@ -5,7 +5,6 @@ import com.memento.model.User;
 import com.memento.service.UserService;
 import com.memento.web.converter.UserRegisterRequestToUserPropertyMap;
 import com.memento.web.converter.UserToUserRegisterRequestPropertyMap;
-import com.memento.web.converter.user.UserToUserProfileResponsePropertyMap;
 import com.memento.web.dto.TokenResponse;
 import com.memento.web.dto.UserAuthenticateRequest;
 import com.memento.web.dto.UserRegisterRequest;
@@ -49,7 +48,6 @@ public class UserApiController implements UserApi {
         this.jwtTokenUtil = jwtTokenUtil;
         modelMapper.addMappings(new UserToUserRegisterRequestPropertyMap());
         modelMapper.addMappings(new UserRegisterRequestToUserPropertyMap());
-        modelMapper.addMappings(new UserToUserProfileResponsePropertyMap());
     }
 
     @Override

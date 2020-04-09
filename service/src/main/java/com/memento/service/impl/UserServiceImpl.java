@@ -52,13 +52,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void register(@NonNull final User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new DuplicateKeyException("email exists.");
+            throw new DuplicateKeyException("Този имейл веюе съществува.");
         }
 
         final User newUser = User.builder()
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
                 .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .agencyName(user.getAgencyName())
+                .agencyPhoneNumber(user.getAgencyPhoneNumber())
                 .role(roleService.findRoleByPermission(user.getRole().getPermission()))
                 .password(bCryptPasswordEncoder.encode(user.getPassword()))
                 .build();
@@ -71,11 +74,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User update(@NonNull final User user) {
-        final User oldUser = userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with id: " + user.getId()));
+        final User oldUser = userRepository.findById(user.getId()).orElseThrow(() -> new ResourceNotFoundException("Липсва акаунт с идентификатор: " + user.getId()));
         final User newUser = User.builder()
                 .id(oldUser.getId())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
+                .email(user.getEmail())
+                .phoneNumber(user.getPhoneNumber())
+                .agencyName(user.getAgencyName())
+                .agencyPhoneNumber(user.getAgencyPhoneNumber())
                 .password(bCryptPasswordEncoder.encode(user.getPassword()))
                 .role(user.getRole())
                 .build();
@@ -85,12 +92,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public User findByEmail(@NonNull final String email) {
         return userRepository.findByEmail(email)
-                .orElseThrow(() -> new ResourceNotFoundException("Cannot find user with email: " + email));
+                .orElseThrow(() -> new ResourceNotFoundException("Липсва акаунт с имейл: " + email));
     }
 
     @Override
     public User findById(@NonNull final Long id) {
         log.info("Search for user with id: " + id);
-        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Cannot find user with id: " + id));
+        return userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Липсва акаунт с идентификатор: " + id));
     }
 }

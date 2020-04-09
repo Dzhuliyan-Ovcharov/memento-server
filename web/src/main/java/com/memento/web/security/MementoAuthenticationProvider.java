@@ -45,13 +45,13 @@ public class MementoAuthenticationProvider implements AuthenticationProvider {
         final String password = authentication.getCredentials().toString();
 
         if(!emailVerificationService.isEmailVerified(email)) {
-            throw new EmailVerificationException("Please activate your account first.");
+            throw new EmailVerificationException("Моля активирайте вашият акаунт.");
         }
 
         final User user = userService.findByEmail(email);
 
         if (!bCryptPasswordEncoder.matches(password, user.getPassword())) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username or password doesn't match");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Името или паролата не съвпадат");
         }
 
         return new UsernamePasswordAuthenticationToken(user, user.getPassword(), Set.of(user.getRole()));

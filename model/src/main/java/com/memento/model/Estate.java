@@ -1,5 +1,6 @@
 package com.memento.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.memento.model.converter.MoneyConverter;
@@ -11,59 +12,76 @@ import org.joda.money.Money;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Set;
 
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "estates")
 public class Estate implements Serializable {
 
     private static final long serialVersionUID = -605287185932654205L;
 
-    @EqualsAndHashCode.Include
-    @ToString.Include
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @EqualsAndHashCode.Include
-    @ToString.Include
     @Column(name = "price", nullable = false)
     @Convert(converter = MoneyConverter.class)
     @JsonSerialize(using = MoneyJsonSerializer.class)
     @JsonDeserialize(using = MoneyJsonDeserializer.class)
     private Money price;
 
-    @EqualsAndHashCode.Include
-    @ToString.Include
     @Embedded
     private Quadrature quadrature;
 
-    @EqualsAndHashCode.Include
-    @ToString.Include
     @Column(name = "description", nullable = false)
     private String description;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "floor_id", foreignKey = @ForeignKey(name = "fk_floor_id"))
     private Floor floor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "estate_type_id", foreignKey = @ForeignKey(name = "fk_estate_type_id"))
     private EstateType estateType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ad_type_id", foreignKey = @ForeignKey(name = "fk_ad_type_id"))
     private AdType adType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "fk_user_id"))
     private User user;
 
-    @OneToMany(mappedBy = "estate", fetch = FetchType.LAZY)
+    @JsonBackReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "estates_estate_features",
+            joinColumns = @JoinColumn(name = "estate_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(name = "estate_feature_id", referencedColumnName = "id"))
+    private Set<EstateFeature> estateFeatures;
+
+    @JsonBackReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    @OneToMany(mappedBy = "estate", fetch = FetchType.EAGER)
     private List<Image> images;
 }

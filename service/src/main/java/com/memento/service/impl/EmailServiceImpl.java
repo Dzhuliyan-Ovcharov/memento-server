@@ -38,9 +38,9 @@ public class EmailServiceImpl implements EmailService {
             final SimpleMailMessage message = new SimpleMailMessage();
             message.setFrom(from);
             message.setTo(emailTo);
-            message.setSubject("Memento Email Verification");
-            message.setText(String.format("Please click on the following link to verify your email %s. " +
-                    "This link is activated only 15 minutes.\nRegister again in case the link is inactive.", url));
+            message.setSubject("Memento имейл потвърждаване");
+            message.setText(String.format("Моля кликнете на текущият линк, за да потвърдите вашият имейл %s. " +
+                    "Линкът е активен само 15 минути.\nРегистрирайте се отново в случай, че времето Ви е изтекло", url));
             javaMailSender.send(message);
 
         } catch (MailException e) {

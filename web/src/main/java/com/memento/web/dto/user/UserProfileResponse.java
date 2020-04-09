@@ -1,6 +1,5 @@
 package com.memento.web.dto.user;
 
-import com.memento.model.Permission;
 import lombok.*;
 
 @Builder(toBuilder = true)
@@ -13,5 +12,7 @@ public class UserProfileResponse {
     private String firstName;
     private String lastName;
     private String email;
-    private Permission permission;
+    private String phoneNumber;
+    private String agencyName;
+    private String agencyPhoneNumber;
 }

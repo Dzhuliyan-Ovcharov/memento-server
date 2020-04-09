@@ -21,7 +21,7 @@ public class EmailVerificationToken implements Serializable {
     private static final long serialVersionUID = -2920113489880098521L;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(nullable = false)

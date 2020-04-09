@@ -2,6 +2,7 @@ package com.memento.web.endpoint;
 
 import com.memento.model.Estate;
 import com.memento.model.Permission;
+import com.memento.model.User;
 import com.memento.service.EstateService;
 import com.memento.web.converter.EstateRequestToEstatePropertyMap;
 import com.memento.web.converter.EstateToEstateResponsePropertyMap;
@@ -14,8 +15,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,6 +51,15 @@ public class EstateApiController implements EstateApi {
     @GetMapping
     public ResponseEntity<Set<EstateResponse>> getAll() {
         return ResponseEntity.ok(estateService.getAll()
+                .stream()
+                .map(estate -> modelMapper.map(estate, EstateResponse.class))
+                .collect(Collectors.toSet()));
+    }
+
+    @Override
+    @GetMapping(value = "/{email}")
+    public ResponseEntity<Set<EstateResponse>> getEstatesByUserEmail(@PathVariable final String email) {
+        return ResponseEntity.ok(estateService.getEstatesByUserEmail(email)
                 .stream()
                 .map(estate -> modelMapper.map(estate, EstateResponse.class))
                 .collect(Collectors.toSet()));

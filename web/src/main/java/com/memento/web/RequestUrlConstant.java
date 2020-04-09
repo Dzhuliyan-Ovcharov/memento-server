@@ -12,6 +12,8 @@ public class RequestUrlConstant {
 
     public static final String ESTATE_TYPES_BASE_URL = "/v1/estate-types";
 
+    public static final String ESTATE_FEATURES_BASE_URL = "/v1/estate-features";
+
     public static final String FLOORS_BASE_URL = "/v1/floors";
 
     public static final String IMAGES_BASE_URL = "/v1/images";

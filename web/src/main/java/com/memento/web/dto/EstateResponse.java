@@ -20,6 +20,8 @@ import java.util.List;
 @ToString
 public class EstateResponse {
 
+    private Long id;
+
     @NotNull
     @JsonSerialize(using = MoneyJsonSerializer.class)
     @JsonDeserialize(using = MoneyJsonDeserializer.class)

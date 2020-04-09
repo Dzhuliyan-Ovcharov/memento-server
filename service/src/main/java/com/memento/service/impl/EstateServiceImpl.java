@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 @Primary
@@ -23,6 +24,7 @@ public class EstateServiceImpl implements EstateService {
     private final FloorService floorService;
     private final EstateTypeService estateTypeService;
     private final AdTypeService adTypeService;
+    private final EstateFeatureService estateFeatureService;
     private final UserService userService;
     private final EstateRepository estateRepository;
 
@@ -30,11 +32,13 @@ public class EstateServiceImpl implements EstateService {
     public EstateServiceImpl(final FloorService floorService,
                              final EstateTypeService estateTypeService,
                              final AdTypeService adTypeService,
+                             final EstateFeatureService estateFeatureService,
                              final UserService userService,
                              final EstateRepository estateRepository) {
         this.floorService = floorService;
         this.estateTypeService = estateTypeService;
         this.adTypeService = adTypeService;
+        this.estateFeatureService = estateFeatureService;
         this.userService = userService;
         this.estateRepository = estateRepository;
     }
@@ -55,6 +59,10 @@ public class EstateServiceImpl implements EstateService {
         final Floor floor = floorService.findByNumber(estate.getFloor().getNumber());
         final EstateType estateType = estateTypeService.findByType(estate.getEstateType().getType());
         final AdType adType = adTypeService.findByType(estate.getAdType().getType());
+        final Set<EstateFeature> estateFeatures = estateFeatureService.findByFeatures(estate.getEstateFeatures()
+                .stream()
+                .map(EstateFeature::getFeature)
+                .collect(Collectors.toSet()));
         final User user = userService.findByEmail(estate.getUser().getEmail());
 
         final Estate estateToSave = Estate.builder()
@@ -64,6 +72,7 @@ public class EstateServiceImpl implements EstateService {
                 .floor(floor)
                 .estateType(estateType)
                 .adType(adType)
+                .estateFeatures(estateFeatures)
                 .user(user)
                 .images(Collections.emptyList())
                 .build();
@@ -92,4 +101,10 @@ public class EstateServiceImpl implements EstateService {
 
         return estateRepository.save(newEstate);
     }
+
+    @Override
+    public Set<Estate> getEstatesByUserEmail(@NonNull final String email) {
+        return Set.copyOf(estateRepository.findAllByUserEmail(email));
+    }
+
 }

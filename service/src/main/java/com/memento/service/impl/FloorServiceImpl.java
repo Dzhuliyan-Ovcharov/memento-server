@@ -39,6 +39,6 @@ public class FloorServiceImpl implements FloorService {
     @Override
     public Floor findByNumber(@NonNull final Integer number) {
         return floorRepository.findFloorByNumber(number)
-                .orElseThrow(() -> new ResourceNotFoundException("Floor cannot be find with number: " + number));
+                .orElseThrow(() -> new ResourceNotFoundException("Липсва етаж с номер: " + number));
     }
 }

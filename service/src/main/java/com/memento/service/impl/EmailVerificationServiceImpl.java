@@ -53,12 +53,12 @@ public class EmailVerificationServiceImpl implements EmailVerificationService {
 
     private EmailVerificationToken getEmailVerificationToken(final String verificationToken) {
         return emailVerificationRepository.findByToken(verificationToken)
-                .orElseThrow(() -> new ResourceNotFoundException(String.format("Invalid verification token %s", verificationToken)));
+                .orElseThrow(() -> new ResourceNotFoundException(String.format("Невалиден токен за потвърждение %s", verificationToken)));
     }
 
     private void validateVerificationActiveToken(final EmailVerificationToken emailVerificationToken) {
         if (emailVerificationToken.getExpiryTime().toEpochMilli() - Instant.now().toEpochMilli() <= 0) {
-            throw new EmailVerificationException("Verification token has expired.");
+            throw new EmailVerificationException("Токенът е изтекъл.");
         }
     }
 }

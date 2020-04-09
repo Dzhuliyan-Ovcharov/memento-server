@@ -5,7 +5,10 @@ import com.memento.web.dto.EstateResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Set;
 
 @Api(value = "Estate API")
@@ -22,4 +25,7 @@ public interface EstateApi {
 
     @ApiOperation(value = "Update estate", response = EstateResponse.class)
     ResponseEntity<EstateResponse> update(Long id, EstateRequest estateRequest);
+
+    @ApiOperation(value = "Fetch all estates by user email", response = Set.class)
+    ResponseEntity<Set<EstateResponse>> getEstatesByUserEmail(@PathVariable final String email);
 }

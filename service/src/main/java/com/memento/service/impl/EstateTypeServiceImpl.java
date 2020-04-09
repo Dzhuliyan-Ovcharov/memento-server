@@ -46,7 +46,7 @@ public class EstateTypeServiceImpl implements EstateTypeService {
     @Override
     public EstateType update(@NonNull final Long id, @NonNull final EstateType estateType) {
         if (!id.equals(estateType.getId())) {
-            throw new BadRequestException(String.format("The ids does not match. First id is %d. Second id is %d", id, estateType.getId()));
+            throw new BadRequestException(String.format("Идентефикаторите не съвпадат. Първият е %d. Вторият е %d", id, estateType.getId()));
         }
 
         final EstateType oldEstateType = estateTypeRepository.findById(estateType.getId()).orElseThrow(ResourceNotFoundException::new);

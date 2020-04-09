@@ -89,6 +89,9 @@ public class MementoCommandLineRunner {
                         .firstName(FIRST_AND_LAST_NAME)
                         .lastName(FIRST_AND_LAST_NAME)
                         .email(EMAIL)
+                        .phoneNumber("0898351443")
+                        .agencyName("ЕРА")
+                        .agencyPhoneNumber("0898351443")
                         .password(bCryptPasswordEncoder.encode(PASSWORD))
                         .role(roleService.findRoleByPermission(Permission.ADMIN))
                         .build();

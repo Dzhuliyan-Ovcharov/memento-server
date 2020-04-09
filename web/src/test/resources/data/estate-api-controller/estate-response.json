@@ -9,7 +9,7 @@
     "difference": 50.0
   },
   "description": "Description",
-  "floorNumber": 1,
+  "floor": 1,
   "estateType": "Estate type",
   "adType": "Ad type",
   "firstName": "First name",

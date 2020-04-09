@@ -28,6 +28,17 @@ public class UserRegisterRequest {
     @NotEmpty
     private String email;
 
+    @NotEmpty
+    @Pattern(regexp = "(\\+)?(359|0)8[789]\\d{1}(|-| )\\d{3}(|-| )\\d{3}", message = "Моля добавете валиден телефонен номер.")
+    private String phoneNumber;
+
+    @NotEmpty
+    private String agencyName;
+
+    @NotEmpty
+    @Pattern(regexp = "(\\+)?(359|0)8[789]\\d{1}(|-| )\\d{3}(|-| )\\d{3}", message = "Моля добавете валиден телефонен номер.")
+    private String agencyPhoneNumber;
+
     @NotNull
     private Permission permission;
 

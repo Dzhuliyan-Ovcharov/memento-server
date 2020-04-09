@@ -1,5 +1,8 @@
 package com.memento.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
@@ -11,26 +14,25 @@ import java.util.Set;
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
 @AllArgsConstructor(access = AccessLevel.PACKAGE)
 @Getter
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(onlyExplicitlyIncluded = true)
+@EqualsAndHashCode
+@ToString
 @Entity
 @Table(name = "estate_types", indexes = {@Index(name = "uidx_estate_type", unique = true, columnList = "type")})
 public class EstateType implements Serializable {
 
     private static final long serialVersionUID = 896929148458585749L;
 
-    @EqualsAndHashCode.Include
-    @ToString.Include
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @EqualsAndHashCode.Include
-    @ToString.Include
     @Length(min = 3, max = 30, message = "Type must be between 3 and 30 symbols.")
     @Column(name = "type", nullable = false)
     private String type;
 
+    @JsonManagedReference
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
     @OneToMany(mappedBy = "estateType", fetch = FetchType.LAZY)
     private Set<Estate> estates;
 }
