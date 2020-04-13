@@ -83,5 +83,5 @@ public class Estate implements Serializable {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @OneToMany(mappedBy = "estate", fetch = FetchType.EAGER)
-    private List<Image> images;
+    private Set<Image> images;
 }

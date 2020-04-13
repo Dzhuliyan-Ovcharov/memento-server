@@ -52,7 +52,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public void register(@NonNull final User user) {
         if (userRepository.findByEmail(user.getEmail()).isPresent()) {
-            throw new DuplicateKeyException("Този имейл веюе съществува.");
+            throw new DuplicateKeyException("Този имейл вече съществува.");
         }
 
         final User newUser = User.builder()

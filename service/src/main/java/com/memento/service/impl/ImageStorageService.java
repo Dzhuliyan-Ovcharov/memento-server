@@ -48,7 +48,7 @@ public class ImageStorageService implements StorageService {
                     ImageIO.read(file.getInputStream()) == null ||
                     !FilenameUtils.isExtension(file.getOriginalFilename(), SUPPORTED_FILE_EXTENSIONS)) {
                 log.error("The file {} is either empty or its type is not supported.", file.getOriginalFilename());
-                throw new StorageException(String.format("The file %s is either empty or its not an image with supported extension. Current supported file extensions are %s.", file.getOriginalFilename(), SUPPORTED_FILE_EXTENSIONS));
+                throw new StorageException(String.format("Файлът %s е празен или не е снимка, която поддържаме. Текущите формати които поддържаме са %s.", file.getOriginalFilename(), SUPPORTED_FILE_EXTENSIONS));
             }
             final File destination = FileUtils.getFile(storageRootDirectory, newFileName);
             file.transferTo(destination);

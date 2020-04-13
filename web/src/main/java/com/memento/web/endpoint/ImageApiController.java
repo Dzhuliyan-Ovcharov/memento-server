@@ -46,8 +46,13 @@ public class ImageApiController implements ImageApi {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping(value = "/all/estate/{estateId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<HttpStatus> createImages(@RequestParam(value = "files") final List<MultipartFile> files, @PathVariable(value = "estateId") final Long estateId) {
+        imageService.createImages(files, estateId);
+        return ResponseEntity.ok().build();
+    }
+
     @Override
-    @Secured(Permission.Value.ADMIN)
     @DeleteMapping(value = "/name/{imageName}")
     public ResponseEntity<HttpStatus> deleteImage(@PathVariable(value = "imageName") final String imageName) {
         imageService.deleteImage(imageName);

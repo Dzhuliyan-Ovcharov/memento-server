@@ -2,7 +2,6 @@ package com.memento.web.endpoint;
 
 import com.memento.model.Estate;
 import com.memento.model.Permission;
-import com.memento.model.User;
 import com.memento.service.EstateService;
 import com.memento.web.converter.EstateRequestToEstatePropertyMap;
 import com.memento.web.converter.EstateToEstateResponsePropertyMap;
@@ -15,10 +14,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -32,7 +29,8 @@ public class EstateApiController implements EstateApi {
     private final ModelMapper modelMapper;
 
     @Autowired
-    public EstateApiController(final EstateService estateService, final ModelMapper modelMapper) {
+    public EstateApiController(final EstateService estateService,
+                               final ModelMapper modelMapper) {
         this.estateService = estateService;
         this.modelMapper = modelMapper;
         modelMapper.addMappings(new EstateRequestToEstatePropertyMap());
@@ -56,8 +54,16 @@ public class EstateApiController implements EstateApi {
                 .collect(Collectors.toSet()));
     }
 
+    @GetMapping(value = "/latest/{count}")
+    public ResponseEntity<Set<EstateResponse>> getLatest(@PathVariable final Long count) {
+        return ResponseEntity.ok(estateService.getLatest(count)
+                .stream()
+                .map(estate -> modelMapper.map(estate, EstateResponse.class))
+                .collect(Collectors.toSet()));
+    }
+
     @Override
-    @GetMapping(value = "/{email}")
+    @GetMapping(value = "/email/{email}")
     public ResponseEntity<Set<EstateResponse>> getEstatesByUserEmail(@PathVariable final String email) {
         return ResponseEntity.ok(estateService.getEstatesByUserEmail(email)
                 .stream()

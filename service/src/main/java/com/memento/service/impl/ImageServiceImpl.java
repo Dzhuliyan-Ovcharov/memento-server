@@ -11,9 +11,11 @@ import lombok.NonNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -57,6 +59,14 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    @Transactional
+    public void createImages(@NonNull final List<MultipartFile> files, @NonNull final Long estateId) {
+        files.forEach(file -> createImage(file, estateId));
+    }
+
+
+    @Override
+    @Transactional
     public void deleteImage(@NonNull final String imageName) {
         final Image image = imageRepository.findByName(imageName).orElseThrow(ResourceNotFoundException::new);
         imageRepository.delete(image);

@@ -1,5 +1,6 @@
 package com.memento.web.endpoint.api;
 
+import com.memento.web.dto.EstateImageResponse;
 import com.memento.web.dto.EstateRequest;
 import com.memento.web.dto.EstateResponse;
 import io.swagger.annotations.Api;

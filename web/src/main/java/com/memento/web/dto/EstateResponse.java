@@ -11,6 +11,7 @@ import org.joda.money.Money;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.List;
+import java.util.Set;
 
 @Builder(toBuilder = true)
 @NoArgsConstructor(access = AccessLevel.PACKAGE)
@@ -34,7 +35,7 @@ public class EstateResponse {
     private String description;
 
     @NotNull
-    private Integer floorNumber;
+    private Integer floor;
 
     @NotEmpty
     private String estateType;
@@ -52,5 +53,7 @@ public class EstateResponse {
     private String email;
 
     @NotNull
-    private List<String> images;
+    private Set<String> images;
+
+    private Set<String> features;
 }

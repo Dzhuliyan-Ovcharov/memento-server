@@ -6,7 +6,7 @@ INSERT IGNORE INTO ESTATE_TYPES (`TYPE`)
 VALUES ('1-СТАЕН'), ('2-СТАЕН'), ('3-СТАЕН'), ('4-СТАЕН'), ('МНОГОСТАЕН'), ('МЕЗОНЕТ'), ('АТЕЛИЕ, ТАВАН');
 
 INSERT IGNORE INTO AD_TYPES (`TYPE`)
-VALUES ('ПРОДАВА'), ('НАЕМ');
+VALUES ('ПРОДАВА'), ('ДАВА ПОД НАЕМ');
 
 INSERT IGNORE INTO ESTATE_FEATURES (`FEATURE`)
 VALUES ('В строеж'), ('С преход'), ('Асансьор'), ('С гараж'), ('С паркинг'), ('Лизинг'), ('Ипотекиран'), ('Бартер'),

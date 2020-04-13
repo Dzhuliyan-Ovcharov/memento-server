@@ -16,4 +16,6 @@ public interface EstateService {
     Estate update(Long id, Estate estate);
 
     Set<Estate> getEstatesByUserEmail(String email);
+
+    Set<Estate> getLatest(Long count);
 }
