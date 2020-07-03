@@ -23,4 +23,5 @@ public class RequestUrlConstant {
     public static final String USERS_BASE_URL = "/v1/users";
 
     public static final String ROLE_BASE_URL = "/v1/roles";
+
 }

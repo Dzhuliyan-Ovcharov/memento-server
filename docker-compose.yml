@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  memento-db:
+    container_name: memento-db
+    image: mysql
+    environment:
+      MYSQL_DATABASE: memento
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: dzhuliyan
+      MYSQL_PASSWORD: dzhuliyan
+    ports:
+      - '3306:3306'
+    volumes:
+      - memento
+
+  memento-server:
+    restart: on-failure
+    container_name: memento-server
+    image: memento-server
+    ports:
+      - '8081:8081'
+    depends_on:
+      - memento-db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://memento-db/memento?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8081/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

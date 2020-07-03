@@ -56,8 +56,15 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
-                    <finalName>memento</finalName>
+                    <finalName>memento-executable</finalName>
                 </configuration>
             </plugin>
         </plugins>

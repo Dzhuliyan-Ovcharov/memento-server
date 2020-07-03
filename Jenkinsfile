@@ -1,6 +1,12 @@
 pipeline {
     agent any
 
+    properties([
+      parameters([
+        string(name: 'Branch:', defaultValue: 'master', description: 'The target environment', )
+       ])
+    ])
+
         stages {
             stage ('Compile Stage') {
                 steps {

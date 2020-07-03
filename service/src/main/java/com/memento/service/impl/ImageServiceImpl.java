@@ -49,6 +49,7 @@ public class ImageServiceImpl implements ImageService {
     }
 
     @Override
+    @Transactional
     public void createImage(@NonNull final MultipartFile file, @NonNull final Long estateId) {
         final Estate estate = estateRepository.findById(estateId).orElseThrow(ResourceNotFoundException::new);
         final String imageName = storageService.store(file);
