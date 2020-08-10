@@ -1,15 +1,12 @@
 package com.memento.web.endpoint.api;
 
-import com.memento.web.dto.EstateImageResponse;
 import com.memento.web.dto.EstateRequest;
 import com.memento.web.dto.EstateResponse;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
 import java.util.Set;
 
 @Api(value = "Estate API")

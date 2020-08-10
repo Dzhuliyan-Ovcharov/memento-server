@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.memento.MementoStarter;
 import com.memento.service.UserService;
 import com.memento.service.configuration.BeanConfig;
-import com.memento.web.configuration.WebSecurityConfig;
 import org.junit.Before;
 import org.junit.runner.RunWith;
 import org.mockito.MockitoAnnotations;

@@ -8,12 +8,9 @@ import com.memento.model.serializer.MoneyJsonSerializer;
 import com.memento.shared.annotation.ValidEmail;
 import lombok.*;
 import org.joda.money.Money;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 import java.util.Set;
 
 @Builder(toBuilder = true)

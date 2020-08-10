@@ -2,13 +2,11 @@ package com.memento.web.converter;
 
 import com.memento.model.Estate;
 import com.memento.model.EstateFeature;
-import com.memento.model.Image;
 import com.memento.web.dto.EstateRequest;
 import org.modelmapper.Converter;
 import org.modelmapper.PropertyMap;
 import org.modelmapper.spi.MappingContext;
 
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 

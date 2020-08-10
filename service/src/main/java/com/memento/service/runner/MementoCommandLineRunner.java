@@ -1,7 +1,7 @@
 package com.memento.service.runner;
 
-import com.memento.model.Role;
 import com.memento.model.Permission;
+import com.memento.model.Role;
 import com.memento.model.User;
 import com.memento.repository.UserRepository;
 import com.memento.service.RoleService;

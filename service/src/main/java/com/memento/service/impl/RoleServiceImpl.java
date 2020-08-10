@@ -1,7 +1,7 @@
 package com.memento.service.impl;
 
-import com.memento.model.Role;
 import com.memento.model.Permission;
+import com.memento.model.Role;
 import com.memento.repository.RoleRepository;
 import com.memento.service.RoleService;
 import lombok.extern.slf4j.Slf4j;

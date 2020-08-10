@@ -1,7 +1,7 @@
 package com.memento.repository;
 
-import com.memento.model.Role;
 import com.memento.model.Permission;
+import com.memento.model.Role;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

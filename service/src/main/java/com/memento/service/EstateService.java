@@ -1,7 +1,6 @@
 package com.memento.service;
 
 import com.memento.model.Estate;
-import com.memento.model.User;
 
 import java.util.Set;
 

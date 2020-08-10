@@ -1,7 +1,7 @@
 package com.memento.service;
 
-import com.memento.model.Role;
 import com.memento.model.Permission;
+import com.memento.model.Role;
 
 import java.util.Set;
 
